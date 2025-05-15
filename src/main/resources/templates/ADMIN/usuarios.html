@@ -1,0 +1,32 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+</head>
+<body>
+<h2>Lista de Usuarios</h2>
+<a th:href="@{/admin/usuarios/nuevo}">Agregar Usuario</a>
+<table>
+    <thead><tr><th>Nombre</th><th>Email</th><th>Rol</th><th>Estado</th><th>Fecha</th><th>Acciones</th></tr></thead>
+    <tbody>
+    <tr th:each="usuario : ${usuarios}">
+        <td th:text="${usuario.nombre}"></td>
+        <td th:text="${usuario.email}"></td>
+        <td th:text="${usuario.rol.nombre}"></td>
+        <td>
+            <span th:if="${usuario.activo}" class="badge badge-success">ACTIVO</span>
+            <span th:unless="${usuario.activo}" class="badge badge-danger">INACTIVO</span>
+        </td>
+        <td th:text="${usuario.fechaRegistro}"></td>
+        <td>
+            <a th:href="@{/admin/usuarios/editar/{id}(id=${usuario.idUsuario})}" class="btn btn-warning">Editar</a>
+            <a th:if="${usuario.activo}" th:href="@{/admin/usuarios/desactivar/{id}(id=${usuario.idUsuario})}" class="btn btn-danger">Desactivar</a>
+            <a th:unless="${usuario.activo}" th:href="@{/admin/usuarios/reactivar/{id}(id=${usuario.idUsuario})}" class="btn btn-success">Reactivar</a>
+        </td>
+    </tr>
+    </tbody>
+</table>
+
+</body>
+</html>

@@ -1,0 +1,40 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+</head>
+<body>
+<h2>Formulario Usuario</h2>
+<form th:action="@{/admin/usuarios/guardar}" th:object="${usuario}" method="post">
+
+  <input type="hidden" th:field="*{idUsuario}" />
+
+  <label >Nombre:</label>
+  <input type="text" th:field="*{nombre}" required />
+
+  <label>Email:</label>
+  <input type="email" th:field="*{email}" required />
+
+  <label>Rol:</label>
+  <select th:field="*{rol}" required>
+    <option th:each="rol : ${roles}" th:value="${rol.idRol}" th:text="${rol.nombre}"></option>
+  </select>
+
+  <label>Fecha Registro:</label>
+  <input type="date" th:field="*{fechaRegistro}" />
+
+  <label>Estado:</label>
+  <select th:field="*{activo}">
+    <option th:value="true" th:text="'Activo'" th:selected="${usuario.activo} == true"></option>
+    <option th:value="false" th:text="'Inactivo'" th:selected="${usuario.activo} == false"></option>
+  </select>
+
+  <label>Nueva contraseña (opcional):</label>
+  <input type="password" name="nuevaContraseña" placeholder="Dejar vacío para no cambiarla" />
+
+  <button type="submit">Guardar</button>
+</form>
+
+</body>
+</html>

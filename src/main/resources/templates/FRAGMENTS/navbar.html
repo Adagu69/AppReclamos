@@ -1,0 +1,22 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+</head>
+<body>
+<!-- fragments/navbar.html -->
+<div th:fragment="barra-navegacion">
+    <form th:action="@{/logout}" method="post" style="display:inline;">
+        <button type="submit">Cerrar Sesión</button>
+    </form>
+
+    <a th:if="${#authentication?.principal?.authorities.?[toString().contains('ADMIN')]}"
+       th:href="@{/admin/usuarios}">Volver al Panel Admin</a>
+
+    <a th:if="${#authentication?.principal?.authorities.?[toString().contains('USER')] && !#authentication?.principal?.authorities.?[toString().contains('ADMIN')]}"
+       th:href="@{/user/dashboard}">Volver al Panel Usuario</a>
+</div>
+
+</body>
+</html>

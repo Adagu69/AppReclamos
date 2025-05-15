@@ -1,5 +1,7 @@
 package com.AppReclamos.AppReclamosCms.Controladores;
 
+import com.AppReclamos.AppReclamosCms.Modelos.Usuarios;
+import com.AppReclamos.AppReclamosCms.Servicios.impl.UsuarioServicioImpl;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -14,22 +16,8 @@ public class AuthController {
         return "login";
     }
 
-    @GetMapping("/home")
-    public String home(Model model, Principal principal) {
-        if (principal == null) {
-            return "redirect:/login";
-        }
-        model.addAttribute("username", principal.getName());
-        return "home";
-    }
-
-    @GetMapping("/admin/panel")
-    public String adminPanel(){
-        return "admin-panel";
-    }
-
-    @GetMapping("/user/dashboard")
-    public String userDashboard(){
-        return "user-dashboard";
+    @GetMapping("/")
+    public String index() {
+        return "redirect:/login";
     }
 }

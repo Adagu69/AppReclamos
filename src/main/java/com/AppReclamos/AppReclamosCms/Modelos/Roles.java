@@ -1,8 +1,10 @@
 package com.AppReclamos.AppReclamosCms.Modelos;
 
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
 import lombok.Data;
+import lombok.ToString;
 
 import java.util.List;
 
@@ -20,5 +22,7 @@ public class Roles {
     private String nombre;
 
     @OneToMany(mappedBy = "rol", cascade = CascadeType.ALL)
+    @ToString.Exclude // Evita loop en toString
+    @JsonIgnore       // (Si usas JSON alguna vez)
     private List<Usuarios> usuarios;
 }
