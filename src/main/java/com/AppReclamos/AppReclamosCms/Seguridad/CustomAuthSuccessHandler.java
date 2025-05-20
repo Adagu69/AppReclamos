@@ -2,6 +2,7 @@ package com.AppReclamos.AppReclamosCms.Seguridad;
 
 import com.AppReclamos.AppReclamosCms.Modelos.Usuarios;
 import com.AppReclamos.AppReclamosCms.Repositorios.UsuarioRepositorio;
+import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import org.springframework.beans.factory.annotation.Autowired;

@@ -96,4 +96,16 @@ public class AdminUsuarioController {
         usuarioServicios.guardar(usuario); // actualiza el estado a desactivado
         return "redirect:/admin/usuarios";
     }
+
+    @GetMapping("/admin/dashboard")
+    public String mostrarDashboardAdmin(Model model) {
+        return "ADMIN/dashboard"; // Templates path
+    }
+
+    @GetMapping("/user/UserDashboard")
+    public String mostrarDashboardUsuario(Model model) {
+        return "USER/UserDashboard";
+    }
+
+
 }

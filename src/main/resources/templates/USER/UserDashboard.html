@@ -1,0 +1,43 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
+<head th:replace="FRAGMENTS/head :: head">
+</head>
+<body class="layout-fixed sidebar-expand-lg bg-body-tertiary">
+<!--begin::App Wrapper-->
+<div class="app-wrapper">
+    <div th:replace="FRAGMENTS/navbar :: navbar"></div>
+    <div th:replace="FRAGMENTS/sidebar :: sidebar"></div>
+
+
+    <main class="app-main">
+        <div class="app-content">
+            <div class="container-fluid">
+            </div>
+        </div>
+    </main>
+    <!--end::App Main-->
+    <!--begin::Footer-->
+    <footer class="app-footer">
+        <!--begin::To the end-->
+        <div class="float-end d-none d-sm-inline">CMS</div>
+        <!--end::To the end-->
+        <!--begin::Copyright-->
+        <strong>
+            Copyright &copy; 2025&nbsp;
+            <a href="#" class="text-decoration-none">CMS</a>.
+        </strong>
+        Todos los derechos reservados.
+        <!--end::Copyright-->
+    </footer>
+    <!--end::Footer-->
+</div>
+
+
+<!--end::Required Plugin(Bootstrap 5)--><!--begin::Required Plugin(AdminLTE)-->
+<script th:src="@{/js/adminlte.js}"></script>
+<!--end::Required Plugin(AdminLTE)--><!--begin::OverlayScrollbars Configure-->
+
+<!--end::Script-->
+
+</body>
+</html>
