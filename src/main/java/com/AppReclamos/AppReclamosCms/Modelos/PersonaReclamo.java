@@ -2,7 +2,11 @@ package com.AppReclamos.AppReclamosCms.Modelos;
 
 
 import jakarta.persistence.*;
+import lombok.Data;
 
+import java.util.List;
+
+@Data
 @Entity
 @Table(name="PersonaReclamo")
 public class PersonaReclamo {
@@ -10,7 +14,7 @@ public class PersonaReclamo {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private int idPersona;
-
+    private String tipoPersona; // "PRESENTANTE", "USUARIO", "TERCERO"
     private String tipoDocumento;
     private String numeroDocumento;
     private String nombres;
@@ -23,7 +27,8 @@ public class PersonaReclamo {
     @Column(columnDefinition = "TEXT")
     private String domicilio;
 
-    @OneToOne
+    @ManyToOne
     @JoinColumn(name = "id_reclamo")
     private Reclamos reclamo;
+
 }

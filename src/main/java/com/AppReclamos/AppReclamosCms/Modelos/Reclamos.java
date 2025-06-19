@@ -2,10 +2,13 @@ package com.AppReclamos.AppReclamosCms.Modelos;
 
 
 import jakarta.persistence.*;
+import lombok.Data;
 
 import java.time.LocalDate;
+import java.util.ArrayList;
 import java.util.List;
 
+@Data
 @Entity
 @Table(name="Reclamos")
 public class Reclamos {
@@ -15,7 +18,6 @@ public class Reclamos {
     private int idReclamo;
 
     private LocalDate fechaReclamo;
-
     private String tipoDeclarante;
     private String codigoDeclarante;
     private String tipoInstitucion;
@@ -24,25 +26,26 @@ public class Reclamos {
     private String codigoReclamo;
     private String estadoReclamo;
 
-    private String medioRecepcion;
-    private LocalDate fechaRecepcion;
+//    private String medioRecepcion;
+//    private LocalDate fechaRecepcion;
+//
+//    @Column(columnDefinition = "TEXT")
+//    private String detalle;
+//
+//    private String resultado;
+//
+//    @Column(columnDefinition = "TEXT")
+//    private String motivoConclusion;
+//
+//    @Column(columnDefinition = "TEXT")
+//    private String comunicacionResultado;
+//
+//    private LocalDate fechaResultado;
+//    private LocalDate fechaNotificacion;
 
-    @Column(columnDefinition = "TEXT")
-    private String detalle;
+    @OneToMany(mappedBy = "reclamo", cascade = CascadeType.ALL, orphanRemoval = true)
+    private List<PersonaReclamo> personas = new ArrayList<>();
 
-    private String resultado;
-
-    @Column(columnDefinition = "TEXT")
-    private String motivoConclusion;
-
-    @Column(columnDefinition = "TEXT")
-    private String comunicacionResultado;
-
-    private LocalDate fechaResultado;
-    private LocalDate fechaNotificacion;
-
-    @OneToOne(mappedBy = "reclamo", cascade = CascadeType.ALL)
-    private PersonaReclamo persona;
 
     @OneToOne(mappedBy = "reclamo", cascade = CascadeType.ALL)
     private GestionReclamo gestion;
@@ -52,4 +55,10 @@ public class Reclamos {
 
     @OneToMany(mappedBy = "reclamo", cascade = CascadeType.ALL)
     private List<MedidasAdoptadas> medidas;
+
+    @OneToMany(mappedBy = "reclamo", cascade = CascadeType.ALL)
+    private List<ResultadoNotificacion> resultados;
+
+    @OneToMany(mappedBy = "reclamo", cascade = CascadeType.ALL)
+    private List<DetalleReclamo> detalles;
 }

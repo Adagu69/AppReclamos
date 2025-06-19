@@ -11,111 +11,202 @@
 
     <!-- Main content -->
     <main class="app-main">
-        <div class="app-content-header">
-            <div class="container-fluid">
-                <div class="row">
-                    <div class="col-sm-6">
-                        <h3 class="mb-0">Reclamos</h3>
+        <div class="container-fluid mt-4">
+            <div class="d-flex justify-content-between align-items-center mb-3">
+                <h2>Gestión de Reclamos</h2>
+                <button class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#modalReclamo">
+                    Nuevo Reclamo
+                </button>
+            </div>
+
+            <!-- Filtros en la cabecera -->
+            <form class="row mb-3 g-2" method="get">
+                <div class="col-auto">
+                    <label>Estado:</label>
+                    <select name="estado" class="form-select form-select-sm">
+                        <option th:value="'TODOS'" th:selected="${estado == 'TODOS'}">Todos</option>
+                        <option th:value="'No Proceso'" th:selected="${estado == 'No Proceso'}">No Proceso</option>
+                        <option th:value="'Procesado'" th:selected="${estado == 'Procesado'}">Procesado</option>
+                    </select>
+                </div>
+                <div class="col-auto">
+                    <label>Buscar por:</label>
+                    <select name="buscarPor" class="form-select form-select-sm">
+                        <option th:value="'TODO'" th:selected="${buscarPor == 'TODO'}">Todo</option>
+                        <option th:value="'CODIGO'" th:selected="${buscarPor == 'CODIGO'}">Código</option>
+                        <option th:value="'NOMBRE'" th:selected="${buscarPor == 'NOMBRE'}">Nombre</option>
+                    </select>
+                </div>
+                <div class="col-auto">
+                    <label>Query:</label>
+                    <input type="text" name="query" th:value="${query}" class="form-control form-control-sm"/>
+                </div>
+                <div class="col-auto">
+                    <label>Año:</label>
+                    <input type="number" min="2020" max="2100" name="anio" th:value="${anio}" class="form-control form-control-sm"/>
+                </div>
+                <div class="col-auto">
+                    <label>Mes:</label>
+                    <input type="number" min="1" max="12" name="mes" th:value="${mes}" class="form-control form-control-sm"/>
+                </div>
+                <div class="col-auto align-self-end">
+                    <button class="btn btn-primary btn-sm">Buscar</button>
+                </div>
+            </form>
+
+            <!-- Tabla de reclamos -->
+            <div class="card">
+                <div class="card-body">
+                    <table class="table table-bordered table-hover table-striped">
+                        <thead>
+                        <tr>
+                            <th>P</th>
+                            <th>Perdec</th>
+                            <th>Medprerecl</th>
+                            <th>Codunirecl</th>
+                            <th>Tipodocusuafec</th>
+                            <th>Numdocusuafec</th>
+                            <th>Razsocusuafec</th>
+                            <th>Nomusuafec</th>
+                            <!-- Si hay más columnas, agrega aquí -->
+                            <th>Acciones</th>
+                        </tr>
+                        </thead>
+                        <tbody>
+                        <tr th:each="r : ${reclamos}">
+                            <td><input type="checkbox"/></td>
+                            <td th:text="${#dates.format(r.fechaReclamo, 'dd/MM/yyyy')}"></td>
+                            <td th:text="${r.medioReclamo}"></td>
+                            <td th:text="${r.codigoReclamo}"></td>
+                            <td th:text="${r.tipoDocumentoAfectado}"></td>
+                            <td th:text="${r.numeroDocumentoAfectado}"></td>
+                            <td th:text="${r.razonSocialAfectado}"></td>
+                            <td th:text="${r.nombreAfectado}"></td>
+                            <td>
+                                <button class="btn btn-sm btn-info"
+                                        data-bs-toggle="modal"
+                                        data-bs-target="#modalReclamo"
+                                        th:attr="data-id=${r.codigoReclamo}">Ver/Editar</button>
+                            </td>
+                        </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+
+            <!-- Modal para crear/editar reclamo -->
+            <!-- Modal Bootstrap 5 -->
+            <div class="modal fade" id="modalReclamo" tabindex="-1" aria-labelledby="modalReclamoLabel" aria-hidden="true">
+                <div class="modal-dialog modal-xl modal-dialog-scrollable">
+                    <div class="modal-content">
+                        <form th:action="@{/admin/reclamos/guardar}" th:object="${reclamo}" method="post">
+                            <div class="modal-header bg-primary text-white">
+                                <h5 class="modal-title" id="modalReclamoLabel">Registro de Reclamos</h5>
+                                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Cerrar"></button>
+                            </div>
+                            <div class="modal-body">
+                                <!-- CARD: CLASIFICACIÓN DEL RECLAMO -->
+                                <div class="card mb-2">
+                                    <div class="card-header bg-light">
+                                        <strong>Clasificación del Reclamo</strong>
+                                    </div>
+                                    <div class="card-body row g-2">
+                                        <!-- Ejemplo: -->
+                                        <div class="col-md-3">
+                                            <label>Fecha Reclamo</label>
+                                            <input type="date" th:field="*{fechaReclamo}" class="form-control" required/>
+                                        </div>
+                                        <div class="col-md-3">
+                                            <label>Tipo Declarante</label>
+                                            <input type="text" th:field="*{tipoDeclarante}" class="form-control"/>
+                                        </div>
+                                        <div class="col-md-3">
+                                            <label>Código Declarante</label>
+                                            <input type="text" th:field="*{codigoDeclarante}" class="form-control"/>
+                                        </div>
+                                        <div class="col-md-3">
+                                            <label>Tipo Institución</label>
+                                            <input type="text" th:field="*{tipoInstitucion}" class="form-control"/>
+                                        </div>
+                                        <!-- ... sigue los demás campos del bloque ... -->
+                                    </div>
+                                </div>
+                                <!-- CARD: IDENTIFICACIÓN DEL PRESENTANTE -->
+                                <div class="card mb-2">
+                                    <div class="card-header bg-light"><strong>Identificación de Quien Presenta</strong></div>
+                                    <div class="card-body row g-2">
+                                        <div class="col-md-3">
+                                            <label>Tipo Documento</label>
+                                            <input type="text" th:field="*{tipoDocumentoPresentante}" class="form-control"/>
+                                        </div>
+                                        <div class="col-md-3">
+                                            <label>Número Documento</label>
+                                            <input type="text" th:field="*{numeroDocumentoPresentante}" class="form-control"/>
+                                        </div>
+                                        <div class="col-md-3">
+                                            <label>Nombres</label>
+                                            <input type="text" th:field="*{nombresPresentante}" class="form-control"/>
+                                        </div>
+                                        <div class="col-md-3">
+                                            <label>Apellido Paterno</label>
+                                            <input type="text" th:field="*{apellidoPaternoPresentante}" class="form-control"/>
+                                        </div>
+                                        <!-- ... más campos ... -->
+                                    </div>
+                                </div>
+                                <!-- ... OTRAS SECCIONES igual ... -->
+                                <!-- CARD: REGISTRO DE MEDIDAS ADOPTADAS -->
+                                <div class="card mb-2">
+                                    <div class="card-header bg-light"><strong>Registro de Medidas Adoptadas</strong></div>
+                                    <div class="card-body p-2">
+                                        <table class="table table-sm table-bordered">
+                                            <thead>
+                                            <tr>
+                                                <th>Tipo Código</th>
+                                                <th>Descripción</th>
+                                                <th>NatMedado</th>
+                                                <th>ProcMedado</th>
+                                                <th>Fecha IniImp</th>
+                                                <th>Fecha CulPre</th>
+                                            </tr>
+                                            </thead>
+                                            <tbody>
+                                            <tr th:each="medida, i : *{medidas}">
+                                                <td><input th:field="*{medidas[__${i.index}__].tipoCodigo}" class="form-control form-control-sm"></td>
+                                                <td><input th:field="*{medidas[__${i.index}__].descripcion}" class="form-control form-control-sm"></td>
+                                                <td><input th:field="*{medidas[__${i.index}__].natMedado}" class="form-control form-control-sm"></td>
+                                                <td><input th:field="*{medidas[__${i.index}__].procMedado}" class="form-control form-control-sm"></td>
+                                                <td><input type="date" th:field="*{medidas[__${i.index}__].fechaIniImp}" class="form-control form-control-sm"></td>
+                                                <td><input type="date" th:field="*{medidas[__${i.index}__].fechaCulPre}" class="form-control form-control-sm"></td>
+                                            </tr>
+                                            </tbody>
+                                        </table>
+                                        <!-- Puedes agregar botones para añadir/eliminar filas dinámicamente (con JS) -->
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="modal-footer">
+                                <button type="submit" class="btn btn-success">Guardar</button>
+                                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cerrar</button>
+                            </div>
+                        </form>
                     </div>
                 </div>
             </div>
-        </div>
-
-        <div class="app-content">
-            <div class="container-fluid">
-
-                <!-- FILTROS -->
-                <div class="card mb-4">
-                    <div class="card-header">Filtros</div>
-                    <div class="card-body row g-3 align-items-center">
-                        <div class="col-md-2">
-                            <label class="form-label">Estado</label>
-                            <select class="form-select">
-                                <option>Todos</option>
-                                <option>No Proceso</option>
-                                <option>Procesado</option>
-                            </select>
-                        </div>
-                        <div class="col-md-3">
-                            <label class="form-label">Buscar por</label>
-                            <select class="form-select">
-                                <option>Todo</option>
-                                <option>Código</option>
-                                <option>Fecha</option>
-                            </select>
-                        </div>
-                        <div class="col-md-2">
-                            <label class="form-label">Año</label>
-                            <input type="number" class="form-control" value="2025" />
-                        </div>
-                        <div class="col-md-2">
-                            <label class="form-label">Mes</label>
-                            <select class="form-select">
-                                <option>Enero</option>
-                                <option selected>Abril</option>
-                                <option>Mayo</option>
-                                <!-- etc -->
-                            </select>
-                        </div>
-                        <div class="col-md-2">
-                            <label class="form-label d-block">&nbsp;</label>
-                            <button class="btn btn-primary w-100">Buscar</button>
-                        </div>
-                        <div class="col-md-1 d-flex align-items-end">
-                            <button class="btn btn-outline-success w-100">Nuevo</button>
-                        </div>
-                    </div>
-                </div>
-
-                <!-- TABLA DE RECLAMOS -->
-                <div class="card">
-                    <div class="card-body">
-                        <div class="table-responsive">
-                            <table class="table table-bordered table-striped">
-                                <thead>
-                                <tr>
-                                    <th><input type="checkbox" /></th>
-                                    <th>Fecha</th>
-                                    <th>Medio</th>
-                                    <th>Código</th>
-                                    <th>Tipo Doc</th>
-                                    <th>Nº Documento</th>
-                                    <th>Razón Social</th>
-                                    <th>Nombre</th>
-                                </tr>
-                                </thead>
-                                <tbody>
-                                <tr th:each="reclamo : ${reclamos}">
-                                    <td><input type="checkbox" /></td>
-                                    <td th:text="${reclamo.fecha}"></td>
-                                    <td th:text="${reclamo.medio}"></td>
-                                    <td th:text="${reclamo.codigo}"></td>
-                                    <td th:text="${reclamo.tipoDoc}"></td>
-                                    <td th:text="${reclamo.numeroDoc}"></td>
-                                    <td th:text="${reclamo.razonSocial}"></td>
-                                    <td th:text="${reclamo.nombreUsuario}"></td>
-                                </tr>
-                                </tbody>
-                            </table>
-                        </div>
-                        <p class="mt-3">Total Reclamos: <span th:text="${reclamos.size()}"></span></p>
-                    </div>
-                </div>
-
-                <!-- BOTON TRAMA -->
-                <div class="d-flex justify-content-end mt-3">
-                    <button class="btn btn-secondary">Procesar Trama TXT</button>
-                </div>
-
-            </div>
+            <!-- Fin Modal -->
         </div>
     </main>
+
+    <script th:src="@{/js/bootstrap.bundle.min.js}"></script>
+    <script th:src="@{/js/adminlte.js}"></script>
 
     <!-- Footer -->
     <footer class="app-footer">
         <div class="float-end d-none d-sm-inline">Sistema Reclamos</div>
         <strong>App &copy; 2025</strong>
     </footer>
+
+
 </div>
 </body>
 </html>
