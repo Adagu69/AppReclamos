@@ -21,28 +21,32 @@ public class ReclamosController {
 
     // Muestra la lista de reclamos y el formulario de creación
     @GetMapping
-    public String listarReclamos(@RequestParam(value = "estado", required = false, defaultValue = "TODOS") String estado,
-                                 @RequestParam(value = "buscarPor", required = false, defaultValue = "TODO") String buscarPor,
-                                 @RequestParam(value = "query", required = false, defaultValue = "") String query,
-                                 @RequestParam(value = "anio", required = false) Integer anio,
-                                 @RequestParam(value = "mes", required = false) Integer mes,
-                                 Model model) {
+    public String listarReclamos(
+            @RequestParam(value = "estado", required = false, defaultValue = "TODOS") String estado,
+            @RequestParam(value = "buscarPor", required = false, defaultValue = "TODO") String buscarPor,
+            @RequestParam(value = "query", required = false, defaultValue = "") String query,
+            @RequestParam(value = "anio", required = false) Integer anio,
+            @RequestParam(value = "mes", required = false) Integer mes,
+            Model model) {
 
-        List<ReclamoTablaDTO> reclamos = reclamosServicios.buscarFiltrado(estado, buscarPor, query, anio, mes);
-        model.addAttribute("reclamos", reclamos);
+        // Reclamos para la tabla principal
+        List<ReclamoTablaDTO> reclamosTabla = reclamosServicios.buscarFiltrado(estado, buscarPor, query, anio, mes);
+        model.addAttribute("reclamosTabla", reclamosTabla);
 
+        // ReclamosDTO completos (si necesitas para otra lógica)
+        List<ReclamoDTO> reclamosDTO = reclamosServicios.listarTodosDTO();
+        model.addAttribute("reclamosDTO", reclamosDTO);
 
-        // Para repoblar selects de filtro si hace falta
+        // Objeto vacío para el formulario de registro
+        model.addAttribute("reclamo", new ReclamoDTO());
+
+        // Parámetros de filtro para mantener estado de los selects/inputs
         model.addAttribute("estado", estado);
         model.addAttribute("buscarPor", buscarPor);
         model.addAttribute("query", query);
         model.addAttribute("anio", anio);
         model.addAttribute("mes", mes);
 
-        List<ReclamoDTO> lista = reclamosServicios.listarTodosDTO();
-        model.addAttribute("reclamos", lista);
-        model.addAttribute("reclamo", new ReclamoDTO());
-        model.addAttribute("reclamos", reclamosServicios.listarTodosParaTabla());
         return "ADMIN/reclamos";
     }
 

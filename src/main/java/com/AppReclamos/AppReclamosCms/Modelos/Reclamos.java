@@ -26,23 +26,6 @@ public class Reclamos {
     private String codigoReclamo;
     private String estadoReclamo;
 
-//    private String medioRecepcion;
-//    private LocalDate fechaRecepcion;
-//
-//    @Column(columnDefinition = "TEXT")
-//    private String detalle;
-//
-//    private String resultado;
-//
-//    @Column(columnDefinition = "TEXT")
-//    private String motivoConclusion;
-//
-//    @Column(columnDefinition = "TEXT")
-//    private String comunicacionResultado;
-//
-//    private LocalDate fechaResultado;
-//    private LocalDate fechaNotificacion;
-
     @OneToMany(mappedBy = "reclamo", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<PersonaReclamo> personas = new ArrayList<>();
 
