@@ -1,9 +1,11 @@
 package com.AppReclamos.AppReclamosCms.Modelos;
 
 import jakarta.persistence.*;
+import lombok.Data;
 
 import java.time.LocalDate;
 
+@Data
 @Entity
 @Table(name = "MedidasAdoptadas")
 public class MedidasAdoptadas {

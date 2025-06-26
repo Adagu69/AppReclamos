@@ -1,11 +1,14 @@
 package com.AppReclamos.AppReclamosCms.Controladores;
 
-import com.AppReclamos.AppReclamosCms.Modelos.ReclamoDTO;
-import com.AppReclamos.AppReclamosCms.Modelos.ReclamoTablaDTO;
+import com.AppReclamos.AppReclamosCms.Modelos.*;
+import com.AppReclamos.AppReclamosCms.Modelos.Enums.EstadoReclamo;
 import com.AppReclamos.AppReclamosCms.Servicios.interfaces.IReclamosServicios;
+import jakarta.validation.Valid;
+import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
+import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
@@ -14,63 +17,102 @@ import java.util.List;
 
 @Controller
 @RequestMapping("/admin/reclamos")
+@RequiredArgsConstructor
 public class ReclamosController {
 
     @Autowired
-    private IReclamosServicios reclamosServicios;
+    private IReclamosServicios reclamosSvc;
 
-    // Muestra la lista de reclamos y el formulario de creación
+    /* ╔════════════════════════════════════════╗
+       ║ 1. LISTA + FILTRO (reclamos.html)      ║
+       ╚════════════════════════════════════════╝ */
     @GetMapping
-    public String listarReclamos(
-            @RequestParam(value = "estado", required = false, defaultValue = "TODOS") String estado,
-            @RequestParam(value = "buscarPor", required = false, defaultValue = "TODO") String buscarPor,
-            @RequestParam(value = "query", required = false, defaultValue = "") String query,
-            @RequestParam(value = "anio", required = false) Integer anio,
-            @RequestParam(value = "mes", required = false) Integer mes,
+    public String listar(
+            @RequestParam(defaultValue = "TODOS") String estado,
+            @RequestParam(defaultValue = "TODO")  String buscarPor,
+            @RequestParam(defaultValue = "")      String query,
+            @RequestParam(required = false)       Integer anio,
+            @RequestParam(required = false)       Integer mes,
             Model model) {
 
-        // Reclamos para la tabla principal
-        List<ReclamoTablaDTO> reclamosTabla = reclamosServicios.buscarFiltrado(estado, buscarPor, query, anio, mes);
-        model.addAttribute("reclamosTabla", reclamosTabla);
+        List<ReclamoTablaDTO> reclamos = reclamosSvc.buscarFiltrado(estado, buscarPor, query, anio, mes);
 
-        // ReclamosDTO completos (si necesitas para otra lógica)
-        List<ReclamoDTO> reclamosDTO = reclamosServicios.listarTodosDTO();
-        model.addAttribute("reclamosDTO", reclamosDTO);
+        model.addAttribute("reclamos",   reclamos);   // para la tabla
+        model.addAttribute("estado",     estado);     // mantiene filtros
+        model.addAttribute("buscarPor",  buscarPor);
+        model.addAttribute("query",      query);
+        model.addAttribute("anio",       anio);
+        model.addAttribute("mes",        mes);
 
-        // Objeto vacío para el formulario de registro
-        model.addAttribute("reclamo", new ReclamoDTO());
+        // lista estática de estados (para el <select>)
+        model.addAttribute("estadosEnum", EstadoReclamo.values());
 
-        // Parámetros de filtro para mantener estado de los selects/inputs
-        model.addAttribute("estado", estado);
-        model.addAttribute("buscarPor", buscarPor);
-        model.addAttribute("query", query);
-        model.addAttribute("anio", anio);
-        model.addAttribute("mes", mes);
-
-        return "ADMIN/reclamos";
+        return "ADMIN/reclamos";          // ⇢ reclamos.html
     }
 
-    // Carga el formulario para editar un reclamo (modal)
+    /* ╔════════════════════════════════════════╗
+           ║ 2. NUEVO RECLAMO (formulario)          ║
+           ╚════════════════════════════════════════╝ */
+    @GetMapping("/nuevo")
+    public String nuevo(Model model) {
+        ReclamoDTO dto = new ReclamoDTO();
+
+        // Evitar IndexOutOfBounds en la vista
+        dto.getPersonas().add(new PersonaReclamoDTO());    // posición 0 = Presentante
+        dto.getDetalles().add(new DetalleReclamoDTO());    // posición 0 = Detalle principal
+
+
+        model.addAttribute("reclamo", dto);
+        model.addAttribute("title", "Nuevo Reclamo");
+        model.addAttribute("estadosEnum", EstadoReclamo.values());
+        return "ADMIN/reclamos-form";
+    }
+
+    /* ╔════════════════════════════════════════╗
+           ║ 3. EDITAR RECLAMO (formulario)         ║
+           ╚════════════════════════════════════════╝ */
     @GetMapping("/editar/{id}")
-    public String editarReclamo(@PathVariable Integer id, Model model) {
-        ReclamoDTO reclamo = reclamosServicios.buscarDTOporId(id);
-        model.addAttribute("reclamos", reclamosServicios.listarTodosDTO());
-        model.addAttribute("reclamo", reclamo);
-        return "ADMIN/reclamos";
+    public String editar(@PathVariable Integer id, Model model, RedirectAttributes redir) {
+        ReclamoDTO dto = reclamosSvc.buscarDTOporId(id);
+        if (dto == null) {
+            redir.addFlashAttribute("error", "El reclamo no existe.");
+            return "redirect:/admin/reclamos";
+        }
+        // asegurar que existan listas mínimas
+        if (dto.getPersonas().isEmpty())  dto.getPersonas().add(new PersonaReclamoDTO());
+        if (dto.getDetalles().isEmpty())  dto.getDetalles().add(new DetalleReclamoDTO());
+
+        model.addAttribute("title", "Editar Reclamo");
+        model.addAttribute("reclamo", dto);
+        model.addAttribute("estadosEnum", EstadoReclamo.values());
+        return "ADMIN/reclamos-form";
     }
 
-    // Guarda/actualiza reclamo (desde el modal/formulario)
-    @PostMapping("/guardar")
-    public String guardarReclamo(@ModelAttribute("reclamo") ReclamoDTO reclamo, RedirectAttributes redirect) {
-        reclamosServicios.guardarDesdeDTO(reclamo);
-        redirect.addFlashAttribute("success", "Reclamo guardado correctamente.");
+    /* ╔════════════════════════════════════════╗
+         ║ 4. GUARDAR / ACTUALIZAR                ║
+         ╚════════════════════════════════════════╝ */
+    @PostMapping("/save")
+    public String save(@Valid @ModelAttribute("reclamo") ReclamoDTO reclamo,
+                       BindingResult br,
+                       RedirectAttributes redir) {
+
+        if (br.hasErrors()) {
+            // vuelve al mismo formulario mostrando errores
+            return "ADMIN/reclamos-form";
+        }
+
+        reclamosSvc.guardarDesdeDTO(reclamo);
+        redir.addFlashAttribute("success", "Reclamo guardado correctamente.");
         return "redirect:/admin/reclamos";
     }
 
-    // Si quieres editar, puedes devolver el reclamo como JSON para llenar el modal por AJAX
-    @GetMapping("/buscar/{id}")
+    /* ╔════════════════════════════════════════╗
+     ║ 5. ENDPOINT JSON (AJAX opcional)       ║
+     ╚════════════════════════════════════════╝ */
+    @GetMapping("/api/{id}")
     @ResponseBody
-    public ReclamoDTO buscarReclamo(@PathVariable Integer id) {
-        return reclamosServicios.buscarDTOporId(id);
+    public ReclamoDTO detalleAjax(@PathVariable Integer id) {
+        return reclamosSvc.buscarDTOporId(id);
     }
+
 }

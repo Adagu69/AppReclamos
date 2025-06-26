@@ -1,185 +1,211 @@
 <!DOCTYPE html>
 <html xmlns:th="http://www.thymeleaf.org">
-<head th:replace="FRAGMENTS/head :: head"></head>
-<head>
-    <meta charset="UTF-8">
-    <title>Title</title>
+<head th:replace="~{FRAGMENTS/head :: head}">
 </head>
+
 <body class="layout-fixed sidebar-expand-lg bg-body-tertiary">
 <div class="app-wrapper">
-    <!-- Navbar -->
-    <nav th:replace="FRAGMENTS/navbar :: navbar"></nav>
 
-    <!-- Sidebar -->
-    <aside th:replace="FRAGMENTS/sidebar :: sidebar"></aside>
+    <nav   th:replace="~{FRAGMENTS/navbar  :: navbar}"></nav>
+    <aside th:replace="~{FRAGMENTS/sidebar :: sidebar}"></aside>
+
     <main class="app-main">
-        <h2 th:text="${reclamo.idReclamo != null ? 'Editar Reclamo' : 'Nuevo Reclamo'}"></h2>
+            <div class="container-fluid mt-4">
 
-        <form th:action="@{/admin/reclamos/guardar}" th:object="${reclamo}" method="post">
+                <!-- ====== FORMULARIO ====== -->
+                <form th:action="@{/admin/reclamos/guardar}" th:object="${reclamo}" method="post">
 
-            <!-- CLASIFICACIÓN DEL RECLAMO -->
-            <div class="card mb-2">
-                <div class="card-header bg-light"><strong>Clasificación del Reclamo</strong></div>
-                <div class="card-body row g-2">
-                    <div class="col-md-3">
-                        <label>Fecha Reclamo</label>
-                        <input type="date" th:field="*{fechaReclamo}" class="form-control" required/>
+                <input type="hidden" th:field="*{id}" />
+
+                    <!-- ========= CLASIFICACIÓN DEL RECLAMO ========= -->
+                    <div class="card card-primary mb-4">
+                        <div class="card-header"><h3 class="card-title">Clasificación del Reclamo</h3></div>
+                        <div class="card-body row g-3">
+
+                            <div class="col-md-3">
+                                <label>Fecha Reclamo</label>
+                                <input type="date" class="form-control"
+                                       th:field="*{fechaReclamo}" required>
+                            </div>
+
+                            <div class="col-md-3">
+                                <label>Tipo Declarante</label>
+                                <select class="form-select"
+                                        th:field="*{tipoDeclarante}">
+                                    <option th:each="d : ${T(com.AppReclamos.AppReclamosCms.Modelos.Enums.TipoDeclarante).values()}"
+                                            th:value="${d}" th:text="${d}">
+
+                                    </option>
+                                </select>
+                            </div>
+                            <!-- 3. Código Declarante (numérico, hasta 8 dígitos, obligatorio) -->
+                            <div class="col-md-3">
+                                <label>Código Declarante</label>
+                                <input type="text"
+                                       class="form-control"
+                                       th:field="*{codigoDeclarante}"
+                                       pattern="\d{1,8}"
+                                       maxlength="8"
+                                       required>
+                            </div>
+
+                            <!-- 4. Código UGIPRESS (numérico, hasta 8 dígitos, obligatorio) -->
+                            <div class="col-md-3">
+                                <label>Código UGIPRESS</label>
+                                <input type="text"
+                                       class="form-control"
+                                       th:field="*{codigoUgipress}"
+                                       pattern="\d{1,8}"
+                                       maxlength="8"
+                                       required>
+                            </div>
+
+                            <div class="col-md-3">
+                                <label>Tipo Institución</label>
+                                <select class="form-select"
+                                        th:field="*{tipoInstitucion}">
+                                    <option th:each="i : ${T(com.AppReclamos.AppReclamosCms.Modelos.Enums.TipoInstitucion).values()}"
+                                            th:value="${i}" th:text="${i}">
+
+                                    </option>
+                                </select>
+                            </div>
+
+                            <!-- 6. Código Institución (numérico, hasta 8 dígitos, obligatorio) -->
+                            <div class="col-md-3">
+                                <label>Código Institución</label>
+                                <input type="text"
+                                       class="form-control"
+                                       th:field="*{codigoInstitucion}"
+                                       pattern="\d{1,8}"
+                                       maxlength="8"
+                                       required>
+                            </div>
+
+                            <div class="col-md-3">
+                                <label>Medio del Reclamo</label>
+                                <select class="form-select"
+                                        th:field="*{medioRecepcion}">
+                                    <option th:each="m : ${T(com.AppReclamos.AppReclamosCms.Modelos.Enums.MedioRecepcion).values()}"
+                                            th:value="${m}"
+                                            th:text="${m}">
+                                    </option>
+                                </select>
+                            </div>
+
+                            <!-- 8. Código Reclamo (alfanumérico, hasta 20 caracteres, obligatorio) -->
+                            <div class="col-md-3">
+                                <label>Código Reclamo</label>
+                                <input type="text"
+                                       class="form-control"
+                                       th:field="*{codigoReclamo}"
+                                       maxlength="20"
+                                       required>
+                            </div>
+
+                        </div>
                     </div>
-                    <div class="col-md-3">
-                        <label>Tipo Declarante</label>
-                        <input type="text" th:field="*{tipoDeclarante}" class="form-control"/>
+
+                <!-- ========= PERSONA – PRESENTANTE ========= -->
+                <div class="card card-secondary">
+                    <div class="card-header"><h3 class="card-title">Persona - Presentante</h3></div>
+                    <div class="card-body row g-3">
+
+                        <input type="hidden" th:field="*{personas[0].id}" />
+
+                        <div class="col-md-6">
+                            <label>Nombres</label>
+                            <input type="text" class="form-control"
+                                   th:field="*{personas[0].nombres}" required>
+                        </div>
+
+                        <div class="col-md-3">
+                            <label>Ape. Paterno</label>
+                            <input type="text" class="form-control"
+                                   th:field="*{personas[0].apellidoPaterno}" required>
+                        </div>
+
+                        <div class="col-md-3">
+                            <label>Ape. Materno</label>
+                            <input type="text" class="form-control"
+                                   th:field="*{personas[0].apellidoMaterno}">
+                        </div>
+
+                        <div class="col-md-3">
+                            <label>Tipo Doc.</label>
+                            <select class="form-select" th:field="*{personas[0].tipoDocumento}">
+                                <option th:each="d : ${T(com.AppReclamos.AppReclamosCms.Modelos.Enums.TipoDocumento).values()}"
+                                        th:value="${d}" th:text="${d}"></option>
+                            </select>
+                        </div>
+
+                        <div class="col-md-3">
+                            <label>N.º Documento</label>
+                            <input type="text" class="form-control"
+                                   th:field="*{personas[0].numeroDocumento}" required>
+                        </div>
+
+                        <div class="col-md-3">
+                            <label>Teléfono</label>
+                            <input type="text" class="form-control"
+                                   th:field="*{personas[0].telefono}">
+                        </div>
+
+                        <div class="col-md-3">
+                            <label>Email</label>
+                            <input type="email" class="form-control"
+                                   th:field="*{personas[0].correoElectronico}">
+                        </div>
                     </div>
-                    <div class="col-md-3">
-                        <label>Código Declarante</label>
-                        <input type="text" th:field="*{codigoDeclarante}" class="form-control"/>
+                </div>
+
+                <!-- ========= DETALLE ========= -->
+                <div class="card card-info">
+                    <div class="card-header"><h3 class="card-title">Detalle del Reclamo</h3></div>
+                    <div class="card-body row g-3">
+
+                        <input type="hidden" th:field="*{detalles[0].idDetalle}" />
+
+                        <div class="col-md-4">
+                            <label>Fecha Recepción</label>
+                            <input type="date" class="form-control"
+                                   th:field="*{detalles[0].fechaRecepcion}">
+                        </div>
+
+                        <div class="col-md-8">
+                            <label>Descripción</label>
+                            <textarea rows="3" class="form-control"
+                                      th:field="*{detalles[0].descripcion}"></textarea>
+                        </div>
                     </div>
-                    <div class="col-md-3">
-                        <label>Tipo Institución</label>
-                        <input type="text" th:field="*{tipoInstitucion}" class="form-control"/>
-                    </div>
-                    <div class="col-md-3">
-                        <label>Código Ugipress</label>
-                        <input type="text" th:field="*{codigoUgipress}" class="form-control"/>
-                    </div>
-                    <div class="col-md-3">
-                        <label>Código Reclamo</label>
-                        <input type="text" th:field="*{codigoReclamo}" class="form-control"/>
-                    </div>
-                    <div class="col-md-3">
-                        <label>Estado Reclamo</label>
-                        <input type="text" th:field="*{estadoReclamo}" class="form-control"/>
-                    </div>
                 </div>
-            </div>
 
-            <!-- IDENTIFICACIÓN DE QUIEN PRESENTA (persona[0]) -->
-            <div class="card mb-2">
-                <div class="card-header bg-light"><strong>Identificación de Quien Presenta</strong></div>
-                <div class="card-body row g-2">
-                    <div class="col-md-3"><label>Tipo Documento</label><input type="text" th:field="*{personas[0].tipoDocumento}" class="form-control"/></div>
-                    <div class="col-md-3"><label>Número Documento</label><input type="text" th:field="*{personas[0].numeroDocumento}" class="form-control"/></div>
-                    <div class="col-md-3"><label>Nombres</label><input type="text" th:field="*{personas[0].nombres}" class="form-control"/></div>
-                    <div class="col-md-3"><label>Apellido Paterno</label><input type="text" th:field="*{personas[0].apellidoPaterno}" class="form-control"/></div>
-                    <div class="col-md-3"><label>Apellido Materno</label><input type="text" th:field="*{personas[0].apellidoMaterno}" class="form-control"/></div>
-                    <div class="col-md-3"><label>Razón Social</label><input type="text" th:field="*{personas[0].razonSocial}" class="form-control"/></div>
-                    <div class="col-md-3"><label>Correo</label><input type="email" th:field="*{personas[0].correoElectronico}" class="form-control"/></div>
-                    <div class="col-md-3"><label>Teléfono</label><input type="text" th:field="*{personas[0].telefono}" class="form-control"/></div>
-                    <div class="col-md-6"><label>Domicilio</label><input type="text" th:field="*{personas[0].domicilio}" class="form-control"/></div>
+                <!-- ========= BOTONES ========= -->
+                <div class="card-footer">
+                    <button type="submit" class="btn btn-primary">
+                        <i class="fas fa-save"></i> Guardar
+                    </button>
+                    <a th:href="@{/admin/reclamos}" class="btn btn-secondary">Cancelar</a>
                 </div>
+                </form>
             </div>
-
-            <!-- IDENTIFICACIÓN DEL USUARIO O TERCERO (persona[1]) -->
-            <div class="card mb-2">
-                <div class="card-header bg-light"><strong>Identificación del Usuario o Tercero</strong></div>
-                <div class="card-body row g-2">
-                    <div class="col-md-3"><label>Tipo Documento</label><input type="text" th:field="*{personas[1].tipoDocumento}" class="form-control"/></div>
-                    <div class="col-md-3"><label>Número Documento</label><input type="text" th:field="*{personas[1].numeroDocumento}" class="form-control"/></div>
-                    <div class="col-md-3"><label>Nombres</label><input type="text" th:field="*{personas[1].nombres}" class="form-control"/></div>
-                    <div class="col-md-3"><label>Apellido Paterno</label><input type="text" th:field="*{personas[1].apellidoPaterno}" class="form-control"/></div>
-                    <div class="col-md-3"><label>Apellido Materno</label><input type="text" th:field="*{personas[1].apellidoMaterno}" class="form-control"/></div>
-                    <div class="col-md-3"><label>Razón Social</label><input type="text" th:field="*{personas[1].razonSocial}" class="form-control"/></div>
-                    <div class="col-md-3"><label>Correo</label><input type="email" th:field="*{personas[1].correoElectronico}" class="form-control"/></div>
-                    <div class="col-md-3"><label>Teléfono</label><input type="text" th:field="*{personas[1].telefono}" class="form-control"/></div>
-                    <div class="col-md-6"><label>Domicilio</label><input type="text" th:field="*{personas[1].domicilio}" class="form-control"/></div>
-                </div>
-            </div>
-
-            <!-- DETALLE DEL RECLAMO -->
-            <div class="card mb-2">
-                <div class="card-header bg-light"><strong>Detalle del Reclamo</strong></div>
-                <div class="card-body row g-2">
-                    <div class="col-md-3"><label>Medio Recepción</label><input type="text" th:field="*{detalle.medioRecepcion}" class="form-control"/></div>
-                    <div class="col-md-3"><label>Fecha Recepción</label><input type="date" th:field="*{detalle.fechaRecepcion}" class="form-control"/></div>
-                    <div class="col-md-12"><label>Detalle</label><textarea th:field="*{detalle.detalle}" class="form-control"></textarea></div>
-                </div>
-            </div>
-
-            <!-- GESTIÓN DEL RECLAMO -->
-            <div class="card mb-2">
-                <div class="card-header bg-light"><strong>Gestión del Reclamo</strong></div>
-                <div class="card-body row g-2">
-                    <div class="col-md-4"><label>Servicio donde ocurrió el hecho</label><input type="text" th:field="*{gestion.servicioHecho}" class="form-control"/></div>
-                    <div class="col-md-4"><label>Competencia</label><input type="text" th:field="*{gestion.competencia}" class="form-control"/></div>
-                    <div class="col-md-4"><label>Clasificación 1</label><input type="text" th:field="*{gestion.clasificacion1}" class="form-control"/></div>
-                    <div class="col-md-4"><label>Clasificación 2</label><input type="text" th:field="*{gestion.clasificacion2}" class="form-control"/></div>
-                    <div class="col-md-4"><label>Clasificación 3</label><input type="text" th:field="*{gestion.clasificacion3}" class="form-control"/></div>
-                    <div class="col-md-4"><label>Estado Gestión</label><input type="text" th:field="*{gestion.estadoGestion}" class="form-control"/></div>
-                    <div class="col-md-4"><label>Etapa Gestión</label><input type="text" th:field="*{gestion.etapaGestion}" class="form-control"/></div>
-                    <div class="col-md-4"><label>Código Primigenio</label><input type="text" th:field="*{gestion.codigoPrimigenio}" class="form-control"/></div>
-                    <div class="col-md-4"><label>Tipo Administradora Derivada</label><input type="text" th:field="*{gestion.tipoAdministradoraDerivada}" class="form-control"/></div>
-                    <div class="col-md-4"><label>Código Administradora Derivada</label><input type="text" th:field="*{gestion.codigoAdministradoraDerivada}" class="form-control"/></div>
-                </div>
-            </div>
-
-            <!-- RESULTADO Y NOTIFICACIÓN DEL RECLAMO -->
-            <div class="card mb-2">
-                <div class="card-header bg-light"><strong>Resultado y Notificación del Reclamo</strong></div>
-                <div class="card-body row g-2">
-                    <div class="col-md-4"><label>Resultado</label><input type="text" th:field="*{resultado.resultado}" class="form-control"/></div>
-                    <div class="col-md-4"><label>Motivo de Conclusión</label><input type="text" th:field="*{resultado.motivoConclusion}" class="form-control"/></div>
-                    <div class="col-md-4"><label>Comunicación Resultado</label><input type="text" th:field="*{resultado.comunicacionResultado}" class="form-control"/></div>
-                    <div class="col-md-4"><label>Fecha Resultado</label><input type="date" th:field="*{resultado.fechaResultado}" class="form-control"/></div>
-                    <div class="col-md-4"><label>Fecha Notificación</label><input type="date" th:field="*{resultado.fechaNotificacion}" class="form-control"/></div>
-                </div>
-            </div>
-
-            <!-- INFORMACIÓN PARA GESTIÓN DE CLÍNICA -->
-            <div class="card mb-2">
-                <div class="card-header bg-light"><strong>Información para Gestión de Clínica</strong></div>
-                <div class="card-body row g-2">
-                    <div class="col-md-3"><label>Compañía</label><input type="text" th:field="*{gestionClinica.compania}" class="form-control"/></div>
-                    <div class="col-md-3"><label>Área</label><input type="text" th:field="*{gestionClinica.area}" class="form-control"/></div>
-                    <div class="col-md-3"><label>Parentesco</label><input type="text" th:field="*{gestionClinica.parentesco}" class="form-control"/></div>
-                    <div class="col-md-3"><label>Origen</label><input type="text" th:field="*{gestionClinica.origen}" class="form-control"/></div>
-                    <div class="col-md-6"><label>Personal Involucrado</label><input type="text" th:field="*{gestionClinica.personalInvolucrado}" class="form-control"/></div>
-                </div>
-            </div>
-
-            <!-- MEDIDAS ADOPTADAS -->
-            <div class="card mb-2">
-                <div class="card-header bg-light"><strong>Registro de Medidas Adoptadas</strong></div>
-                <div class="card-body p-2">
-                    <table class="table table-sm table-bordered">
-                        <thead>
-                        <tr>
-                            <th>Tipo Código</th>
-                            <th>Descripción</th>
-                            <th>NatMedado</th>
-                            <th>ProcMedado</th>
-                            <th>Fecha IniImp</th>
-                            <th>Fecha CulPre</th>
-                        </tr>
-                        </thead>
-                        <tbody>
-                        <tr th:each="medida, i : *{medidas}">
-                            <td><input th:field="*{medidas[__${i.index}__].tipoCodigo}" class="form-control form-control-sm"></td>
-                            <td><input th:field="*{medidas[__${i.index}__].descripcion}" class="form-control form-control-sm"></td>
-                            <td><input th:field="*{medidas[__${i.index}__].natMedado}" class="form-control form-control-sm"></td>
-                            <td><input th:field="*{medidas[__${i.index}__].procMedado}" class="form-control form-control-sm"></td>
-                            <td><input type="date" th:field="*{medidas[__${i.index}__].fechaIniImp}" class="form-control form-control-sm"></td>
-                            <td><input type="date" th:field="*{medidas[__${i.index}__].fechaCulPre}" class="form-control form-control-sm"></td>
-                        </tr>
-                        </tbody>
-                    </table>
-                </div>
-            </div>
-
-            <div class="mt-3">
-                <button type="submit" class="btn btn-success">Guardar</button>
-                <a th:href="@{/admin/reclamos}" class="btn btn-secondary">Volver</a>
-            </div>
-        </form>
     </main>
+    <footer class="app-footer">
+        <!--begin::To the end-->
+        <div class="float-end d-none d-sm-inline">CMS</div>
+        <!--end::To the end-->
+        <!--begin::Copyright-->
+        <strong>
+            Copyright &copy; 2025&nbsp;
+            <a href="#" class="text-decoration-none">CMS</a>.
+        </strong>
+        Todos los derechos reservados.
+        <!--end::Copyright-->
+    </footer>
+    <!--end::Footer-->
 </div>
 
 <script th:src="@{/js/bootstrap.bundle.min.js}"></script>
 <script th:src="@{/js/adminlte.js}"></script>
-
-<!-- Footer -->
-<footer class="app-footer">
-    <div class="float-end d-none d-sm-inline">Sistema Reclamos</div>
-    <strong>App &copy; 2025</strong>
-</footer>
-
 </body>
 </html>

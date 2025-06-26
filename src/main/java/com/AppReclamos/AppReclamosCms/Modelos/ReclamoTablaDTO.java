@@ -1,89 +1,37 @@
 package com.AppReclamos.AppReclamosCms.Modelos;
 
+import com.AppReclamos.AppReclamosCms.Modelos.Enums.EstadoReclamo;
+import com.AppReclamos.AppReclamosCms.Modelos.Enums.MedioRecepcion;
+import com.AppReclamos.AppReclamosCms.Modelos.Enums.TipoDocumento;
+import com.fasterxml.jackson.annotation.JsonInclude;
+import lombok.*;
+
 import java.time.LocalDate;
 
+@Value                       // inmutable (≃ Lombok @Getter + final + constructor)
+@Builder(toBuilder = true)   // permite .toBuilder() para cambios puntuales
+@JsonInclude(JsonInclude.Include.NON_NULL)
 public class ReclamoTablaDTO {
 
-    // Perdec: Fecha del reclamo
-    private LocalDate fechaReclamo;
-    // Medprerecl: Medio (ej: "Físico")
-    private String medioReclamo;
-    // Codunirecl: Código del reclamo
-    private String codigoReclamo;
-    // Tipodocusuafec: Tipo doc usuario afectado
-    private String tipoDocumentoAfectado;
-    // Numdocusuafec: N° doc usuario afectado
-    private String numeroDocumentoAfectado;
-    // Razsocusuafec: Razón social usuario afectado
-    private String razonSocialAfectado;
-    // Nomusuafec: Nombre usuario afectado
-    private String nombreAfectado;
+    /* ---------- Identificadores ---------- */
+    Integer id;                      // PK interna para links / acciones
+    String  codigoReclamo;           // código único visible
 
-    private String estado;
+    /* ---------- Fechas ---------- */
+    LocalDate fechaReclamo;
 
-    // GETTERS AND SETTERS
+    /* ---------- Datos clave para el operador ---------- */
+    MedioRecepcion medioRecepcion;  // enum → badge
+    EstadoReclamo estado;          // enum → pill/colores
 
-    public LocalDate getFechaReclamo() {
-        return fechaReclamo;
-    }
+    /* ---------- Usuario afectado ---------- */
+    TipoDocumento tipoDocumentoAfectado;
+    String        numeroDocumentoAfectado;
+    String        nombreAfectado;          // si es persona natural
+    String        razonSocialAfectado;     // si es persona jurídica
 
-    public void setFechaReclamo(LocalDate fechaReclamo) {
-        this.fechaReclamo = fechaReclamo;
-    }
+    /* ---------- UI helpers ---------- */
+    @Builder.Default
+    boolean seleccionado = false;    // usado solo en el front (checkbox masivo)     // UI helper
 
-    public String getMedioReclamo() {
-        return medioReclamo;
-    }
-
-    public void setMedioReclamo(String medioReclamo) {
-        this.medioReclamo = medioReclamo;
-    }
-
-    public String getCodigoReclamo() {
-        return codigoReclamo;
-    }
-
-    public void setCodigoReclamo(String codigoReclamo) {
-        this.codigoReclamo = codigoReclamo;
-    }
-
-    public String getTipoDocumentoAfectado() {
-        return tipoDocumentoAfectado;
-    }
-
-    public void setTipoDocumentoAfectado(String tipoDocumentoAfectado) {
-        this.tipoDocumentoAfectado = tipoDocumentoAfectado;
-    }
-
-    public String getNumeroDocumentoAfectado() {
-        return numeroDocumentoAfectado;
-    }
-
-    public void setNumeroDocumentoAfectado(String numeroDocumentoAfectado) {
-        this.numeroDocumentoAfectado = numeroDocumentoAfectado;
-    }
-
-    public String getRazonSocialAfectado() {
-        return razonSocialAfectado;
-    }
-
-    public void setRazonSocialAfectado(String razonSocialAfectado) {
-        this.razonSocialAfectado = razonSocialAfectado;
-    }
-
-    public String getNombreAfectado() {
-        return nombreAfectado;
-    }
-
-    public void setNombreAfectado(String nombreAfectado) {
-        this.nombreAfectado = nombreAfectado;
-    }
-
-    public String getEstado() {
-        return estado;
-    }
-
-    public void setEstado(String estado) {
-        this.estado = estado;
-    }
 }

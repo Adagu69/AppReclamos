@@ -10,6 +10,8 @@ public class ResultadoNotificacionDTO {
     private LocalDate fechaResultado;
     private LocalDate fechaNotificacion;
 
+    // getters and setters..
+
     public String getResultado() {
         return resultado;
     }

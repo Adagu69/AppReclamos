@@ -1,154 +1,94 @@
 package com.AppReclamos.AppReclamosCms.Modelos;
 
+import com.AppReclamos.AppReclamosCms.Modelos.Enums.EstadoReclamo;
+import com.AppReclamos.AppReclamosCms.Modelos.Enums.TipoDeclarante;
+import com.AppReclamos.AppReclamosCms.Modelos.Enums.TipoInstitucion;
+import com.AppReclamos.AppReclamosCms.Validations.ValidCodigoDeclarante;
+import com.AppReclamos.AppReclamosCms.Validations.ValidCodigoInstitucion;
+import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.NotNull;
+import lombok.*;
+
 import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
 
+
+@Getter
+@Setter
+@Builder
+@NoArgsConstructor
+@AllArgsConstructor
+@ValidCodigoDeclarante     // valida codigoDeclarante ↔ tipoDeclarante
+@ValidCodigoInstitucion   // valida codigoInstitucion ↔ tipoInstitucion
 public class ReclamoDTO {
-    // --- Reclamos ---
-    private Integer idReclamo;
-    // CLASIFICACIÓN DEL RECLAMO
-    private LocalDate fechaReclamo;
-    private String tipoDeclarante, codigoDeclarante, tipoInstitucion, codigoInstitucion, codigoUgipress, codigoReclamo, estadoReclamo;
 
-    // PRESENTANTE, USUARIO, TERCERO (varios tipos de personas)
-    private List<PersonaReclamoDTO> personas = new ArrayList<>(); // [0] presentante, [1] usuario, [2] tercero (según tu lógica de front)
+    /* ---------- Identificación & clasificación ---------- */
+    private Integer id;                       // PK
 
-    // DETALLE DEL RECLAMO (puede ser uno o varios, pero normalmente solo uno)
-    private DetalleReclamoDTO detalle;
+    @NotNull(message="Fecha de reclamo es obligatoria")
+    private LocalDate    fechaReclamo;
 
-    // GESTIÓN DEL RECLAMO
+    @NotNull(message="Tipo de declarante es obligatorio")
+    private TipoDeclarante tipoDeclarante;
+
+    @NotBlank(message="Código declarante no puede ser vacío")
+    private String       codigoDeclarante;
+
+    @NotNull(message="Tipo de institución es obligatorio")
+    private TipoInstitucion tipoInstitucion;
+
+    @NotBlank(message="Código de institución no puede ser vacío")
+    private String       codigoInstitucion;
+
+    /** UGIPRESS al que pertenece la IPRESS (o igual al declarante si no aplica) */
+    @NotBlank(message="Código UGIPRESS no puede ser vacío")
+    private String       codigoUgipress;
+
+    /** Código interno / primigenio asignado por el sistema */
+    @NotBlank(message="Código de reclamo no puede ser vacío")
+    private String       codigoReclamo;
+
+    /** Código correlativo visible para el usuario (si lo manejas aparte) */
+    private String       nroReclamo;
+
+    @NotNull(message="Medio de recepción es obligatorio")
+    private DetalleReclamo.MedioRecepcion medioRecepcion;   // enum
+
+    @NotNull(message="Estado es obligatorio")
+    private EstadoReclamo estado;           // enum
+
+    /* ---------- Personas involucradas ---------- */
+    private List<PersonaReclamoDTO> personas = new ArrayList<>();
+
+    /* ---------- Detalles del reclamo (puede haber varios) ---------- */
+    private List<DetalleReclamoDTO> detalles = new ArrayList<>();
+
+    /* ---------- Gestión interna ---------- */
     private GestionReclamoDTO gestion;
-
-    // RESULTADO Y NOTIFICACIÓN DEL RECLAMO
-    private ResultadoNotificacionDTO resultado;
-
-    // GESTIÓN CLÍNICA
     private GestionClinicaDTO gestionClinica;
 
-    // MEDIDAS ADOPTADAS
+    /* ---------- Medidas adoptadas ---------- */
     private List<MedidaDTO> medidas = new ArrayList<>();
 
-    // getters and setters..
+    /* ---------- Resultado y notificaciones ---------- */
+    private List<ResultadoNotificacionDTO> resultados = new ArrayList<>();
 
-
-    public Integer getIdReclamo() {
-        return idReclamo;
-    }
-
-    public void setIdReclamo(Integer idReclamo) {
-        this.idReclamo = idReclamo;
-    }
-
-    public LocalDate getFechaReclamo() {
-        return fechaReclamo;
-    }
-
-    public void setFechaReclamo(LocalDate fechaReclamo) {
-        this.fechaReclamo = fechaReclamo;
-    }
-
-    public String getTipoDeclarante() {
-        return tipoDeclarante;
-    }
-
-    public void setTipoDeclarante(String tipoDeclarante) {
-        this.tipoDeclarante = tipoDeclarante;
-    }
-
-    public String getCodigoDeclarante() {
-        return codigoDeclarante;
-    }
-
-    public void setCodigoDeclarante(String codigoDeclarante) {
-        this.codigoDeclarante = codigoDeclarante;
-    }
-
-    public String getTipoInstitucion() {
-        return tipoInstitucion;
-    }
-
-    public void setTipoInstitucion(String tipoInstitucion) {
-        this.tipoInstitucion = tipoInstitucion;
-    }
-
-    public String getCodigoInstitucion() {
-        return codigoInstitucion;
-    }
-
-    public void setCodigoInstitucion(String codigoInstitucion) {
-        this.codigoInstitucion = codigoInstitucion;
-    }
-
-    public String getCodigoUgipress() {
+    /**
+     * Según C1/C2 de UGIPRESS:
+     * Si es IPRESS y tiene una UGIPRESS asignada, devuelvo esa UGIPRESS,
+     * en otro caso el mismo codigoDeclarante/UGIPRESS según corresponda.
+     */
+    public String getCodigoUgipressEfectivo() {
+        if (tipoDeclarante == TipoDeclarante.IPRESS
+                && codigoUgipress != null
+                && !codigoUgipress.isBlank()) {
+            return codigoUgipress;
+        }
+        // si es UGIPRESS o IAFAS, asumo que codigoUgipress ya trae el valor correcto
         return codigoUgipress;
     }
 
-    public void setCodigoUgipress(String codigoUgipress) {
-        this.codigoUgipress = codigoUgipress;
-    }
 
-    public String getCodigoReclamo() {
-        return codigoReclamo;
-    }
-
-    public void setCodigoReclamo(String codigoReclamo) {
-        this.codigoReclamo = codigoReclamo;
-    }
-
-    public String getEstadoReclamo() {
-        return estadoReclamo;
-    }
-
-    public void setEstadoReclamo(String estadoReclamo) {
-        this.estadoReclamo = estadoReclamo;
-    }
-
-    public List<PersonaReclamoDTO> getPersonas() {
-        return personas;
-    }
-
-    public void setPersonas(List<PersonaReclamoDTO> personas) {
-        this.personas = personas;
-    }
-
-    public DetalleReclamoDTO getDetalle() {
-        return detalle;
-    }
-
-    public void setDetalle(DetalleReclamoDTO detalle) {
-        this.detalle = detalle;
-    }
-
-    public GestionReclamoDTO getGestion() {
-        return gestion;
-    }
-
-    public void setGestion(GestionReclamoDTO gestion) {
-        this.gestion = gestion;
-    }
-
-    public ResultadoNotificacionDTO getResultado() {
-        return resultado;
-    }
-
-    public void setResultado(ResultadoNotificacionDTO resultado) {
-        this.resultado = resultado;
-    }
-
-    public GestionClinicaDTO getGestionClinica() {
-        return gestionClinica;
-    }
-
-    public void setGestionClinica(GestionClinicaDTO gestionClinica) {
-        this.gestionClinica = gestionClinica;
-    }
-
-    public List<MedidaDTO> getMedidas() {
-        return medidas;
-    }
-
-    public void setMedidas(List<MedidaDTO> medidas) {
-        this.medidas = medidas;
-    }
 }
+

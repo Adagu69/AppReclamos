@@ -1,88 +1,133 @@
 package com.AppReclamos.AppReclamosCms.Servicios.impl;
 
 import com.AppReclamos.AppReclamosCms.Modelos.*;
+import com.AppReclamos.AppReclamosCms.Modelos.Enums.TipoPersona;
 import com.AppReclamos.AppReclamosCms.Repositorios.ReclamosRepositorio;
 import com.AppReclamos.AppReclamosCms.Servicios.interfaces.IReclamosServicios;
+import jakarta.transaction.Transactional;
+import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.List;
+import java.util.stream.Collectors;
 
 @Service
+@RequiredArgsConstructor
 public class ReclamosServiciosImpl implements IReclamosServicios {
+
+    private final ReclamosRepositorio reclamosRepo;
+    private final ReclamoMapper      mapper;
+
+
+    /* ========== LISTAR TODOS PARA TABLA ========== */
     @Override
-    public List<ReclamoTablaDTO> buscarFiltrado(String estado, String buscarPor, String query, Integer anio, Integer mes) {
+    public List<ReclamoTablaDTO> listarTodosParaTabla() {
+
+        List<Reclamos> lista = reclamosRepo.findAll();
+
+        return lista.stream()
+                .map(r -> {
+                    /* Detalle más reciente */
+                    DetalleReclamo detalleRec = r.getDetalles() == null ? null :
+                            r.getDetalles().stream()
+                                    .max(Comparator.comparing(DetalleReclamo::getFechaCreacion))
+                                    .orElse(null);
+
+                    /* Usuario afectado */
+                    PersonaReclamo usuario = r.getPersonas() == null ? null :
+                            r.getPersonas().stream()
+                                    .filter(p -> p.getTipoPersona() == TipoPersona.USUARIO)   // ← enum global
+                                    .findFirst()
+                                    .orElse(null);
+
+                    return mapper.toTableDTO(r, detalleRec, usuario);
+                })
+                .collect(Collectors.toList());
+    }
+
+    /* ========== FILTRO DINÁMICO PARA TABLA ========== */
+    @Override
+    public List<ReclamoTablaDTO> buscarFiltrado(String estado,
+                                                String buscarPor,
+                                                String query,
+                                                Integer anio,
+                                                Integer mes) {
+
         List<ReclamoTablaDTO> all = listarTodosParaTabla();
 
         return all.stream()
-                .filter(r -> (estado == null || estado.equals("TODOS") || r.getEstado().equalsIgnoreCase(estado)))
+                .filter(r -> (estado == null
+                        || estado.equalsIgnoreCase("TODOS")
+                        || r.getEstado().name().equalsIgnoreCase(estado)))
                 .filter(r -> {
-                    if (buscarPor == null || buscarPor.equals("TODO") || query == null || query.isBlank()) return true;
-                    if (buscarPor.equals("CODIGO")) return r.getCodigoReclamo() != null && r.getCodigoReclamo().contains(query);
-                    if (buscarPor.equals("NOMBRE")) return r.getNumeroDocumentoAfectado() != null && r.getNumeroDocumentoAfectado().toLowerCase().contains(query.toLowerCase());
-                    return true;
+                    if (buscarPor == null || buscarPor.equalsIgnoreCase("TODO") || query == null || query.isBlank())
+                        return true;
+
+                    return switch (buscarPor.toUpperCase()) {
+                        case "CODIGO"  -> r.getCodigoReclamo() != null
+                                && r.getCodigoReclamo().contains(query);
+                        case "NOMBRE"  -> r.getNombreAfectado() != null
+                                && r.getNombreAfectado().toLowerCase().contains(query.toLowerCase());
+                        default        -> true;
+                    };
                 })
-                .filter(r -> (anio == null || (r.getFechaReclamo() != null && r.getFechaReclamo().getYear() == anio)))
-                .filter(r -> (mes == null || (r.getFechaReclamo() != null && r.getFechaReclamo().getMonthValue() == mes)))
+                .filter(r -> anio == null
+                        || (r.getFechaReclamo() != null
+                        && r.getFechaReclamo().getYear() == anio))
+                .filter(r -> mes == null
+                        || (r.getFechaReclamo() != null
+                        && r.getFechaReclamo().getMonthValue() == mes))
                 .toList();
     }
 
-    @Autowired
-    private ReclamosRepositorio reclamosRepositorio;
-
-
+    /* ========== LISTAR TODOS DETALLE DTO ========== */
     @Override
     public List<ReclamoDTO> listarTodosDTO() {
-        return List.of();
+        return reclamosRepo.findAll()
+                .stream()
+                .map(mapper::toDetailDTO)
+                .toList();
     }
 
+    /* ========== BUSCAR POR ID ========== */
     @Override
     public ReclamoDTO buscarDTOporId(Integer id) {
-        return null;
+        return reclamosRepo.findById(id)
+                .map(mapper::toDetailDTO)
+                .orElse(null);
     }
 
+    /* ========== GUARDAR / ACTUALIZAR DESDE DTO ========== */
     @Override
-    public void guardarDesdeDTO(ReclamoDTO reclamo) {
+    @Transactional
+    public void guardarDesdeDTO(ReclamoDTO dto) {
 
-    }
+        Reclamos entity = mapper.toEntity(dto);
 
-    @Override
-    public List<ReclamoTablaDTO> listarTodosParaTabla() {
-        List<Reclamos> lista = reclamosRepositorio.findAll();
-        List<ReclamoTablaDTO> dtos = new ArrayList<>();
-        for (Reclamos r : lista) {
-            ReclamoTablaDTO dto = new ReclamoTablaDTO();
-            dto.setFechaReclamo(r.getFechaReclamo());
-            dto.setCodigoReclamo(r.getCodigoReclamo());
-            dto.setEstado(r.getEstadoReclamo());
-
-            // TOMAR EL DETALLE MÁS RECIENTE (por fechaCreacion)
-            if (r.getDetalles() != null && !r.getDetalles().isEmpty()) {
-                DetalleReclamo detalleReciente = r.getDetalles().stream()
-                        .max(Comparator.comparing(DetalleReclamo::getFechaCreacion))
-                        .orElse(r.getDetalles().get(0));
-                dto.setMedioReclamo(detalleReciente.getMedioRecepcion());
-            }
-
-            // Lógica para usuario afectado igual que antes
-            if (r.getPersonas() != null && !r.getPersonas().isEmpty()) {
-                for (PersonaReclamo p : r.getPersonas()) {
-                    if ("USUARIO_AFECTADO".equalsIgnoreCase(p.getTipoPersona())
-                            || "USUARIO".equalsIgnoreCase(p.getTipoPersona())
-                            || "AFECTADO".equalsIgnoreCase(p.getTipoPersona())) {
-                        dto.setTipoDocumentoAfectado(p.getTipoDocumento());
-                        dto.setNumeroDocumentoAfectado(p.getNumeroDocumento());
-                        dto.setRazonSocialAfectado(p.getRazonSocial());
-                        dto.setNombreAfectado(p.getNombres());
-                        break;
-                    }
-                }
-            }
-            dtos.add(dto);
+        // Bidireccionales: setear padre en hijos (ejemplo con personas)
+        if (entity.getPersonas() != null) {
+            entity.getPersonas().forEach(p -> p.setReclamo(entity));
         }
-        return dtos;
+        if (entity.getDetalles() != null) {
+            entity.getDetalles().forEach(d -> d.setReclamo(entity));
+        }
+        if (entity.getMedidas() != null) {
+            entity.getMedidas().forEach(m -> m.setReclamo(entity));
+        }
+        if (entity.getResultados() != null) {
+            entity.getResultados().forEach(r -> r.setReclamo(entity));
+        }
+        if (entity.getGestion() != null) {
+            entity.getGestion().setReclamo(entity);
+        }
+        if (entity.getGestionClinica() != null) {
+            entity.getGestionClinica().setReclamo(entity);
+        }
+
+        reclamosRepo.save(entity);
     }
 }
 

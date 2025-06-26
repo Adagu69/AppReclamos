@@ -1,79 +1,54 @@
 package com.AppReclamos.AppReclamosCms.Modelos;
 
+import com.AppReclamos.AppReclamosCms.Modelos.Enums.TipoDocumento;
+import com.AppReclamos.AppReclamosCms.Modelos.Enums.TipoPersona;
+import com.fasterxml.jackson.annotation.JsonInclude;
+import jakarta.validation.constraints.Email;
+import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.Size;
+import lombok.*;
+import org.antlr.v4.runtime.misc.NotNull;
+
+@Builder
+@Getter @Setter
+@NoArgsConstructor @AllArgsConstructor
+@EqualsAndHashCode(onlyExplicitlyIncluded = true)
+@JsonInclude(JsonInclude.Include.NON_NULL)
 public class PersonaReclamoDTO {
 
-    private String tipoDocumento;
+    /* ---------- Identificador (solo en edición / respuesta) ---------- */
+    private Integer id;                             // null cuando se crea
+
+    /* ---------- Datos obligatorios ---------- */
+    @NotNull
+    private TipoPersona tipoPersona;              // PRESENTANTE | USUARIO | TERCERO
+
+    @NotNull
+    private TipoDocumento tipoDocumento;            // DNI | CE | PASAPORTE | RUC
+
+    @NotBlank
+    @Size(max = 20)
     private String numeroDocumento;
+
+    /* ---------- Datos opcionales ---------- */
+    @Size(max = 100)
     private String nombres;
+
+    @Size(max = 50)
     private String apellidoPaterno;
+
+    @Size(max = 50)
     private String apellidoMaterno;
+
+    @Size(max = 150)
     private String razonSocial;
+
+    @Size(max = 20)
     private String telefono;
+
+    @Email
+    @Size(max = 255)
     private String correoElectronico;
 
-    //getters and setters..
 
-    public String getTipoDocumento() {
-        return tipoDocumento;
-    }
-
-    public void setTipoDocumento(String tipoDocumento) {
-        this.tipoDocumento = tipoDocumento;
-    }
-
-    public String getNumeroDocumento() {
-        return numeroDocumento;
-    }
-
-    public void setNumeroDocumento(String numeroDocumento) {
-        this.numeroDocumento = numeroDocumento;
-    }
-
-    public String getNombres() {
-        return nombres;
-    }
-
-    public void setNombres(String nombres) {
-        this.nombres = nombres;
-    }
-
-    public String getApellidoPaterno() {
-        return apellidoPaterno;
-    }
-
-    public void setApellidoPaterno(String apellidoPaterno) {
-        this.apellidoPaterno = apellidoPaterno;
-    }
-
-    public String getApellidoMaterno() {
-        return apellidoMaterno;
-    }
-
-    public void setApellidoMaterno(String apellidoMaterno) {
-        this.apellidoMaterno = apellidoMaterno;
-    }
-
-    public String getRazonSocial() {
-        return razonSocial;
-    }
-
-    public void setRazonSocial(String razonSocial) {
-        this.razonSocial = razonSocial;
-    }
-
-    public String getTelefono() {
-        return telefono;
-    }
-
-    public void setTelefono(String telefono) {
-        this.telefono = telefono;
-    }
-
-    public String getCorreoElectronico() {
-        return correoElectronico;
-    }
-
-    public void setCorreoElectronico(String correoElectronico) {
-        this.correoElectronico = correoElectronico;
-    }
 }

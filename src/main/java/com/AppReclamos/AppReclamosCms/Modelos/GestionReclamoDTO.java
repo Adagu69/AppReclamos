@@ -1,87 +1,51 @@
 package com.AppReclamos.AppReclamosCms.Modelos;
 
+import com.AppReclamos.AppReclamosCms.Modelos.Enums.EstadoGestion;
+import com.AppReclamos.AppReclamosCms.Modelos.Enums.EtapaGestion;
+import com.fasterxml.jackson.annotation.JsonInclude;
+import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.Size;
+import lombok.*;
+
+import java.time.LocalDate;
+
+@Getter
+@Setter
+@Builder
+@NoArgsConstructor
+@AllArgsConstructor
+@JsonInclude(JsonInclude.Include.NON_NULL)
 public class GestionReclamoDTO {
-    private String servicioHecho;
-    private String competencia, clasificacion1, clasificacion2, clasificacion3;
-    private String estadoGestion, etapaGestion, codigoPrimigenio, tipoAdministradoraDerivada, codigoAdministradoraDerivada;
+    /* ---------- Identificador (solo en respuestas / edición) ---------- */
+    private Integer id;                          // null cuando se crea
 
-    public String getServicioHecho() {
-        return servicioHecho;
-    }
+    /* ---------- Servicio o área donde ocurrió el hecho ---------- */
+    @NotBlank
+    @Size(max = 255)
+    private String servicio;                     // Ej.: “Hospitalización pediátrica”
 
-    public void setServicioHecho(String servicioHecho) {
-        this.servicioHecho = servicioHecho;
-    }
+    /* ---------- Competencia y clasificación ---------- */
+    @Size(max = 50)
+    private String competencia;                  // Ej.: “SUSALUD”, “MINSA”, etc.
 
-    public String getCompetencia() {
-        return competencia;
-    }
+    @Size(max = 50)
+    private String clasificacion1;               // Primer nivel de clasif.
+    @Size(max = 50)
+    private String clasificacion2;               // Segundo nivel
+    @Size(max = 50)
+    private String clasificacion3;               // Tercer nivel
 
-    public void setCompetencia(String competencia) {
-        this.competencia = competencia;
-    }
+    /* ---------- Estado y etapa (usa enums si son catálogos fijos) ---------- */
+    private EstadoGestion estado;                // REGISTRADO | EN_PROCESO | CONCLUIDO ...
+    private EtapaGestion etapa;                 // INICIAL | APELACIÓN | ...
 
-    public String getClasificacion1() {
-        return clasificacion1;
-    }
+    /* ---------- Datos de rastreo / códigos ----------------------- */
+    @Size(max = 30)
+    private String codigoPrimigenio;             // Código original del reclamo
 
-    public void setClasificacion1(String clasificacion1) {
-        this.clasificacion1 = clasificacion1;
-    }
+    @Size(max = 30)
+    private String tipoAdministradoraDerivada;   // EPS, IPRESS, etc.
 
-    public String getClasificacion2() {
-        return clasificacion2;
-    }
-
-    public void setClasificacion2(String clasificacion2) {
-        this.clasificacion2 = clasificacion2;
-    }
-
-    public String getClasificacion3() {
-        return clasificacion3;
-    }
-
-    public void setClasificacion3(String clasificacion3) {
-        this.clasificacion3 = clasificacion3;
-    }
-
-    public String getEstadoGestion() {
-        return estadoGestion;
-    }
-
-    public void setEstadoGestion(String estadoGestion) {
-        this.estadoGestion = estadoGestion;
-    }
-
-    public String getEtapaGestion() {
-        return etapaGestion;
-    }
-
-    public void setEtapaGestion(String etapaGestion) {
-        this.etapaGestion = etapaGestion;
-    }
-
-    public String getCodigoPrimigenio() {
-        return codigoPrimigenio;
-    }
-
-    public void setCodigoPrimigenio(String codigoPrimigenio) {
-        this.codigoPrimigenio = codigoPrimigenio;
-    }
-
-    public String getTipoAdministradoraDerivada() {
-        return tipoAdministradoraDerivada;
-    }
-
-    public void setTipoAdministradoraDerivada(String tipoAdministradoraDerivada) {
-        this.tipoAdministradoraDerivada = tipoAdministradoraDerivada;
-    }
-
-    public String getCodigoAdministradoraDerivada() {
-        return codigoAdministradoraDerivada;
-    }
-
-    public void setCodigoAdministradoraDerivada(String codigoAdministradoraDerivada) {
-        this.codigoAdministradoraDerivada = codigoAdministradoraDerivada;
-    }
+    @Size(max = 30)
+    private String codigoAdministradoraDerivada; // Código de la administradora
 }

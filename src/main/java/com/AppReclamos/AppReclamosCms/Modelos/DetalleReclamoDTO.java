@@ -1,33 +1,33 @@
 package com.AppReclamos.AppReclamosCms.Modelos;
 
+import com.AppReclamos.AppReclamosCms.Modelos.Enums.MedioRecepcion;
+import com.fasterxml.jackson.annotation.JsonInclude;
+import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.Size;
+import lombok.*;
+
 import java.time.LocalDate;
 
+@Getter
+@Setter
+@Builder
+@NoArgsConstructor
+@AllArgsConstructor
+@JsonInclude(JsonInclude.Include.NON_NULL)
 public class DetalleReclamoDTO {
-    private String medioRecepcion;
+    /* ---------- Identificador (solo al editar / responder) ---------- */
+    private Integer idDetalle;                        // null durante la creación
+
+    /* ---------- Datos del detalle ---------- */
+
+    /** Medio por el que se recibió la comunicación (catálogo fijo). */
+    private MedioRecepcion medioRecepcion;     // VENTANILLA | CORREO | WEB | TELEFONICO | OTRO
+
+    /** Fecha en que se registró o se recibió el reclamo. */
     private LocalDate fechaRecepcion;
-    private String detalle;
 
-    public String getMedioRecepcion() {
-        return medioRecepcion;
-    }
-
-    public void setMedioRecepcion(String medioRecepcion) {
-        this.medioRecepcion = medioRecepcion;
-    }
-
-    public LocalDate getFechaRecepcion() {
-        return fechaRecepcion;
-    }
-
-    public void setFechaRecepcion(LocalDate fechaRecepcion) {
-        this.fechaRecepcion = fechaRecepcion;
-    }
-
-    public String getDetalle() {
-        return detalle;
-    }
-
-    public void setDetalle(String detalle) {
-        this.detalle = detalle;
-    }
+    /** Descripción libre del hecho o ampliación del reclamo. */
+    @NotBlank
+    @Size(max = 1_000)
+    private String descripcion;
 }
