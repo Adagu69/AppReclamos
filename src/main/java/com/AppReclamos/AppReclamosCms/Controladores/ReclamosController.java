@@ -1,7 +1,7 @@
 package com.AppReclamos.AppReclamosCms.Controladores;
 
 import com.AppReclamos.AppReclamosCms.Modelos.*;
-import com.AppReclamos.AppReclamosCms.Modelos.Enums.EstadoReclamo;
+import com.AppReclamos.AppReclamosCms.Modelos.Enums.*;
 import com.AppReclamos.AppReclamosCms.Servicios.interfaces.IReclamosServicios;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
@@ -57,13 +57,16 @@ public class ReclamosController {
     public String nuevo(Model model) {
         ReclamoDTO dto = new ReclamoDTO();
 
-        // Evitar IndexOutOfBounds en la vista
-        dto.getPersonas().add(new PersonaReclamoDTO());    // posición 0 = Presentante
-        dto.getDetalles().add(new DetalleReclamoDTO());    // posición 0 = Detalle principal
+        // inicializar lista mínima
+        dto.getPersonas().add(new PersonaReclamoDTO());    // 0 = presentante
+        dto.getPersonas().add(new PersonaReclamoDTO());    // 1 = usuario/tercero (si lo usas)
+        dto.getDetalles().add(new DetalleReclamoDTO());    // 0 = detalle principal
 
+        // **¡¡ importante inicializar gestión !!**
+        dto.setGestion(new GestionReclamoDTO());
 
         model.addAttribute("reclamo", dto);
-        model.addAttribute("title", "Nuevo Reclamo");
+        model.addAttribute("title",   "Nuevo Reclamo");
         model.addAttribute("estadosEnum", EstadoReclamo.values());
         return "ADMIN/reclamos-form";
     }
@@ -72,15 +75,35 @@ public class ReclamosController {
            ║ 3. EDITAR RECLAMO (formulario)         ║
            ╚════════════════════════════════════════╝ */
     @GetMapping("/editar/{id}")
-    public String editar(@PathVariable Integer id, Model model, RedirectAttributes redir) {
+    public String editar(@PathVariable Integer id,
+                         Model model,
+                         RedirectAttributes redir) {
         ReclamoDTO dto = reclamosSvc.buscarDTOporId(id);
         if (dto == null) {
             redir.addFlashAttribute("error", "El reclamo no existe.");
             return "redirect:/admin/reclamos";
         }
-        // asegurar que existan listas mínimas
-        if (dto.getPersonas().isEmpty())  dto.getPersonas().add(new PersonaReclamoDTO());
-        if (dto.getDetalles().isEmpty())  dto.getDetalles().add(new DetalleReclamoDTO());
+
+        // Asegurar 2 personas en la lista
+        if (dto.getPersonas() == null) {
+            dto.setPersonas(new ArrayList<>());
+        }
+        while (dto.getPersonas().size() < 2) {
+            dto.getPersonas().add(new PersonaReclamoDTO());
+        }
+
+        // Asegurar al menos un detalle
+        if (dto.getDetalles() == null) {
+            dto.setDetalles(new ArrayList<>());
+        }
+        if (dto.getDetalles().isEmpty()) {
+            dto.getDetalles().add(new DetalleReclamoDTO());
+        }
+
+        // **¡¡ importante inicializar gestión si es nulo !!**
+        if (dto.getGestion() == null) {
+            dto.setGestion(new GestionReclamoDTO());
+        }
 
         model.addAttribute("title", "Editar Reclamo");
         model.addAttribute("reclamo", dto);
@@ -91,16 +114,13 @@ public class ReclamosController {
     /* ╔════════════════════════════════════════╗
          ║ 4. GUARDAR / ACTUALIZAR                ║
          ╚════════════════════════════════════════╝ */
-    @PostMapping("/save")
+    @PostMapping("/guardar")
     public String save(@Valid @ModelAttribute("reclamo") ReclamoDTO reclamo,
                        BindingResult br,
                        RedirectAttributes redir) {
-
         if (br.hasErrors()) {
-            // vuelve al mismo formulario mostrando errores
             return "ADMIN/reclamos-form";
         }
-
         reclamosSvc.guardarDesdeDTO(reclamo);
         redir.addFlashAttribute("success", "Reclamo guardado correctamente.");
         return "redirect:/admin/reclamos";

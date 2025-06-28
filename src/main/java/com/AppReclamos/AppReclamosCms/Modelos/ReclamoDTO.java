@@ -1,6 +1,7 @@
 package com.AppReclamos.AppReclamosCms.Modelos;
 
 import com.AppReclamos.AppReclamosCms.Modelos.Enums.EstadoReclamo;
+import com.AppReclamos.AppReclamosCms.Modelos.Enums.MedioRecepcion;
 import com.AppReclamos.AppReclamosCms.Modelos.Enums.TipoDeclarante;
 import com.AppReclamos.AppReclamosCms.Modelos.Enums.TipoInstitucion;
 import com.AppReclamos.AppReclamosCms.Validations.ValidCodigoDeclarante;
@@ -53,7 +54,7 @@ public class ReclamoDTO {
     private String       nroReclamo;
 
     @NotNull(message="Medio de recepción es obligatorio")
-    private DetalleReclamo.MedioRecepcion medioRecepcion;   // enum
+    private MedioRecepcion medioRecepcion;   // enum
 
     @NotNull(message="Estado es obligatorio")
     private EstadoReclamo estado;           // enum

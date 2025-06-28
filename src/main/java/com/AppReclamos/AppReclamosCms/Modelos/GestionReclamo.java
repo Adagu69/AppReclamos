@@ -1,5 +1,9 @@
 package com.AppReclamos.AppReclamosCms.Modelos;
 
+import com.AppReclamos.AppReclamosCms.Modelos.Enums.GestionCompetencia;
+import com.AppReclamos.AppReclamosCms.Modelos.Enums.GestionEtapa;
+import com.AppReclamos.AppReclamosCms.Modelos.Enums.GestionServicios;
+import com.AppReclamos.AppReclamosCms.Modelos.Enums.TipoDeclarante;
 import jakarta.persistence.*;
 import lombok.*;
 
@@ -23,18 +27,32 @@ public class GestionReclamo implements Serializable {
     @EqualsAndHashCode.Include
     private Integer idGestion;
 
-    @Column(columnDefinition = "TEXT")
-    private String servicio;
+    @Enumerated(EnumType.STRING)
+    @Column(nullable=false,length=20)
+    private GestionServicios servicio;
 
-    private String competencia;
+    @Enumerated(EnumType.STRING)
+    @Column(nullable=false,length=12)
+    private GestionCompetencia competencia;
+
     private String clasificacion1;
     private String clasificacion2;
     private String clasificacion3;
 
     private String estadoReclamo;
-    private String etapaReclamo;
+
+    @Enumerated(EnumType.STRING)
+    @Column(nullable=false,length=20)
+    private GestionEtapa etapaReclamo;
+
+    @Column(length=15)
     private String codigoPrimigenio;
-    private String tipoAdministraTraslado;
+
+    @Enumerated(EnumType.STRING)
+    @Column(nullable=false,length=20)
+    private TipoDeclarante tipoAdministraTraslado;
+
+    @Column(length=8)
     private String codigoAdministraTraslado;
 
     @OneToOne(fetch = FetchType.LAZY)

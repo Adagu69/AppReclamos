@@ -106,81 +106,368 @@
                         </div>
                     </div>
 
-                <!-- ========= PERSONA – PRESENTANTE ========= -->
-                <div class="card card-secondary">
-                    <div class="card-header"><h3 class="card-title">Persona - Presentante</h3></div>
-                    <div class="card-body row g-3">
-
-                        <input type="hidden" th:field="*{personas[0].id}" />
-
-                        <div class="col-md-6">
-                            <label>Nombres</label>
-                            <input type="text" class="form-control"
-                                   th:field="*{personas[0].nombres}" required>
+                    <!-- ===========================================================================
+           BLOQUE 1: PERSONA – PRESENTANTE (personas[0])
+           =========================================================================== -->
+                    <div class="card card-secondary mb-4">
+                        <div class="card-header">
+                            <h3 class="card-title">Persona – Presentante</h3>
                         </div>
+                        <div class="card-body row g-3">
+                            <input type="hidden" th:field="*{personas[0].id}" />
 
-                        <div class="col-md-3">
-                            <label>Ape. Paterno</label>
-                            <input type="text" class="form-control"
-                                   th:field="*{personas[0].apellidoPaterno}" required>
-                        </div>
+                            <!-- Nombres -->
+                            <div class="col-md-6">
+                                <label>Nombres</label>
+                                <input type="text" class="form-control"
+                                       th:field="*{personas[0].nombres}"
+                                       required maxlength="150"
+                                       pattern="[A-Za-zÁÉÍÓÚáéíóúñÑ ]+">
+                                <div class="text-danger"
+                                     th:if="${#fields.hasErrors('personas[0].nombres')}"
+                                     th:errors="*{personas[0].nombres}"></div>
+                            </div>
 
-                        <div class="col-md-3">
-                            <label>Ape. Materno</label>
-                            <input type="text" class="form-control"
-                                   th:field="*{personas[0].apellidoMaterno}">
-                        </div>
+                            <!-- Ape. Paterno -->
+                            <div class="col-md-3">
+                                <label>Ape. Paterno</label>
+                                <input type="text" class="form-control"
+                                       th:field="*{personas[0].apellidoPaterno}"
+                                       maxlength="150"
+                                       pattern="[A-Za-zÁÉÍÓÚáéíóúñÑ ]*">
+                                <div class="text-danger"
+                                     th:if="${#fields.hasErrors('personas[0].apellidoPaterno')}"
+                                     th:errors="*{personas[0].apellidoPaterno}"></div>
+                            </div>
 
-                        <div class="col-md-3">
-                            <label>Tipo Doc.</label>
-                            <select class="form-select" th:field="*{personas[0].tipoDocumento}">
-                                <option th:each="d : ${T(com.AppReclamos.AppReclamosCms.Modelos.Enums.TipoDocumento).values()}"
-                                        th:value="${d}" th:text="${d}"></option>
-                            </select>
-                        </div>
+                            <!-- Ape. Materno -->
+                            <div class="col-md-3">
+                                <label>Ape. Materno</label>
+                                <input type="text" class="form-control"
+                                       th:field="*{personas[0].apellidoMaterno}"
+                                       maxlength="150"
+                                       pattern="[A-Za-zÁÉÍÓÚáéíóúñÑ ]*">
+                                <div class="text-danger"
+                                     th:if="${#fields.hasErrors('personas[0].apellidoMaterno')}"
+                                     th:errors="*{personas[0].apellidoMaterno}"></div>
+                            </div>
 
-                        <div class="col-md-3">
-                            <label>N.º Documento</label>
-                            <input type="text" class="form-control"
-                                   th:field="*{personas[0].numeroDocumento}" required>
-                        </div>
+                            <!-- Tipo Doc. -->
+                            <div class="col-md-3">
+                                <label>Tipo Doc.</label>
+                                <select class="form-select"
+                                        th:field="*{personas[0].tipoDocumento}" required>
+                                    <option th:each="d : ${T(com.AppReclamos.AppReclamosCms.Modelos.Enums.TipoDocumento).values()}"
+                                            th:value="${d}" th:text="${d}"></option>
+                                </select>
+                                <div class="text-danger"
+                                     th:if="${#fields.hasErrors('personas[0].tipoDocumento')}"
+                                     th:errors="*{personas[0].tipoDocumento}"></div>
+                            </div>
 
-                        <div class="col-md-3">
-                            <label>Teléfono</label>
-                            <input type="text" class="form-control"
-                                   th:field="*{personas[0].telefono}">
-                        </div>
+                            <!-- N.º Documento -->
+                            <div class="col-md-3">
+                                <label>N.º Documento</label>
+                                <input type="text" class="form-control"
+                                       th:field="*{personas[0].numeroDocumento}"
+                                       required maxlength="15"
+                                       pattern="\d+">
+                                <div class="text-danger"
+                                     th:if="${#fields.hasErrors('personas[0].numeroDocumento')}"
+                                     th:errors="*{personas[0].numeroDocumento}"></div>
+                            </div>
 
-                        <div class="col-md-3">
-                            <label>Email</label>
-                            <input type="email" class="form-control"
-                                   th:field="*{personas[0].correoElectronico}">
+                            <!-- Razón Social (solo si es RUC) -->
+                            <div class="col-md-6" id="razonSolPresentante" style="display:none;">
+                                <label>Razón Social</label>
+                                <input type="text" class="form-control"
+                                       th:field="*{personas[0].razonSocial}"
+                                       maxlength="150"
+                                       pattern="[A-Za-z0-9ÁÉÍÓÚáéíóúñÑ&., ]+">
+                                <div class="text-danger"
+                                     th:if="${#fields.hasErrors('personas[0].razonSocial')}"
+                                     th:errors="*{personas[0].razonSocial}"></div>
+                            </div>
+
+                            <!-- Teléfono -->
+                            <div class="col-md-3">
+                                <label>Teléfono</label>
+                                <input type="text" class="form-control"
+                                       th:field="*{personas[0].telefono}">
+                            </div>
+
+                            <!-- Email -->
+                            <div class="col-md-3">
+                                <label>Email</label>
+                                <input type="email" class="form-control"
+                                       th:field="*{personas[0].correoElectronico}">
+                                <div class="text-danger"
+                                     th:if="${#fields.hasErrors('personas[0].correoElectronico')}"
+                                     th:errors="*{personas[0].correoElectronico}"></div>
+                            </div>
                         </div>
                     </div>
-                </div>
 
-                <!-- ========= DETALLE ========= -->
-                <div class="card card-info">
-                    <div class="card-header"><h3 class="card-title">Detalle del Reclamo</h3></div>
-                    <div class="card-body row g-3">
 
-                        <input type="hidden" th:field="*{detalles[0].idDetalle}" />
-
-                        <div class="col-md-4">
-                            <label>Fecha Recepción</label>
-                            <input type="date" class="form-control"
-                                   th:field="*{detalles[0].fechaRecepcion}">
+                    <!-- ===========================================================================
+                         BLOQUE 2: IDENTIFICACIÓN DEL USUARIO O TERCERO (personas[1])
+                         =========================================================================== -->
+                    <div class="card card-light mb-4">
+                        <div class="card-header">
+                            <h3 class="card-title">Identificación de Usuario / Tercero</h3>
                         </div>
+                        <div class="card-body row g-3">
+                            <input type="hidden" th:field="*{personas[1].id}" />
 
-                        <div class="col-md-8">
-                            <label>Descripción</label>
-                            <textarea rows="3" class="form-control"
-                                      th:field="*{detalles[0].descripcion}"></textarea>
+                            <!-- Tipo documento -->
+                            <div class="col-md-3">
+                                <label>Tipo Doc.</label>
+                                <select class="form-select"
+                                        th:field="*{personas[1].tipoDocumento}" required>
+                                    <option th:each="d : ${T(com.AppReclamos.AppReclamosCms.Modelos.Enums.TipoDocumento).values()}"
+                                            th:value="${d}" th:text="${d}"></option>
+                                </select>
+                            </div>
+
+                            <!-- Número del documento -->
+                            <div class="col-md-3">
+                                <label>N.º Documento</label>
+                                <input type="text" class="form-control"
+                                       th:field="*{personas[1].numeroDocumento}"
+                                       required maxlength="15"
+                                       pattern="\d+">
+                            </div>
+
+                            <!-- Nombres -->
+                            <div class="col-md-3">
+                                <label>Nombres</label>
+                                <input type="text" class="form-control"
+                                       th:field="*{personas[1].nombres}"
+                                       required maxlength="150"
+                                       pattern="[A-Za-zÁÉÍÓÚáéíóúñÑ ]+">
+                            </div>
+
+                            <!-- Ape. Paterno -->
+                            <div class="col-md-3">
+                                <label>Ape. Paterno</label>
+                                <input type="text" class="form-control"
+                                       th:field="*{personas[1].apellidoPaterno}"
+                                       maxlength="150"
+                                       pattern="[A-Za-zÁÉÍÓÚáéíóúñÑ ]*">
+                            </div>
+
+                            <!-- Ape. Materno -->
+                            <div class="col-md-3">
+                                <label>Ape. Materno</label>
+                                <input type="text" class="form-control"
+                                       th:field="*{personas[1].apellidoMaterno}"
+                                       maxlength="150"
+                                       pattern="[A-Za-zÁÉÍÓÚáéíóúñÑ ]*">
+                            </div>
+
+                            <!-- Razón Social (solo si es RUC) -->
+                            <div class="col-md-6" id="razonSolTercero" style="display:none;">
+                                <label>Razón Social</label>
+                                <input type="text" class="form-control"
+                                       th:field="*{personas[1].razonSocial}"
+                                       maxlength="150"
+                                       pattern="[A-Za-z0-9ÁÉÍÓÚáéíóúñÑ&., ]+">
+                            </div>
+
+                            <!-- Resultado al correo (Sí/No) -->
+                            <div class="col-md-3">
+                                <label>Resultado al correo</label>
+                                <select class="form-select"
+                                        th:field="*{personas[1].resultadoPorCorreo}">
+                                    <option th:value="true">Sí</option>
+                                    <option th:value="false">No</option>
+                                </select>
+                            </div>
+
+                            <!-- Teléfono -->
+                            <div class="col-md-3">
+                                <label>Teléfono</label>
+                                <input type="text" class="form-control"
+                                       th:field="*{personas[1].telefono}">
+                            </div>
+
+                            <!-- Email -->
+                            <div class="col-md-3">
+                                <label>Email</label>
+                                <input type="email" class="form-control"
+                                       th:field="*{personas[1].correoElectronico}">
+                            </div>
+
+                            <!-- Domicilio -->
+                            <div class="col-md-6">
+                                <label>Domicilio</label>
+                                <input type="text" class="form-control"
+                                       th:field="*{personas[1].domicilio}"
+                                       maxlength="200">
+                            </div>
                         </div>
                     </div>
-                </div>
 
-                <!-- ========= BOTONES ========= -->
+                    <!-- ========= DETALLE DEL RECLAMO ========= -->
+                    <div class="card card-info mb-4">
+                        <div class="card-header">
+                            <h3 class="card-title">Detalle del Reclamo</h3>
+                        </div>
+                        <div class="card-body row g-3">
+                            <!-- Oculto el id interno -->
+                            <input type="hidden" th:field="*{detalles[0].idDetalle}" />
+
+                            <!-- Medio de recepción del reclamo (obligatorio) -->
+                            <div class="col-md-4">
+                                <label>Medio de recepción</label>
+                                <select class="form-select"
+                                        th:field="*{detalles[0].medioRecepcion}"
+                                        required>
+                                    <option th:each="m : ${T(com.AppReclamos.AppReclamosCms.Modelos.Enums.MedioRecepcion).values()}"
+                                            th:value="${m}"
+                                            th:text="${m}">
+                                    </option>
+                                </select>
+                                <div class="text-danger"
+                                     th:if="${#fields.hasErrors('detalles[0].medioRecepcion')}"
+                                     th:errors="*{detalles[0].medioRecepcion}"></div>
+                            </div>
+
+                            <!-- Fecha de recepción (obligatorio) -->
+                            <div class="col-md-4">
+                                <label>Fecha de recepción</label>
+                                <input type="date"
+                                       class="form-control"
+                                       th:field="*{detalles[0].fechaRecepcion}"
+                                       required>
+                                <div class="text-danger"
+                                     th:if="${#fields.hasErrors('detalles[0].fechaRecepcion')}"
+                                     th:errors="*{detalles[0].fechaRecepcion}"></div>
+                            </div>
+
+                            <!-- Descripción detallada (obligatorio, hasta 500 caracteres) -->
+                            <div class="col-md-12">
+                                <label>Detalle del reclamo</label>
+                                <textarea rows="4"
+                                          class="form-control"
+                                          th:field="*{detalles[0].descripcion}"
+                                          required
+                                          maxlength="500"></textarea>
+                                <div class="text-danger"
+                                     th:if="${#fields.hasErrors('detalles[0].descripcion')}"
+                                     th:errors="*{detalles[0].descripcion}"></div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- ========= GESTIÓN INTERNA ========= -->
+                    <div class="card card-warning mb-4">
+                        <div class="card-header bg-warning text-white">
+                            <h3 class="card-title">Gestión interna</h3>
+                        </div>
+                        <div class="card-body row g-3">
+
+                            <div class="col-md-4">
+                                <label for="servicioSelect">Servicio de origen <span class="text-danger">*</span></label>
+                                <select class="form-select" id="servicioSelect" th:field="*{gestion.servicio}" required>
+                                    <option value="">– Seleccione –</option>
+                                    <option th:each="s : ${T(com.AppReclamos.AppReclamosCms.Modelos.Enums.GestionServicios).values()}"
+                                            th:value="${s}"
+                                            th:text="${s.name().replaceAll('_', ' ')}">
+                                    </option>
+                                </select>
+                            </div>
+
+                            <div class="col-md-4">
+                                <label for="competenciaSelect">Competencia <span class="text-danger">*</span></label>
+                                <select class="form-select" id="competenciaSelect" th:field="*{gestion.competencia}" required>
+                                    <option value="">– Seleccione –</option>
+                                    <option th:each="c : ${T(com.AppReclamos.AppReclamosCms.Modelos.Enums.GestionCompetencia).values()}"
+                                            th:value="${c}"
+                                            th:text="${(c == T(com.AppReclamos.AppReclamosCms.Modelos.Enums.GestionCompetencia).SI) ? 'Sí' : ((c == T(com.AppReclamos.AppReclamosCms.Modelos.Enums.GestionCompetencia).NO) ? 'No' : 'Compartida')}">
+                                    </option>
+                                </select>
+                            </div>
+
+                            <div class="col-md-4">
+                                <label for="estadoReclamoSelect">Estado del Reclamo <span class="text-danger">*</span></label>
+                                <select class="form-select" id="estadoReclamoSelect" th:field="*{estado}" required>
+                                    <option value="">– Seleccione –</option>
+                                    <option th:each="e : ${estadosEnum}"
+                                            th:value="${e}"
+                                            th:text="${e}">
+                                    </option>
+                                </select>
+                            </div>
+
+                            <div class="col-md-4 clasificaciones-group"
+                                 th:classappend="${(reclamo.gestion?.competencia?.name() == 'SI' or reclamo.gestion?.competencia?.name() == 'COMPARTIDA')} ? '' : 'd-none'">
+                                <label for="clasificacion1Input">Clasificación 1 <span class="text-danger clasificacion-required-mark">*</span></label>
+                                <input type="text" class="form-control clasificacion-input"
+                                       id="clasificacion1Input" th:field="*{gestion.clasificacion1}"
+                                       maxlength="4">
+                            </div>
+                            <div class="col-md-4 clasificaciones-group"
+                                 th:classappend="${(reclamo.gestion?.competencia?.name() == 'SI' or reclamo.gestion?.competencia?.name() == 'COMPARTIDA')} ? '' : 'd-none'">
+                                <label for="clasificacion2Input">Clasificación 2 <span class="text-danger clasificacion-required-mark">*</span></label>
+                                <input type="text" class="form-control clasificacion-input"
+                                       id="clasificacion2Input" th:field="*{gestion.clasificacion2}"
+                                       maxlength="4">
+                            </div>
+                            <div class="col-md-4 clasificaciones-group"
+                                 th:classappend="${(reclamo.gestion?.competencia?.name() == 'SI' or reclamo.gestion?.competencia?.name() == 'COMPARTIDA')} ? '' : 'd-none'">
+                                <label for="clasificacion3Input">Clasificación 3 <span class="text-danger clasificacion-required-mark">*</span></label>
+                                <input type="text" class="form-control clasificacion-input"
+                                       id="clasificacion3Input" th:field="*{gestion.clasificacion3}"
+                                       maxlength="4">
+                            </div>
+
+                            <div class="col-md-6 codigo-primigenio-group"
+                                 th:classappend="${(reclamo.estado?.name() == 'VERIFICACION' or reclamo.estado?.name() == 'CIERRE')} ? '' : 'd-none'">
+                                <label for="codigoPrimigenioInput">Código Reclamo Primigenio <span class="text-danger primigenio-destino-required-mark">*</span></label>
+                                <input type="text" class="form-control primigenio-destino-input"
+                                       id="codigoPrimigenioInput" th:field="*{gestion.codigoPrimigenio}"
+                                       maxlength="15">
+                            </div>
+
+                            <div class="col-md-4">
+                                <label for="etapaSelect">Etapa del Reclamo <span class="text-danger">*</span></label>
+                                <select class="form-select" id="etapaSelect" th:field="*{gestion.etapa}" required>
+                                    <option value="">– Seleccione –</option>
+                                    <option th:each="et : ${T(com.AppReclamos.AppReclamosCms.Modelos.Enums.GestionEtapa).values()}"
+                                            th:value="${et}"
+                                            th:text="${et.name().replaceAll('_',' ')}">
+                                    </option>
+                                </select>
+                            </div>
+
+                            <div class="col-md-4 destino-group"
+                                 th:classappend="${(reclamo.estado?.name() == 'VERIFICACION' or reclamo.estado?.name() == 'CIERRE')} ? '' : 'd-none'">
+                                <label for="tipoDestinoSelect">Tipo de administrado destino <span class="text-danger primigenio-destino-required-mark">*</span></label>
+                                <select class="form-select primigenio-destino-input" id="tipoDestinoSelect" th:field="*{gestion.tipoDestino}">
+                                    <option value="">– Seleccione –</option>
+                                    <option th:each="td : ${T(com.AppReclamos.AppReclamosCms.Modelos.Enums.TipoDeclarante).values()}"
+                                            th:value="${td}"
+                                            th:text="${td}">
+                                    </option>
+                                </select>
+                            </div>
+                            <div class="col-md-4 destino-group"
+                                 th:classappend="${(reclamo.estado?.name() == 'VERIFICACION' or reclamo.estado?.name() == 'CIERRE')} ? '' : 'd-none'">
+                                <label for="codigoDestinoInput">Código administrado destino <span class="text-danger primigenio-destino-required-mark">*</span></label>
+                                <input type="text" class="form-control primigenio-destino-input"
+                                       id="codigoDestinoInput" th:field="*{gestion.codigoDestino}"
+                                       pattern="\d{1,8}"
+                                       maxlength="8">
+                            </div>
+
+                        </div>
+                    </div>
+
+
+
+
+                    <!-- ========= BOTONES ========= -->
                 <div class="card-footer">
                     <button type="submit" class="btn btn-primary">
                         <i class="fas fa-save"></i> Guardar
@@ -205,7 +492,102 @@
     <!--end::Footer-->
 </div>
 
+
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.7.1/jquery.min.js"></script>
+<!-- ======= Script para mostrar/ocultar Razón Social ======= -->
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        const sel0 = document.querySelector('select[name="personas[0].tipoDocumento"]');
+        const con0 = document.getElementById('razonSolPresentante');
+        const sel1 = document.querySelector('select[name="personas[1].tipoDocumento"]');
+        const con1 = document.getElementById('razonSolTercero');
+
+        function toggle(idxSel, idxCon) {
+            if (!idxSel || !idxCon) return;
+            idxCon.style.display = (idxSel.value === 'RUC') ? 'block' : 'none';
+        }
+
+        [sel0, sel1].forEach((sel, i) => {
+            const cont = (i===0 ? con0 : con1);
+            toggle(sel, cont);
+            sel.addEventListener('change',()=>toggle(sel, cont));
+        });
+    });
+
+    document.addEventListener('DOMContentLoaded', () => {
+        const selTipoDoc = document.querySelector('select[name="personas[0].tipoDocumento"]');
+        const contRz     = document.getElementById('razonSocialContainer');
+
+        function toggleRazon() {
+            contRz.style.display = (selTipoDoc.value === 'RUC') ? 'block' : 'none';
+        }
+        selTipoDoc.addEventListener('change', toggleRazon);
+        toggleRazon();
+    });
+
+    $(document).ready(function() {
+        const competenciaSelect = $('#competenciaSelect');
+        const estadoReclamoSelect = $('#estadoReclamoSelect');
+
+        const clasificacionesGroup = $('.clasificaciones-group');
+        const clasificacionInputs = $('.clasificacion-input');
+        const clasificacionRequiredMarks = $('.clasificacion-required-mark');
+
+        const codigoPrimigenioGroup = $('.codigo-primigenio-group');
+        const destinoGroup = $('.destino-group');
+        const primigenioDestinoInputs = $('.primigenio-destino-input');
+        const primigenioDestinoRequiredMarks = $('.primigenio-destino-required-mark');
+
+        function setRequired(elements, isRequired) {
+            elements.prop('required', isRequired);
+        }
+
+        function updateCompetenciaFields() {
+            const selectedCompetencia = competenciaSelect.val(); // Obtiene el valor seleccionado del enum (ej. "SI", "NO", "COMPARTIDA")
+            const shouldShow = (selectedCompetencia === 'SI' || selectedCompetencia === 'COMPARTIDA');
+
+            if (shouldShow) {
+                clasificacionesGroup.removeClass('d-none');
+                clasificacionRequiredMarks.removeClass('d-none');
+                setRequired(clasificacionInputs, true);
+            } else {
+                clasificacionesGroup.addClass('d-none');
+                clasificacionRequiredMarks.addClass('d-none');
+                setRequired(clasificacionInputs, false);
+                clasificacionInputs.val(''); // Limpiar valores cuando se ocultan
+            }
+        }
+
+        function updateEstadoFields() {
+            const selectedEstado = estadoReclamoSelect.val(); // Obtiene el valor seleccionado del enum (ej. "VERIFICACION", "CIERRE")
+            const shouldShow = (selectedEstado === 'VERIFICACION' || selectedEstado === 'CIERRE');
+
+            if (shouldShow) {
+                codigoPrimigenioGroup.removeClass('d-none');
+                destinoGroup.removeClass('d-none');
+                primigenioDestinoRequiredMarks.removeClass('d-none');
+                setRequired(primigenioDestinoInputs, true);
+            } else {
+                codigoPrimigenioGroup.addClass('d-none');
+                destinoGroup.addClass('d-none');
+                primigenioDestinoRequiredMarks.addClass('d-none');
+                setRequired(primigenioDestinoInputs, false);
+                primigenioDestinoInputs.val(''); // Limpiar valores cuando se ocultan
+            }
+        }
+
+        // Llamar a las funciones al cargar la página para establecer el estado inicial
+        updateCompetenciaFields();
+        updateEstadoFields();
+
+        // Asignar listeners para cuando cambien los selectores
+        competenciaSelect.on('change', updateCompetenciaFields);
+        estadoReclamoSelect.on('change', updateEstadoFields);
+    });
+</script>
 <script th:src="@{/js/bootstrap.bundle.min.js}"></script>
 <script th:src="@{/js/adminlte.js}"></script>
+
+
 </body>
 </html>

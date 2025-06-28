@@ -1,5 +1,6 @@
 package com.AppReclamos.AppReclamosCms.Modelos;
 
+import com.AppReclamos.AppReclamosCms.Modelos.Enums.MedioRecepcion;
 import jakarta.persistence.*;
 import lombok.*;
 
@@ -33,7 +34,7 @@ public class DetalleReclamo implements Serializable {
     private LocalDate fechaRecepcion;
 
     @Column(columnDefinition = "TEXT")
-    private String detalle;
+    private String descripcion;
 
     private LocalDateTime fechaCreacion;
 
@@ -48,11 +49,4 @@ public class DetalleReclamo implements Serializable {
         }
     }
 
-    public enum MedioRecepcion {
-        VENTANILLA,
-        CORREO,
-        WEB,
-        TELEFONICO,
-        OTRO
-    }
 }
