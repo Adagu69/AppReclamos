@@ -2,28 +2,34 @@ package com.AppReclamos.AppReclamosCms.Modelos;
 
 import jakarta.persistence.*;
 import lombok.Data;
+import lombok.Getter;
+import lombok.Setter;
 
 import java.time.LocalDate;
 
-@Data
+@Getter
+@Setter
 @Entity
 @Table(name = "MedidasAdoptadas")
 public class MedidasAdoptadas {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Integer idMedida;
+    private Integer id;
 
-    private String tipoProcedimiento;
-
-    @Column(columnDefinition = "TEXT")
+    @Column(columnDefinition = "TEXT", nullable = false)
     private String descripcion;
 
-    private String procedemado;
-    private LocalDate feciimp;
-    private LocalDate fecculpre;
+    @Column(nullable = false)
+    private LocalDate fechaMedida;
 
-    @ManyToOne
-    @JoinColumn(name = "id_reclamo")
+    @Column(length = 255, nullable = false)
+    private String responsableEjecucion;
+
+    @Column(nullable = false)
+    private LocalDate fechaEjecucion;
+
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "id_reclamo", nullable = false)
     private Reclamos reclamo;
 }

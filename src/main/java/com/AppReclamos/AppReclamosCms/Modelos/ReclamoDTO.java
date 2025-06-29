@@ -25,7 +25,7 @@ import java.util.List;
 public class ReclamoDTO {
 
     /* ---------- Identificación & clasificación ---------- */
-    private Integer id;                       // PK
+    private Integer idReclamo;                       // PK
 
     @NotNull(message="Fecha de reclamo es obligatoria")
     private LocalDate    fechaReclamo;

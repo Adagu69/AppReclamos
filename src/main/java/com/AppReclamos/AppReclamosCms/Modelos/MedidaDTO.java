@@ -3,46 +3,49 @@ package com.AppReclamos.AppReclamosCms.Modelos;
 
 import com.fasterxml.jackson.annotation.JsonInclude;
 import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Size;
 import lombok.*;
+import org.springframework.format.annotation.DateTimeFormat;
 
 import java.time.LocalDate;
 
 
 @Getter
 @Setter
-@Builder
 @NoArgsConstructor
 @AllArgsConstructor
-@JsonInclude(JsonInclude.Include.NON_NULL)
+@Builder
 public class MedidaDTO {
 
-    /* ---------- Identificador (solo al editar / responder) ---------- */
-    private Integer id;                       // null en creación
 
-    /* ---------- Datos de la medida ---------- */
+    private Integer id;
 
-    /** Código o tipo de procedimiento administrativo (catálogo interno). */
     @NotBlank
     @Size(max = 50)
     private String tipoProcedimiento;
 
-    /** Descripción concreta de la medida adoptada. */
-    @NotBlank
-    @Size(max = 500)
+    @NotBlank(message = "La descripción no puede estar vacía.")
+    @Size(max = 2000, message = "La descripción no puede superar los 2000 caracteres.")
     private String descripcion;
 
-    /** Naturaleza de la medida: PREVENTIVA, CORRECTIVA, INFORMATIVA, etc. */
+    @NotNull(message = "La fecha de la medida es obligatoria.")
+    @DateTimeFormat(iso = DateTimeFormat.ISO.DATE)
+    private LocalDate fechaMedida;
+
+    @NotBlank(message = "El responsable de la ejecución no puede estar vacío.")
+    private String responsableEjecucion;
+
+    @NotNull(message = "La fecha de ejecución es obligatoria.")
+    @DateTimeFormat(iso = DateTimeFormat.ISO.DATE)
+    private LocalDate fechaEjecucion;
+
+    private Integer reclamoId;
+
     @Size(max = 30)
     private String naturaleza;
 
-    /** Procedimiento empleado (si aplica): derivación, restitución, resarcimiento… */
     @Size(max = 100)
     private String procedimiento;
 
-    /** Fecha de inicio de la implementación. */
-    private LocalDate fechaInicio;
-
-    /** Fecha de culminación o cumplimiento. */
-    private LocalDate fechaCulminacion;
 }

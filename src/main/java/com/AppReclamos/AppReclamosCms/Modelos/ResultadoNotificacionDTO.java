@@ -1,54 +1,36 @@
 package com.AppReclamos.AppReclamosCms.Modelos;
 
+import com.AppReclamos.AppReclamosCms.Modelos.Enums.ComunicacionResultado;
+import com.AppReclamos.AppReclamosCms.Modelos.Enums.MedioRecepcion;
+import com.AppReclamos.AppReclamosCms.Modelos.Enums.MotivoConclusion;
+import com.AppReclamos.AppReclamosCms.Modelos.Enums.ResultadoReclamo;
+import jakarta.validation.constraints.NotNull;
+import lombok.*;
+
 import java.time.LocalDate;
 
+@Getter
+@Setter
+@NoArgsConstructor
+@AllArgsConstructor
+@Builder
 public class ResultadoNotificacionDTO {
 
-    private String resultado;
-    private String motivoConclusion;
-    private String comunicacionResultado;
+    private Integer id;
+
+    @NotNull
+    private ResultadoReclamo resultado;
+
+
+    private MotivoConclusion motivoConclusion;
+
+    @NotNull
     private LocalDate fechaResultado;
+
+    @NotNull
+    private ComunicacionResultado comunicacionResultado;
+
+    @NotNull
     private LocalDate fechaNotificacion;
 
-    // getters and setters..
-
-    public String getResultado() {
-        return resultado;
-    }
-
-    public void setResultado(String resultado) {
-        this.resultado = resultado;
-    }
-
-    public String getMotivoConclusion() {
-        return motivoConclusion;
-    }
-
-    public void setMotivoConclusion(String motivoConclusion) {
-        this.motivoConclusion = motivoConclusion;
-    }
-
-    public String getComunicacionResultado() {
-        return comunicacionResultado;
-    }
-
-    public void setComunicacionResultado(String comunicacionResultado) {
-        this.comunicacionResultado = comunicacionResultado;
-    }
-
-    public LocalDate getFechaResultado() {
-        return fechaResultado;
-    }
-
-    public void setFechaResultado(LocalDate fechaResultado) {
-        this.fechaResultado = fechaResultado;
-    }
-
-    public LocalDate getFechaNotificacion() {
-        return fechaNotificacion;
-    }
-
-    public void setFechaNotificacion(LocalDate fechaNotificacion) {
-        this.fechaNotificacion = fechaNotificacion;
-    }
 }

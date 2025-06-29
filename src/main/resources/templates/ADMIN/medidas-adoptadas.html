@@ -1,0 +1,170 @@
+<!DOCTYPE html>
+<html lang="es" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <th:block th:include="~{FRAGMENTS/head :: head}"></th:block>
+    <title>Registro de Medidas Adoptadas</title>
+</head>
+<body class="hold-transition sidebar-mini">
+<div class="wrapper">
+
+    <th:block th:include="~{FRAGMENTS/navbar :: navbar}"></th:block>
+    <th:block th:include="~{FRAGMENTS/sidebar :: sidebar}"></th:block>
+
+    <div class="content-wrapper">
+        <section class="content-header">
+            <div class="container-fluid">
+                <div class="row mb-2">
+                    <div class="col-sm-6">
+                        <h1>Registro de Medidas Adoptadas para el Reclamo <span th:text="${reclamo.nroReclamo}"></span></h1>
+                    </div>
+                    <div class="col-sm-6">
+                        <ol class="breadcrumb float-sm-right">
+                            <li class="breadcrumb-item"><a th:href="@{/admin/home}">Inicio</a></li>
+                            <li class="breadcrumb-item"><a th:href="@{/admin/reclamos}">Reclamos</a></li>
+                            <li class="breadcrumb-item active">Medidas Adoptadas</li>
+                        </ol>
+                    </div>
+                </div>
+            </div></section>
+
+        <section class="content">
+            <div class="container-fluid">
+                <div class="card">
+                    <div class="card-header">
+                        <button type="button" class="btn btn-primary" data-toggle="modal" data-target="#medidaModal">
+                            <i class="fas fa-plus-circle"></i> Agregar Medida
+                        </button>
+                    </div>
+                    <div class="card-body">
+                        <div th:if="${msg_success}" class="alert alert-success" role="alert" th:text="${msg_success}"></div>
+                        <table class="table table-bordered table-striped">
+                            <thead>
+                            <tr>
+                                <th>ID</th>
+                                <th>Fecha de Medida</th>
+                                <th>Descripción</th>
+                                <th>Responsable</th>
+                                <th>Fecha de Ejecución</th>
+                                <th>Acciones</th>
+                            </tr>
+                            </thead>
+                            <tbody>
+                            <tr th:each="medida : ${listaMedidas}">
+                                <td th:text="${medida.id}"></td>
+                                <td th:text="${#temporals.format(medida.fechaMedida, 'dd/MM/yyyy')}"></td>
+                                <td th:text="${medida.descripcion}"></td>
+                                <td th:text="${medida.responsableEjecucion}"></td>
+                                <td th:text="${#temporals.format(medida.fechaEjecucion, 'dd/MM/yyyy')}"></td>
+                                <td>
+                                    <button class="btn btn-warning btn-sm edit-btn"
+                                            th:attr="data-id=${medida.id}, data-descripcion=${medida.descripcion}, data-fechamedida=${medida.fechaMedida}, data-responsable=${medida.responsableEjecucion}, data-fechaejecucion=${medida.fechaEjecucion}">
+                                        <i class="fas fa-edit"></i>
+                                    </button>
+                                    <form th:action="@{/admin/medidas/eliminar/{id}(id=${medida.id})}" method="post" class="d-inline" onsubmit="return confirm('¿Estás seguro de eliminar esta medida?');">
+                                        <input type="hidden" name="reclamoId" th:value="${reclamo.idReclamo}" />
+                                        <button type="submit" class="btn btn-danger btn-sm">
+                                            <i class="fas fa-trash-alt"></i>
+                                        </button>
+                                    </form>
+                                </td>
+                            </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                    <div class="card-footer">
+                        <a th:href="@{/admin/reclamos/{id}(id=${reclamo.idReclamo})}" class="btn btn-secondary">
+                            <i class="fas fa-arrow-circle-left"></i> Regresar al Reclamo
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </section>
+    </div>
+    <div class="modal fade" id="medidaModal" tabindex="-1" role="dialog" aria-labelledby="medidaModalLabel" aria-hidden="true">
+        <div class="modal-dialog" role="document">
+            <div class="modal-content">
+                <form id="medidaForm" th:action="@{/admin/medidas/guardar}" th:object="${medidaDTO}" method="post">
+                    <div class="modal-header">
+                        <h5 class="modal-title" id="medidaModalLabel">Agregar Medida</h5>
+                        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                            <span aria-hidden="true">&times;</span>
+                        </button>
+                    </div>
+                    <div class="modal-body">
+                        <input type="hidden" id="id" th:field="*{id}" />
+                        <input type="hidden" id="reclamoId" name="reclamoId" th:value="${reclamo.idReclamo}" />
+
+                        <div class="form-group">
+                            <label for="fechaMedida">Fecha de la Medida</label>
+                            <input type="date" class="form-control" id="fechaMedida" th:field="*{fechaMedida}" required>
+                            <div class="text-danger" th:if="${#fields.hasErrors('fechaMedida')}" th:errors="*{fechaMedida}"></div>
+                        </div>
+
+                        <div class="form-group">
+                            <label for="descripcion">Descripción de la Medida Adoptada</label>
+                            <textarea class="form-control" id="descripcion" th:field="*{descripcion}" rows="3" required></textarea>
+                            <div class="text-danger" th:if="${#fields.hasErrors('descripcion')}" th:errors="*{descripcion}"></div>
+                        </div>
+
+                        <div class="form-group">
+                            <label for="responsableEjecucion">Responsable de la Ejecución</label>
+                            <input type="text" class="form-control" id="responsableEjecucion" th:field="*{responsableEjecucion}" required>
+                            <div class="text-danger" th:if="${#fields.hasErrors('responsableEjecucion')}" th:errors="*{responsableEjecucion}"></div>
+                        </div>
+
+                        <div class="form-group">
+                            <label for="fechaEjecucion">Fecha de Ejecución</label>
+                            <input type="date" class="form-control" id="fechaEjecucion" th:field="*{fechaEjecucion}" required>
+                            <div class="text-danger" th:if="${#fields.hasErrors('fechaEjecucion')}" th:errors="*{fechaEjecucion}"></div>
+                        </div>
+
+                    </div>
+                    <div class="card-footer">
+                        <a th:href="@{/admin/reclamos}" class="btn btn-success">
+                            <i class="fas fa-check-circle"></i> Finalizar y Volver al Listado
+                        </a>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.7.1/jquery.min.js"></script>
+
+    <script th:inline="javascript">
+        /*<![CDATA[*/
+        $(document).ready(function() {
+            // Lógica para abrir modal para editar
+            $('.edit-btn').on('click', function() {
+                var modal = $('#medidaModal');
+                modal.find('.modal-title').text('Editar Medida');
+                modal.find('#id').val($(this).data('id'));
+                modal.find('#descripcion').val($(this).data('descripcion'));
+                modal.find('#fechaMedida').val($(this).data('fechamedida'));
+                modal.find('#responsableEjecucion').val($(this).data('responsable'));
+                modal.find('#fechaEjecucion').val($(this).data('fechaejecucion'));
+                modal.modal('show');
+            });
+
+            // Resetear modal al cerrar para que "Agregar" funcione bien
+            $('#medidaModal').on('hidden.bs.modal', function () {
+                var modal = $(this);
+                modal.find('.modal-title').text('Agregar Medida');
+                modal.find('form')[0].reset();
+                modal.find('#id').val(''); // Asegurarse que el id esté vacío
+                // Limpiar mensajes de error al cerrar
+                modal.find('.text-danger').text('');
+            });
+
+            // Si hay un error de validación, Thymeleaf renderizará este bloque de código
+            /*[# th:if="${showModal}"]*/
+            $('#medidaModal').modal('show');
+            /*[/]*/
+        });
+        /*]]>*/
+    </script>
+    <script th:src="@{/js/bootstrap.bundle.min.js}"></script>
+    <script th:src="@{/js/adminlte.js}"></script>
+</div>
+</body>
+</html>

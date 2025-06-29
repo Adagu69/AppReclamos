@@ -19,7 +19,7 @@ import org.antlr.v4.runtime.misc.NotNull;
 public class PersonaReclamoDTO {
 
     /* ---------- Identificador (solo en edición / respuesta) ---------- */
-    private Integer id;                             // null cuando se crea
+    private Integer idPersona;                             // null cuando se crea
 
     /* ---------- Datos obligatorios ---------- */
     @NotNull

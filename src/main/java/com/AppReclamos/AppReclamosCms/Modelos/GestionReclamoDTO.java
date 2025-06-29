@@ -18,7 +18,7 @@ import java.time.LocalDate;
 public class GestionReclamoDTO {
 
     /* ---------- Identificador (solo en respuestas / edición) ---------- */
-    private Integer id;
+    private Integer idGestion;
 
     @NotNull
     @Size(max = 255)
@@ -38,16 +38,15 @@ public class GestionReclamoDTO {
 
     /* ---------- Estado y etapa (usa enums si son catálogos fijos) ---------- */
     private EstadoGestion estado;
-    @NotNull private GestionEtapa etapa;
+    @NotNull private GestionEtapa etapaReclamo;
 
     /* ---------- Datos de rastreo / códigos ----------------------- */
     @Size(max = 30)
     private String codigoPrimigenio;
 
-
     @NotNull
-    private TipoDeclarante tipoDestino;
+    private TipoDeclarante tipoAdministraTraslado;
 
     @Size(max = 8)
-    private String codigoDestino;
+    private String codigoAdministraTraslado;
 }
