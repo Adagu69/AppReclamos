@@ -1,0 +1,56 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" xmlns:sec="http://www.w3.org/1999/xhtml">
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+</head>
+<body>
+<aside th:fragment="sidebar" class="app-sidebar bg-body-secondary shadow" data-bs-theme="dark">
+    <div class="sidebar-brand">
+        <a href="#" class="brand-link">
+            <img th:src="@{/assets.assets/AdminLTELogo.png}" alt="Logo" class="brand-image opacity-75 shadow">
+            <span class="brand-text fw-light">AdminLTE 4</span>
+        </a>
+    </div>
+    <div class="sidebar-wrapper">
+        <nav>
+            <ul class="nav sidebar-menu flex-column" data-lte-toggle="treeview" role="menu" data-accordion="false">
+
+                <!-- Visible para todos -->
+                <li class="nav-item">
+                    <a th:href="@{/user/dashboard}" class="nav-link">
+                        <i class="nav-icon bi bi-house-door"></i>
+                        <p>Inicio Usuario</p>
+                    </a>
+                </li>
+
+                <!-- Solo visible para ROLE_ADMIN -->
+                <li class="nav-item" sec:authorize="hasAuthority('ROLE_ADMIN')">
+                    <a th:href="@{/admin/usuarios}" class="nav-link">
+                        <i class="nav-icon bi bi-people-fill"></i>
+                        <p>Usuarios</p>
+                    </a>
+                </li>
+
+                <!-- Solo visible para ROLE_ADMIN -->
+                <li class="nav-item" sec:authorize="hasAuthority('ROLE_ADMIN')">
+                    <a th:href="@{/admin/reclamos}" class="nav-link">
+                        <i class="nav-icon bi bi-people-fill"></i>
+                        <p>Reclamos</p>
+                    </a>
+                </li>
+
+                <!-- Todos los roles -->
+                <li class="nav-item">
+                    <a class="nav-link" th:href="@{/logout}">
+                        <i class="nav-icon bi bi-box-arrow-right"></i>
+                        <p>Cerrar sesión</p>
+                    </a>
+                </li>
+
+            </ul>
+        </nav>
+    </div>
+</aside>
+</body>
+</html>

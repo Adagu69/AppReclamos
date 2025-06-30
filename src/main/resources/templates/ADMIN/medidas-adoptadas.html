@@ -1,0 +1,195 @@
+<!DOCTYPE html>
+<html lang="es" xmlns:th="http://www.thymeleaf.org">
+<head th:replace="~{FRAGMENTS/head :: head}">
+    <title>Registro de Medidas Adoptadas</title>
+</head>
+<!-- 1) Añadimos las clases de AdminLTE en el body -->
+<body class="layout-fixed sidebar-expand-lg bg-body-tertiary">
+
+<!-- 2) El wrapper general -->
+<div class="app-wrapper">
+
+    <nav th:replace="~{FRAGMENTS/navbar :: navbar}"></nav>
+    <aside th:replace="~{FRAGMENTS/sidebar :: sidebar}"></aside>
+
+    <main class="app-main">
+        <div class="app-content-header">
+            <div class="container-fluid">
+                <h1>Medidas Adoptadas <small class="text-muted">Reclamo <span th:text="${reclamo.codigoReclamo}"></span></small></h1>
+            </div>
+        </div>
+        <div class="app-content">
+            <div class="container-fluid">
+                <div class="mb-3">
+                    <button type="button" class="btn btn-primary add-btn" data-bs-toggle="modal" data-bs-target="#medidaModal">
+                        <i class="fas fa-plus-circle"></i> Agregar Medida
+                    </button>
+                </div>
+                <div class="card">
+                    <div class="card-body p-0">
+                        <div class="table-responsive">
+                            <table class="table table-bordered table-hover table-striped mb-0">
+                                <thead>
+                                <tr>
+                                    <th>Código</th>
+                                    <th>Naturaleza</th>
+                                    <th>Proceso</th>
+                                    <th>Descripción</th>
+                                    <th>F. Inicio</th>
+                                    <th>F. Culminación</th>
+                                    <th style="width: 120px;">Acciones</th>
+                                </tr>
+                                </thead>
+                                <tbody>
+                                <tr th:each="m : ${listaMedidas}">
+                                    <td th:text="${m.codigoMedida}"></td>
+                                    <td th:text="${m.naturaleza.toString().replace('_',' ')}"></td>
+                                    <td th:text="${m.proceso.toString().replace('_',' ')}"></td>
+                                    <td th:text="${m.descripcion}"></td>
+                                    <td class="text-center" th:text="${#temporals.format(m.fechaInicioImplementacion,'dd/MM/yyyy')}"></td>
+                                    <td class="text-center" th:text="${#temporals.format(m.fechaCulminacionPrevista,'dd/MM/yyyy')}"></td>
+                                    <td class="text-center">
+                                        <button type="button"
+                                                class="btn btn-warning btn-sm edit-btn"
+                                                data-bs-toggle="modal" data-bs-target="#medidaModal"
+                                                th:data-id="${m.id}"
+                                                th:data-codigo-medida="${m.codigoMedida}"
+                                                th:data-naturaleza="${m.naturaleza}"
+                                                th:data-proceso="${m.proceso}"
+                                                th:data-descripcion="${m.descripcion}"
+                                                th:data-fecha-inicio="${m.fechaInicioImplementacion}"
+                                                th:data-fecha-culminacion="${m.fechaCulminacionPrevista}">
+                                            <i class="fas fa-edit"></i>
+                                        </button>
+                                        <form th:action="@{/admin/medidas/eliminar/{id}(id=${m.id})}" method="post" class="d-inline" onsubmit="return confirm('¿Está seguro de eliminar esta medida?');">
+                                            <input type="hidden" name="reclamoId" th:value="${reclamo.idReclamo}" />
+                                            <button type="submit" class="btn btn-danger btn-sm">
+                                                <i class="fas fa-trash-alt"></i>
+                                            </button>
+                                        </form>
+                                    </td>
+                                </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <br>
+            <a th:href="@{/admin/reclamos}" class="btn btn-success float-right">
+                <i class="fas fa-check-circle"></i> Finalizar y Volver al Listado
+            </a>
+        </div>
+
+    </main>
+</div>
+
+<div class="modal fade" id="medidaModal" tabindex="-1">
+    <div class="modal-dialog modal-lg">
+        <div class="modal-content">
+            <form id="medidaForm" th:action="@{/admin/medidas/guardar}" th:object="${medidaDTO}" method="post">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="medidaModalLabel">Agregar Medida</h5>
+                </div>
+                <div class="modal-body">
+                    <input type="hidden" th:field="*{id}" id="medidaId"/>
+                    <input type="hidden" th:field="*{reclamoId}" id="reclamoId"/>
+                    <div class="row g-3">
+                        <div class="col-md-4">
+                            <label class="form-label">Código Medida</label>
+                            <input type="text" class="form-control" th:field="*{codigoMedida}" required placeholder="Ej. 01">
+                        </div>
+                        <div class="col-md-8">
+                            <label class="form-label">Naturaleza</label>
+                            <select class="form-select" th:field="*{naturaleza}" required>
+                                <option value="">-- Seleccione --</option>
+                                <option th:each="n : ${naturalezasEnum}" th:value="${n}" th:text="${n.toString().replace('_',' ')}"></option>
+                            </select>
+                        </div>
+                        <div class="col-12">
+                            <label class="form-label">Proceso sobre el cual recae</label>
+                            <select class="form-select" th:field="*{proceso}" required>
+                                <option value="">-- Seleccione --</option>
+                                <option th:each="p : ${procesosEnum}" th:value="${p}" th:text="${p.toString().replace('_',' ')}"></option>
+                            </select>
+                        </div>
+                        <div class="col-md-6">
+                            <label class="form-label">Fecha Inicio Implementación</label>
+                            <input type="date" class="form-control" th:field="*{fechaInicioImplementacion}" required>
+                        </div>
+                        <div class="col-md-6">
+                            <label class="form-label">Fecha Culminación Prevista</label>
+                            <input type="date" class="form-control" th:field="*{fechaCulminacionPrevista}" required>
+                        </div>
+                        <div class="col-12">
+                            <label class="form-label">Descripción Detallada</label>
+                            <textarea class="form-control" th:field="*{descripcion}" rows="3" required></textarea>
+                        </div>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
+                    <button type="submit" class="btn btn-primary">Guardar</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+<!-- Scripts -->
+<script th:src="@{/js/jquery.min.js}"></script>
+<script th:src="@{/js/bootstrap.bundle.min.js}"></script>
+<script th:src="@{/js/adminlte.js}"></script>
+<script th:inline="javascript">
+    /*<![CDATA[*/
+    $(function(){
+        const modal = $('#medidaModal');
+        const form  = $('#medidaForm');
+
+        $('.edit-btn').on('click', function(){
+            const medidaId = $(this).data('id');
+            // si usas context path distinto, ajusta la URL:
+            fetch(`/admin/medidas/api/${medidaId}`)
+                .then(resp => {
+                    if (!resp.ok) throw new Error('Not found');
+                    return resp.json();
+                })
+                .then(data => {
+                    // Cambiamos el título
+                    modal.find('.modal-title').text('Editar Medida');
+                    // Rellenamos **todos** los campos, incluidos los hidden
+                    form.find('#medidaId').val(data.id);
+                    form.find('#reclamoId').val(data.reclamoId);
+
+                    form.find('[name="codigoMedida"]').val(data.codigoMedida);
+                    form.find('[name="naturaleza"]').val(data.naturaleza);
+                    form.find('[name="proceso"]').val(data.proceso);
+                    form.find('[name="descripcion"]').val(data.descripcion);
+                    form.find('[name="fechaInicioImplementacion"]')
+                        .val(data.fechaInicioImplementacion);
+                    form.find('[name="fechaCulminacionPrevista"]')
+                        .val(data.fechaCulminacionPrevista);
+
+                    modal.modal('show');
+                })
+                .catch(err => {
+                    console.error('Error al cargar medida:', err);
+                    alert('No se pudo cargar los datos para editar.');
+                });
+        });
+
+        // Cuando abres el modal “Agregar” limpiamos id para forzar CREATE
+        $('.add-btn').on('click', function(){
+            modal.find('.modal-title').text('Agregar Medida');
+            form[0].reset();
+            form.find('#medidaId').val('');
+            // reclamoId ya está inicializado en el GET
+        });
+
+        // Mostrar modal si vuelven errores de validación
+        /*[# th:if="${showModal}"]*/ modal.modal('show'); /*[/]*/
+    });
+    /*]]>*/
+</script>
+</body>
+</html>
