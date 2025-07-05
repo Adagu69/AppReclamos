@@ -1,40 +1,109 @@
 <!DOCTYPE html>
 <html xmlns:th="http://www.thymeleaf.org">
-<head>
-    <meta charset="UTF-8">
-    <title>Title</title>
-</head>
-<body>
-<h2>Formulario Usuario</h2>
-<form th:action="@{/admin/usuarios/guardar}" th:object="${usuario}" method="post">
+<head th:replace="~{FRAGMENTS/head :: head}"></head>
 
-  <input type="hidden" th:field="*{idUsuario}" />
+<body class="layout-fixed sidebar-expand-lg bg-body-tertiary">
 
-  <label >Nombre:</label>
-  <input type="text" th:field="*{nombre}" required />
+<div class="app-wrapper">
+  <nav th:replace="~{FRAGMENTS/navbar  :: navbar}"></nav>
+  <aside th:replace="~{FRAGMENTS/sidebar :: sidebar}"></aside>
 
-  <label>Email:</label>
-  <input type="email" th:field="*{email}" required />
+  <main class="app-main">
+    <div class="container-fluid mt-4">
 
-  <label>Rol:</label>
-  <select th:field="*{rol}" required>
-    <option th:each="rol : ${roles}" th:value="${rol.idRol}" th:text="${rol.nombre}"></option>
-  </select>
+      <h2 th:text="${usuario.idUsuario == null ? 'Nuevo Usuario' : 'Editar Usuario'}">Gestión de Usuario</h2>
+      <hr>
 
-  <label>Fecha Registro:</label>
-  <input type="date" th:field="*{fechaRegistro}" />
+      <div class="card card-primary card-outline">
+        <div class="card-header">
+          <h3 class="card-title">Datos del Usuario</h3>
+        </div>
+        <form th:action="@{/admin/usuarios/guardar}" th:object="${usuario}" method="post">
+          <input type="hidden" th:field="*{idUsuario}" />
 
-  <label>Estado:</label>
-  <select th:field="*{activo}">
-    <option th:value="true" th:text="'Activo'" th:selected="${usuario.activo} == true"></option>
-    <option th:value="false" th:text="'Inactivo'" th:selected="${usuario.activo} == false"></option>
-  </select>
+          <div class="card-body">
+            <div th:if="${#fields.hasErrors('*')}" class="alert alert-danger" role="alert">
+              Por favor, corrija los errores a continuación.
+            </div>
 
-  <label>Nueva contraseña (opcional):</label>
-  <input type="password" name="nuevaContraseña" placeholder="Dejar vacío para no cambiarla" />
+            <div class="row">
+              <div class="col-md-6">
+                <div class="mb-3">
+                  <label for="nombre" class="form-label">Nombre Completo:</label>
+                  <input type="text" th:field="*{nombre}" id="nombre" class="form-control"
+                         th:classappend="${#fields.hasErrors('nombre')} ? 'is-invalid' : ''" required />
+                  <div class="invalid-feedback" th:if="${#fields.hasErrors('nombre')}" th:errors="*{nombre}"></div>
+                </div>
 
-  <button type="submit">Guardar</button>
-</form>
+                <div class="mb-3">
+                  <label for="email" class="form-label">Email:</label>
+                  <input type="email" th:field="*{email}" id="email" class="form-control"
+                         th:classappend="${#fields.hasErrors('email')} ? 'is-invalid' : ''" required />
+                  <div class="invalid-feedback" th:if="${#fields.hasErrors('email')}" th:errors="*{email}"></div>
+                </div>
 
+                <div class="mb-3">
+                  <label for="nuevaContraseña" class="form-label">Nueva contraseña (opcional):</label>
+                  <input type="password" name="nuevaContraseña" id="nuevaContraseña" class="form-control"
+                         placeholder="Dejar vacío para no cambiarla" />
+                  <small class="form-text text-muted">Mínimo 6 caracteres. Si editas un usuario, solo llena este campo si quieres cambiar su contraseña.</small>
+                </div>
+              </div>
+
+              <div class="col-md-6">
+                <div class="mb-3">
+                  <label for="rol" class="form-label">Rol:</label>
+                  <select th:field="*{rol}" id="rol" class="form-select"
+                          th:classappend="${#fields.hasErrors('rol')} ? 'is-invalid' : ''" required>
+                    <option value="">Seleccione un rol</option>
+                    <option th:each="rolItem : ${roles}" th:value="${rolItem.idRol}" th:text="${rolItem.nombre}"></option>
+                  </select>
+                  <div class="invalid-feedback" th:if="${#fields.hasErrors('rol')}" th:errors="*{rol}"></div>
+                </div>
+
+                <div class="mb-3">
+                  <label for="fechaRegistro" class="form-label">Fecha de Registro:</label>
+                  <input type="date" th:field="*{fechaRegistro}" id="fechaRegistro" class="form-control"
+                         th:readonly="${usuario.idUsuario != null}" />
+                </div>
+
+                <div class="mb-3">
+                  <label for="activo" class="form-label">Estado:</label>
+                  <select th:field="*{activo}" id="activo" class="form-select">
+                    <option th:value="true">Activo</option>
+                    <option th:value="false">Inactivo</option>
+                  </select>
+                </div>
+              </div>
+            </div>
+          </div>
+          <div class="card-footer">
+            <button type="submit" class="btn btn-primary">
+              <i class="fas fa-save"></i> Guardar
+            </button>
+            <a th:href="@{/admin/usuarios}" class="btn btn-secondary ms-2">
+              <i class="fas fa-times"></i> Cancelar
+            </a>
+          </div>
+        </form>
+      </div>
+    </div>
+  </main>
+  <footer class="app-footer">
+    <!--begin::To the end-->
+    <div class="float-end d-none d-sm-inline">CMS</div>
+    <!--end::To the end-->
+    <!--begin::Copyright-->
+    <strong>
+      Copyright &copy; 2025&nbsp;
+      <a href="#" class="text-decoration-none">CMS</a>.
+    </strong>
+    Todos los derechos reservados.
+    <!--end::Copyright-->
+  </footer>
+  <!--end::Footer-->
+</div>
+<script th:src="@{/js/bootstrap.bundle.min.js}"></script>
+<script th:src="@{/js/adminlte.js}"></script>
 </body>
 </html>

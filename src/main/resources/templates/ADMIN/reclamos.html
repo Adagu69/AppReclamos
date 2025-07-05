@@ -1,6 +1,13 @@
 <!DOCTYPE html>
 <html xmlns:th="http://www.thymeleaf.org" xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
 <head th:replace="FRAGMENTS/head :: head">
+
+    <style>
+        .fila-clicable:hover {
+            cursor: pointer;
+            background-color: rgba(0, 0, 0, 0.05); /* Un sutil color al pasar el mouse */
+        }
+    </style>
 </head>
 <body class="layout-fixed sidebar-expand-lg bg-body-tertiary">
 
@@ -13,77 +20,99 @@
     <main class="app-main">
         <div class="container-fluid mt-4">
 
-            <!-- Título + botón nuevo -->
-            <div class="d-flex justify-content-between align-items-center mb-3">
-                <h2>Gestión de Reclamos</h2>
-                <a class="btn btn-primary" th:href="@{/admin/reclamos/nuevo}">
-                    <i class="fas fa-plus"></i> Nuevo Reclamo
-                </a>
 
+            <div class="d-flex justify-content-between align-items-start mb-4">
+
+                <h2 class="mb-0">Gestión de Reclamos</h2>
+
+                <div class="d-flex flex-column align-items-end">
+
+                    <div class="d-flex mb-2">
+                        <form th:action="@{/admin/reclamos/importar}" method="post" enctype="multipart/form-data" class="d-flex align-items-center me-2">
+                            <input type="file" name="archivoExcel" class="form-control form-control-sm" required style="width: 250px;">
+                            <button type="submit" class="btn btn-info btn-sm ms-2 flex-shrink-0">
+                                <i class="fas fa-upload"></i> Procesar
+                            </button>
+                        </form>
+
+                        <a class="btn btn-primary" th:href="@{/admin/reclamos/nuevo}">
+                            <i class="fas fa-plus"></i> Nuevo Reclamo
+                        </a>
+                    </div>
+
+                    <form th:action="@{/admin/reclamos/exportar}" method="get" id="formExportar" class="w-100">
+                        <input type="hidden" name="estado" th:value="${estado}">
+                        <input type="hidden" name="buscarPor" th:value="${buscarPor}">
+                        <input type="hidden" name="query" th:value="${query}">
+                        <input type="hidden" name="anio" th:value="${anio}">
+                        <input type="hidden" name="mes" th:value="${mes}">
+
+                        <button type="submit" class="btn btn-success w-100">
+                            <i class="fas fa-file-excel"></i> Generar Excel de la Vista Actual
+                        </button>
+                    </form>
+                </div>
             </div>
 
-            <!-- Alertas flash -->
-            <div th:if="${success}" class="alert alert-success" th:text="${success}"></div>
-            <div th:if="${error}"   class="alert alert-danger"  th:text="${error}"></div>
-
-            <!-- Filtros -->
-            <form class="row mb-3 g-2" method="get">
-
-                <!-- Estado (usa enum dinámico) -->
-                <div class="col-auto">
-                    <label>Estado:</label>
-                    <select name="estado" class="form-select form-select-sm">
-                        <option th:value="'TODOS'" th:selected="${estado == 'TODOS'}">Todos</option>
-                        <option th:each="e : ${estadosEnum}"
-                                th:value="${e.name()}"
-                                th:text="${#strings.capitalize(e.name().toLowerCase().replace('_',' '))}"
-                                th:selected="${estado == e.name()}">
-                        </option>
-                    </select>
+            <div class="card mb-4">
+                <div class="card-body">
+                    <h5 class="card-title mb-3">Filtros de Búsqueda</h5>
+                    <form class="row g-3 align-items-end" method="get">
+                        <div class="col-md-auto">
+                            <label for="estado" class="form-label">Estado:</label>
+                            <select name="estado" id="estado" class="form-select form-select-sm">
+                                <option th:value="'TODOS'" th:selected="${estado == 'TODOS'}">Todos</option>
+                                <option th:each="e : ${estadosEnum}"
+                                        th:value="${e.name()}"
+                                        th:text="${#strings.capitalize(e.name().toLowerCase().replace('_',' '))}"
+                                        th:selected="${estado == e.name()}"></option>
+                            </select>
+                        </div>
+                        <div class="col-md-auto">
+                            <label for="buscarPor" class="form-label">Buscar por:</label>
+                            <select name="buscarPor" id="buscarPor" class="form-select form-select-sm">
+                                <option th:value="'TODO'" th:selected="${buscarPor == 'TODO'}">Todo</option>
+                                <option th:value="'CODIGO'" th:selected="${buscarPor == 'CODIGO'}">Código</option>
+                                <option th:value="'NOMBRE'" th:selected="${buscarPor == 'NOMBRE'}">Nombre</option>
+                            </select>
+                        </div>
+                        <div class="col-md-3">
+                            <label for="query" class="form-label">Término:</label>
+                            <input type="text" name="query" id="query" th:value="${query}" class="form-control form-control-sm"/>
+                        </div>
+                        <div class="col-md-auto">
+                            <label for="anio" class="form-label">Año:</label>
+                            <input type="number" min="2020" max="2100" name="anio" id="anio" th:value="${anio}" class="form-control form-control-sm" style="width: 100px;"/>
+                        </div>
+                        <div class="col-md-auto">
+                            <label for="mes" class="form-label">Mes:</label>
+                            <input type="number" min="1" max="12" name="mes" id="mes" th:value="${mes}" class="form-control form-control-sm" style="width: 80px;"/>
+                        </div>
+                        <div class="col-md-auto">
+                            <button class="btn btn-primary btn-sm">Buscar</button>
+                        </div>
+                    </form>
                 </div>
+            </div>
 
-                <!-- Buscar por -->
-                <div class="col-auto">
-                    <label>Buscar por:</label>
-                    <select name="buscarPor" class="form-select form-select-sm">
-                        <option th:value="'TODO'"   th:selected="${buscarPor == 'TODO'}">Todo</option>
-                        <option th:value="'CODIGO'" th:selected="${buscarPor == 'CODIGO'}">Código</option>
-                        <option th:value="'NOMBRE'" th:selected="${buscarPor == 'NOMBRE'}">Nombre</option>
-                    </select>
-                </div>
-
-                <!-- Query -->
-                <div class="col-auto">
-                    <label>Query:</label>
-                    <input type="text" name="query" th:value="${query}" class="form-control form-control-sm"/>
-                </div>
-
-                <!-- Año -->
-                <div class="col-auto">
-                    <label>Año:</label>
-                    <input type="number" min="2020" max="2100" name="anio"
-                           th:value="${anio}" class="form-control form-control-sm"/>
-                </div>
-
-                <!-- Mes -->
-                <div class="col-auto">
-                    <label>Mes:</label>
-                    <input type="number" min="1" max="12" name="mes"
-                           th:value="${mes}" class="form-control form-control-sm"/>
-                </div>
-
-                <div class="col-auto align-self-end">
-                    <button class="btn btn-primary btn-sm">Buscar</button>
-                </div>
-            </form>
+            <div class="d-flex align-items-center mb-3">
+                <strong class="me-3">Acciones sobre la selección:</strong>
+                <button id="btnEditar" class="btn btn-info btn-sm me-2" disabled>
+                    <i class="fas fa-pen"></i> Editar
+                </button>
+                <button id="btnEliminar" class="btn btn-danger btn-sm" disabled>
+                    <i class="fas fa-trash"></i> Eliminar
+                </button>
+            </div>
 
             <!-- Tabla -->
+            <div class="table-responsive">
             <div class="card">
                 <div class="card-body p-0">
                     <table class="table table-bordered table-hover table-striped mb-0">
                         <thead class="table-light text-center align-middle">
                         <tr>
-                            <th><input type="checkbox" onclick="toggleAll(this)"/></th>
+                            <th><input type="checkbox" id="master-checkbox" /></th>
                             <th>Fecha</th>
                             <th>Tipo Declarante</th>
                             <th>Codigo Declarante</th>
@@ -123,13 +152,12 @@
                             <th>fechaCulminacionPrevista</th>
                             <th>descripcionMedida</th>
                             <th>Estado</th>
-                            <th>Acciones</th>
                         </tr>
                         </thead>
                         <tbody>
-                        <tr th:each="r : ${reclamos}">
-                            <td class="text-center">
-                                <input type="checkbox" th:id="'chk_'+${r.id}" />
+                        <tr th:each="r : ${reclamos}" th:data-href="@{/admin/reclamos/editar/{id}(id=${r.id})}" class="fila-clicable">
+                            <td class="text-center" onclick="event.stopPropagation();">
+                                <input type="checkbox" class="fila-checkbox" th:value="${r.id}" />
                             </td>
 
                             <td th:text="${#temporals.format(r.fechaReclamo, 'dd/MM/yyyy')}"
@@ -181,18 +209,12 @@
                                     <th:block th:case="'CONCLUIDO'" th:classappend="'bg-success'"></th:block>
                                     <th:block th:case="*"th:classappend="'bg-dark"></th:block> </span>
                             </td>
-                            <td class="text-center">
-                                <a class="btn btn-sm btn-info"
-                                   th:href="@{/admin/reclamos/editar/{id}(id=${r.id})}">
-                                    <i class="fas fa-pen"></i> Editar
-                                </a>
-                            </td>
                         </tr>
                         </tbody>
                     </table>
                 </div>
             </div>
-
+            </div>
         </div>
     </main>
 
@@ -215,10 +237,55 @@
 <script th:src="@{/js/bootstrap.bundle.min.js}"></script>
 <script th:src="@{/js/adminlte.js}"></script>
 <script>
-    function toggleAll(master){
-        document.querySelectorAll('tbody input[type=checkbox]')
-            .forEach(cb => cb.checked = master.checked);
-    }
+    document.addEventListener('DOMContentLoaded', function () {
+        const masterCheckbox = document.getElementById('master-checkbox');
+        const checkboxes = document.querySelectorAll('.fila-checkbox');
+        const btnEditar = document.getElementById('btnEditar');
+        const btnEliminar = document.getElementById('btnEliminar');
+
+        // Lógica para el checkbox maestro
+        masterCheckbox.addEventListener('change', function () {
+            checkboxes.forEach(cb => cb.checked = this.checked);
+            actualizarBotones();
+        });
+
+        // Lógica para los checkboxes individuales
+        checkboxes.forEach(cb => {
+            cb.addEventListener('change', function () {
+                actualizarBotones();
+            });
+        });
+
+        // Lógica para hacer las filas clicables
+        document.querySelectorAll('.fila-clicable').forEach(fila => {
+            fila.addEventListener('click', function (event) {
+                // Solo navega si el clic no fue en la celda del checkbox
+                if (event.target.closest('td').firstElementChild?.type !== 'checkbox') {
+                    window.location.href = this.dataset.href;
+                }
+            });
+        });
+
+        function actualizarBotones() {
+            const seleccionados = document.querySelectorAll('.fila-checkbox:checked');
+
+            // Habilitar/deshabilitar botón de eliminar
+            btnEliminar.disabled = seleccionados.length === 0;
+
+            // Habilitar/deshabilitar botón de editar (solo si hay 1 seleccionado)
+            if (seleccionados.length === 1) {
+                btnEditar.disabled = false;
+                const idSeleccionado = seleccionados[0].value;
+                // Actualiza el enlace del botón para que apunte al reclamo correcto
+                btnEditar.onclick = function() {
+                    window.location.href = '/admin/reclamos/editar/' + idSeleccionado;
+                };
+            } else {
+                btnEditar.disabled = true;
+                btnEditar.onclick = null;
+            }
+        }
+    });
 </script>
 </body>
 </html>

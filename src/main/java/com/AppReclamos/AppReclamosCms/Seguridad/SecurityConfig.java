@@ -28,14 +28,19 @@ public class SecurityConfig {
         http
                 .csrf(csrf -> csrf.disable())
                 .authorizeHttpRequests(auth -> auth
-                        .requestMatchers("/login", "/logout", "/css/**", "/js/**").permitAll()
-                        .requestMatchers("/admin/**").hasAuthority("ROLE_ADMIN")
+                        // REGLAS ESPECÍFICAS PRIMERO
+                        // AÑADIR ESTA LÍNEA ES LA SOLUCIÓN
+                        .requestMatchers("/login", "/css/**", "/js/**", "/assets/**", "/images/**").permitAll()
+
+                        // TUS OTRAS REGLAS SE MANTIENEN IGUAL
+                        .requestMatchers("/admin/usuarios/**").hasAuthority("ROLE_ADMIN")
+                        .requestMatchers("/admin/reclamos/**").hasAnyAuthority("ROLE_ADMIN", "ROLE_USER")
                         .requestMatchers("/user/**").hasAnyAuthority("ROLE_USER", "ROLE_ADMIN")
                         .anyRequest().authenticated()
                 )
                 .formLogin(form -> form
                         .loginPage("/login")
-                        .successHandler(successHandler()) // 🔥
+                        .successHandler(successHandler())
                         .permitAll()
                 )
                 .logout(logout -> logout

@@ -3,18 +3,27 @@ package com.AppReclamos.AppReclamosCms.Controladores;
 import com.AppReclamos.AppReclamosCms.Modelos.*;
 import com.AppReclamos.AppReclamosCms.Modelos.Enums.*;
 import com.AppReclamos.AppReclamosCms.Servicios.interfaces.IReclamosServicios;
+import com.AppReclamos.AppReclamosCms.Utils.ExcelGenerator;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.core.io.InputStreamResource;
+import org.springframework.http.HttpHeaders;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
 import org.springframework.validation.FieldError;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
+import java.io.ByteArrayInputStream;
+import java.io.IOException;
+import java.time.LocalDate;
+import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
@@ -129,6 +138,50 @@ public class ReclamosController {
         } catch (Exception e) {
             attributes.addFlashAttribute("msg_error", "Error al eliminar el reclamo");
         }
+        return "redirect:/admin/reclamos";
+    }
+
+    @GetMapping("/exportar")
+    public ResponseEntity<InputStreamResource> exportarReclamosAExcel(
+            @RequestParam(defaultValue = "TODOS") String estado,
+            @RequestParam(defaultValue = "TODO")  String buscarPor,
+            @RequestParam(defaultValue = "")      String query,
+            @RequestParam(required = false)       Integer anio,
+            @RequestParam(required = false)       Integer mes) throws IOException {
+
+        // 1. Obtener los datos filtrados (reutilizamos la lógica existente)
+        List<ReclamoTablaDTO> reclamos = reclamosSvc.buscarFiltrado(estado, buscarPor, query, anio, mes);
+
+        // 2. Generar el archivo Excel en memoria
+        ByteArrayInputStream in = ExcelGenerator.reclamosToExcel(reclamos);
+
+        // 3. Preparar la respuesta HTTP para la descarga
+        HttpHeaders headers = new HttpHeaders();
+        String fecha = LocalDate.now().format(DateTimeFormatter.ofPattern("yyyyMMdd"));
+        headers.add("Content-Disposition", "attachment; filename=reclamos_" + fecha + ".xlsx");
+
+        return ResponseEntity
+                .ok()
+                .headers(headers)
+                .body(new InputStreamResource(in));
+    }
+
+
+    @PostMapping("/importar")
+    public String importarReclamosDesdeExcel(@RequestParam("archivoExcel") MultipartFile file, RedirectAttributes redirectAttributes) {
+        if (file.isEmpty()) {
+            redirectAttributes.addFlashAttribute("error", "Por favor, seleccione un archivo para subir.");
+            return "redirect:/admin/reclamos";
+        }
+
+        try {
+            reclamosSvc.procesarTrama(file);
+            redirectAttributes.addFlashAttribute("success", "Trama de reclamos procesada exitosamente.");
+        } catch (Exception e) {
+            redirectAttributes.addFlashAttribute("error", "Error al procesar el archivo: " + e.getMessage());
+            e.printStackTrace(); // Es bueno ver el error completo en la consola del servidor
+        }
+
         return "redirect:/admin/reclamos";
     }
 }

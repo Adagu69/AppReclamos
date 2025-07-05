@@ -3,41 +3,65 @@
 <head th:replace="FRAGMENTS/head :: head">
 </head>
 <body class="layout-fixed sidebar-expand-lg bg-body-tertiary">
-<!--begin::App Wrapper-->
-<div class="app-wrapper">
-    <div th:replace="FRAGMENTS/navbar :: navbar"></div>
-    <div th:replace="FRAGMENTS/sidebar :: sidebar"></div>
 
+<div class="app-wrapper">
+    <nav th:replace="~{FRAGMENTS/navbar  :: navbar}"></nav>
+    <aside th:replace="~{FRAGMENTS/sidebar :: sidebar}"></aside>
 
     <main class="app-main">
-        <div class="app-content">
-            <div class="container-fluid">
-                <h2>Lista de Usuarios</h2>
-                <a th:href="@{/admin/usuarios/nuevo}">Agregar Usuario</a>
-                <table class="table table-bordered">
-                    <thead>
-                    <tr>
-                        <th>Nombre</th><th>Email</th><th>Rol</th><th>Estado</th><th>Fecha</th><th>Acciones</th>
-                    </tr>
-                    </thead>
-                    <tbody>
-                    <tr th:each="usuario : ${usuarios}">
-                        <td th:text="${usuario.nombre}"></td>
-                        <td th:text="${usuario.email}"></td>
-                        <td th:text="${usuario.rol.nombre}"></td>
-                        <td>
-                            <span th:if="${usuario.activo}" class="badge bg-success">ACTIVO</span>
-                            <span th:unless="${usuario.activo}" class="badge bg-danger">INACTIVO</span>
-                        </td>
-                        <td th:text="${usuario.fechaRegistro}"></td>
-                        <td>
-                            <a th:href="@{/admin/usuarios/editar/{id}(id=${usuario.idUsuario})}" class="btn btn-warning">Editar</a>
-                            <a th:if="${usuario.activo}" th:href="@{/admin/usuarios/desactivar/{id}(id=${usuario.idUsuario})}" class="btn btn-danger">Desactivar</a>
-                            <a th:unless="${usuario.activo}" th:href="@{/admin/usuarios/reactivar/{id}(id=${usuario.idUsuario})}" class="btn btn-success">Reactivar</a>
-                        </td>
-                    </tr>
-                    </tbody>
-                </table>
+        <div class="container-fluid mt-4">
+
+            <div class="card">
+
+                <div class="card-header d-flex justify-content-between align-items-center">
+                    <h3 class="card-title mb-0">Lista de Usuarios</h3>
+                    <a th:href="@{/admin/usuarios/nuevo}" class="btn btn-primary btn-sm">
+                        <i class="fas fa-plus me-1"></i>
+                        Agregar Usuario
+                    </a>
+                </div>
+                <div class="card-body p-0">
+                    <div class="table-responsive">
+                        <table class="table table-bordered table-striped table-hover mb-0">
+                            <thead class="table-light text-center align-middle">
+                            <tr>
+                                <th>Nombre</th>
+                                <th>Email</th>
+                                <th>Rol</th>
+                                <th>Estado</th>
+                                <th>Fecha de Registro</th>
+                                <th>Acciones</th>
+                            </tr>
+                            </thead>
+                            <tbody>
+                            <tr th:each="usuario : ${usuarios}">
+                                <td th:text="${usuario.nombre}"></td>
+                                <td th:text="${usuario.email}"></td>
+                                <td class="text-center" th:text="${usuario.rol.nombre}"></td>
+                                <td class="text-center">
+                                    <span th:if="${usuario.activo}" class="badge bg-success">ACTIVO</span>
+                                    <span th:unless="${usuario.activo}" class="badge bg-danger">INACTIVO</span>
+                                </td>
+                                <td class="text-center" th:text="${#temporals.format(usuario.fechaRegistro, 'dd/MM/yyyy')}"></td>
+                                <td class="text-center">
+                                    <a th:href="@{/admin/usuarios/editar/{id}(id=${usuario.idUsuario})}" class="btn btn-warning btn-sm" title="Editar">
+                                        <i class="fas fa-pen"></i>
+                                    </a>
+                                    <a th:if="${usuario.activo}" th:href="@{/admin/usuarios/desactivar/{id}(id=${usuario.idUsuario})}" class="btn btn-danger btn-sm" title="Desactivar">
+                                        <i class="fas fa-user-lock"></i>
+                                    </a>
+                                    <a th:unless="${usuario.activo}" th:href="@{/admin/usuarios/reactivar/{id}(id=${usuario.idUsuario})}" class="btn btn-success btn-sm" title="Reactivar">
+                                        <i class="fas fa-user-check"></i>
+                                    </a>
+                                </td>
+                            </tr>
+                            <tr th:if="${#lists.isEmpty(usuarios)}">
+                                <td colspan="6" class="text-center">No hay usuarios para mostrar.</td>
+                            </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
             </div>
         </div>
     </main>
@@ -57,13 +81,6 @@
     </footer>
     <!--end::Footer-->
 </div>
-
-
-<!--end::Required Plugin(Bootstrap 5)--><!--begin::Required Plugin(AdminLTE)-->
 <script th:src="@{/js/adminlte.js}"></script>
-<!--end::Required Plugin(AdminLTE)--><!--begin::OverlayScrollbars Configure-->
-
-<!--end::Script-->
-
 </body>
 </html>

@@ -4,7 +4,9 @@ import com.AppReclamos.AppReclamosCms.Modelos.ReclamoDTO;
 import com.AppReclamos.AppReclamosCms.Modelos.ReclamoTablaDTO;
 import jakarta.transaction.Transactional;
 import jakarta.validation.Valid;
+import org.springframework.web.multipart.MultipartFile;
 
+import java.io.IOException;
 import java.util.List;
 
 public interface IReclamosServicios {
@@ -29,5 +31,7 @@ public interface IReclamosServicios {
      * Elimina un reclamo por su ID.
      */
     void eliminarPorId(Integer id);
+
+    void procesarTrama(MultipartFile file) throws IOException;
 }
 

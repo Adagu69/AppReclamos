@@ -7,7 +7,9 @@ import lombok.*;
 import java.io.Serializable;
 import java.time.LocalDate;
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 @Data
 @Builder
@@ -43,7 +45,8 @@ public class Reclamos implements Serializable {
             cascade = CascadeType.ALL,
             orphanRemoval = true
     )
-    private List<PersonaReclamo> personas = new ArrayList<>();
+    // ANTES: private List<PersonaReclamo> personas = new ArrayList<>();
+    private Set<PersonaReclamo> personas = new HashSet<>();
 
 
     @OneToOne(mappedBy = "reclamo",
@@ -58,21 +61,17 @@ public class Reclamos implements Serializable {
             optional = false)
     private GestionClinica gestionClinica;
 
-    @OneToMany(mappedBy = "reclamo",
-            cascade = CascadeType.ALL,
-            fetch = FetchType.LAZY)
-    private List<MedidasAdoptadas> medidas = new ArrayList<>();
+    @OneToMany(mappedBy = "reclamo", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
+    // ANTES: private List<MedidasAdoptadas> medidas = new ArrayList<>();
+    private Set<MedidasAdoptadas> medidas = new HashSet<>();
 
-    @OneToMany(mappedBy = "reclamo",
-            cascade = CascadeType.ALL,
-            orphanRemoval = true,
-            fetch = FetchType.LAZY)
-    private List<ResultadoNotificacion> resultados = new ArrayList<>();
+    @OneToMany(mappedBy = "reclamo", cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.LAZY)
+    // ANTES: private List<ResultadoNotificacion> resultados = new ArrayList<>();
+    private Set<ResultadoNotificacion> resultados = new HashSet<>();
 
-    @OneToMany(mappedBy = "reclamo",
-            cascade = CascadeType.ALL,
-            fetch = FetchType.LAZY)
-    private List<DetalleReclamo> detalles = new ArrayList<>();
+    @OneToMany(mappedBy = "reclamo", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
+    // ANTES: private List<DetalleReclamo> detalles = new ArrayList<>();
+    private Set<DetalleReclamo> detalles = new HashSet<>();
 
     public void addPersona(PersonaReclamo p) {
         personas.add(p);

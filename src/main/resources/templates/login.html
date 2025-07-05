@@ -1,17 +1,50 @@
 <!DOCTYPE html>
 <html xmlns:th="http://www.thymeleaf.org" xmlns="http://www.w3.org/1999/html">
-<head>
-    <meta charset="UTF-8">
-    <title>Title</title>
+<head th:replace="FRAGMENTS/head :: head">
 </head>
-<body>
-<h2>Iniciar Sesion</h2>
-<form th:action="@{/login}" method="post">
-    <label>Email: <input type="text" name="username"/></label><br/>
-    <label>Contraseña: <input type="password" name="password"/></label><br/>
-    <button type="submit">Ingresar</button>
-    <p th:if="${param.logout}" style="color:green;">Has cerrado sesión bien.</p>
-</form>
+<body class="login-page bg-body-tertiary">
+<div class="login-box">
+    <div class="card card-outline card-primary">
+        <div class="card-header text-center">
+            <a href="#" class="h1"><b>CMS</b>Reclamos</a>
+        </div>
+        <div class="card-body">
+            <p class="login-box-msg">Inicia sesión para comenzar</p>
 
+            <div th:if="${param.error}" class="alert alert-danger text-center">
+                Email o contraseña incorrectos.
+            </div>
+
+            <div th:if="${param.logout}" class="alert alert-success text-center">
+                Has cerrado sesión exitosamente.
+            </div>
+
+            <form th:action="@{/login}" method="post">
+                <div class="input-group mb-3">
+                    <input type="text" class="form-control" placeholder="Email" name="username" required autofocus>
+                    <div class="input-group-text">
+                        <span class="fas fa-envelope"></span>
+                    </div>
+                </div>
+
+                <div class="input-group mb-3">
+                    <input type="password" class="form-control" placeholder="Contraseña" name="password" required>
+                    <div class="input-group-text">
+                        <span class="fas fa-lock"></span>
+                    </div>
+                </div>
+
+                <div class="row">
+                    <div class="col-12">
+                        <button type="submit" class="btn btn-primary btn-block w-100">Ingresar</button>
+                    </div>
+                </div>
+            </form>
+
+        </div>
+    </div>
+</div>
+<script th:src="@{/js/bootstrap.bundle.min.js}"></script>
+<script th:src="@{/js/adminlte.min.js}"></script>
 </body>
 </html>
