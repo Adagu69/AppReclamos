@@ -1,5 +1,10 @@
 package com.AppReclamos.AppReclamosCms.Modelos.Enums;
 
 public enum ResultadoReclamo {
-    Pendiente, Fundado, Fundado_Parcial, Infundado, Improcedentem, Concluido_Anticipadamente;
+    PENDIENTE,
+    FUNDADO,
+    FUNDADO_PARCIAL,
+    INFUNDADO,
+    IMPROCEDENTE, // Corregí el typo "Improcedentem"
+    CONCLUIDO_ANTICIPADAMENTE;
 }

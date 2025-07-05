@@ -85,12 +85,43 @@
                         <tr>
                             <th><input type="checkbox" onclick="toggleAll(this)"/></th>
                             <th>Fecha</th>
+                            <th>Tipo Declarante</th>
+                            <th>Codigo Declarante</th>
+                            <th>Codigo UGIPRESS</th>
+                            <th>Tipo Institucion</th>
                             <th>Medio</th>
                             <th>Código</th>
                             <th>Tipo Doc.</th>
                             <th>N° Doc.</th>
                             <th>Razón Social</th>
                             <th>Nombre</th>
+                            <th>Apellido P.</th>
+                            <th>Apellido M.</th>
+                            <th>Resultado Correo</th>
+                            <th>Domicilio</th>
+                            <th>Telefono</th>
+                            <th>FechaRecepcionDetalle</th>
+                            <th>DescripcionDetalle</th>
+                            <th>servicio</th>
+                            <th>competencia</th>
+                            <th>clasificacion1</th>
+                            <th>clasificacion2</th>
+                            <th>clasificacion3</th>
+                            <th>etapaReclamo</th>
+                            <th>codigoPrimigenio</th>
+                            <th>tipoAdministraTraslado</th>
+                            <th>codigoAdministraTraslado</th>
+                            <th>ResultadoReclamo</th>
+                            <th>MotivoConclusion</th>
+                            <th>fechaResultado</th>
+                            <th>comunicacionResultado</th>
+                            <th>fechaNotificacion</th>
+                            <th>codigoMedida</th>
+                            <th>NaturalezaMedida</th>
+                            <th>ProcesoMedida</th>
+                            <th>fechaInicioImplementacion</th>
+                            <th>fechaCulminacionPrevista</th>
+                            <th>descripcionMedida</th>
                             <th>Estado</th>
                             <th>Acciones</th>
                         </tr>
@@ -103,20 +134,52 @@
 
                             <td th:text="${#temporals.format(r.fechaReclamo, 'dd/MM/yyyy')}"
                                 class="text-center"></td>
+                            <td th:text="${r.tipoDeclarante}"></td>
+                            <td th:text="${r.codigoDeclarante}"></td>
+                            <td th:text="${r.codigoUgipress}"></td>
+                            <td th:text="${r.tipoInstitucion}"></td>
                             <td th:text="${r.medioRecepcion}"></td>
                             <td th:text="${r.codigoReclamo}"></td>
                             <td th:text="${r.tipoDocumentoAfectado}"></td>
                             <td th:text="${r.numeroDocumentoAfectado}"></td>
                             <td th:text="${r.razonSocialAfectado}"></td>
                             <td th:text="${r.nombreAfectado}"></td>
+                            <td th:text="${r.apellidoPaterno}"></td>
+                            <td th:text="${r.apellidoMaterno}"></td>
+                            <td th:text="${r.resultadoPorCorreo}"></td>
+                            <td th:text="${r.domicilio}"></td>
+                            <td th:text="${r.telefono}"></td>
+                            <td th:text="${r.fechaRecepcion}"></td>
+                            <td th:text="${r.descripcion}"></td>
+                            <td th:text="${r.servicio}"></td>
+                            <td th:text="${r.competencia}"></td>
+                            <td th:text="${r.clasificacion1}"></td>
+                            <td th:text="${r.clasificacion2}"></td>
+                            <td th:text="${r.clasificacion3}"></td>
+                            <td th:text="${r.etapaReclamo}"></td>
+                            <td th:text="${r.codigoPrimigenio}"></td>
+                            <td th:text="${r.tipoAdministraTraslado}"></td>
+                            <td th:text="${r.codigoAdministraTraslado}"></td>
+                            <td th:text="${r.resultado}"></td>
+                            <td th:text="${r.motivoConclusion}"></td>
+                            <td th:text="${r.fechaResultado}"></td>
+                            <td th:text="${r.comunicacionResultado}"></td>
+                            <td th:text="${r.fechaNotificacion}"></td>
+                            <td th:text="${r.codigoMedida}"></td>
+                            <td th:text="${r.naturaleza}"></td>
+                            <td th:text="${r.proceso}"></td>
+                            <td th:text="${r.fechaInicioImplementacion}"></td>
+                            <td th:text="${r.fechaCulminacionPrevista}"></td>
+                            <td th:text="${r.descripcionMedida}"></td>
+
                             <td>
-                                <span th:text="${r.estado}"
-                                      th:classappend="${'badge bg-' +
-                                            (r.estado.name()=='REGISTRADO' ? 'secondary' :
-                                             r.estado.name()=='EN_PROCESO' ? 'warning'   :
-                                             r.estado.name()=='CONCLUIDO'  ? 'success'   :
-                                             'dark')}">
-                                </span>
+                                <span class="badge"
+                                      th:switch="${r.estado?.name()}"
+                                      th:text="${r.estado != null ? r.estado.toString().replace('_',' ') : 'Indefinido'}">
+                                    <th:block th:case="'REGISTRADO'" th:classappend="'bg-secondary'"></th:block>
+                                    <th:block th:case="'EN_PROCESO'" th:classappend="'bg-warning'"></th:block>
+                                    <th:block th:case="'CONCLUIDO'" th:classappend="'bg-success'"></th:block>
+                                    <th:block th:case="*"th:classappend="'bg-dark"></th:block> </span>
                             </td>
                             <td class="text-center">
                                 <a class="btn btn-sm btn-info"

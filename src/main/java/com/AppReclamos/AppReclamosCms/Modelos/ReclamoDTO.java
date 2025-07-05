@@ -56,10 +56,10 @@ public class ReclamoDTO {
     private String       nroReclamo;
 
     @NotNull(message="Medio de recepción es obligatorio")
-    private MedioRecepcion medioRecepcion;   // enum
+    private MedioRecepcion medioRecepcion;
 
     @NotNull(message="Estado es obligatorio")
-    private EstadoReclamo estado;           // enum
+    private EstadoReclamo estado;
 
     /* ---------- Personas involucradas ---------- */
     private List<PersonaReclamoDTO> personas = new ArrayList<>();

@@ -45,7 +45,7 @@
                                     <td th:text="${m.codigoMedida}"></td>
                                     <td th:text="${m.naturaleza.toString().replace('_',' ')}"></td>
                                     <td th:text="${m.proceso.toString().replace('_',' ')}"></td>
-                                    <td th:text="${m.descripcion}"></td>
+                                    <td th:text="${m.descripcionMedida}"></td>
                                     <td class="text-center" th:text="${#temporals.format(m.fechaInicioImplementacion,'dd/MM/yyyy')}"></td>
                                     <td class="text-center" th:text="${#temporals.format(m.fechaCulminacionPrevista,'dd/MM/yyyy')}"></td>
                                     <td class="text-center">
@@ -56,7 +56,7 @@
                                                 th:data-codigo-medida="${m.codigoMedida}"
                                                 th:data-naturaleza="${m.naturaleza}"
                                                 th:data-proceso="${m.proceso}"
-                                                th:data-descripcion="${m.descripcion}"
+                                                th:data-descripcion="${m.descripcionMedida}"
                                                 th:data-fecha-inicio="${m.fechaInicioImplementacion}"
                                                 th:data-fecha-culminacion="${m.fechaCulminacionPrevista}">
                                             <i class="fas fa-edit"></i>
@@ -123,7 +123,7 @@
                         </div>
                         <div class="col-12">
                             <label class="form-label">Descripción Detallada</label>
-                            <textarea class="form-control" th:field="*{descripcion}" rows="3" required></textarea>
+                            <textarea class="form-control" th:field="*{descripcionMedida}" rows="3" required></textarea>
                         </div>
                     </div>
                 </div>
@@ -164,7 +164,7 @@
                     form.find('[name="codigoMedida"]').val(data.codigoMedida);
                     form.find('[name="naturaleza"]').val(data.naturaleza);
                     form.find('[name="proceso"]').val(data.proceso);
-                    form.find('[name="descripcion"]').val(data.descripcion);
+                    form.find('[name="descripcionMedida"]').val(data.descripcionMedida);
                     form.find('[name="fechaInicioImplementacion"]')
                         .val(data.fechaInicioImplementacion);
                     form.find('[name="fechaCulminacionPrevista"]')

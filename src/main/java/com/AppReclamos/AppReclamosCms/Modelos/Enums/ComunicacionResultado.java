@@ -1,10 +1,10 @@
 package com.AppReclamos.AppReclamosCms.Modelos.Enums;
 
 public enum ComunicacionResultado {
-    Domicilio_Consignado_Libro_Reclamaciones,
-    Correo_Electronico,
-    Otra_Direccion_Proporcionada_Por_El_Usuario,
-    Notifiacion_Por_El_Usuario_En_El_LibroReclamciones,
-    Telefono_Acreditado_Por_El_Usuario,
-    No_se_Logra_Notificar_debido_a_imprecisiones_en_direccionCorreo_atribuibles_Usuario;
+    DOMICILIO_CONSIGNADO_LIBRO_RECLAMACIONES,
+    CORREO_ELECTRONICO,
+    OTRA_DIRECCION_PROPORCIONADA_POR_EL_USUARIO,
+    NOTIFICACION_POR_EL_USUARIO_EN_EL_LIBRO_RECLAMACIONES,
+    TELEFONO_ACREDITADO_POR_EL_USUARIO,
+    NO_SE_LOGRA_NOTIFICAR_DEBIDO_A_IMPRECISIONES_EN_DIRECCION_CORREO_ATRIBUIBLES_USUARIO;
 }

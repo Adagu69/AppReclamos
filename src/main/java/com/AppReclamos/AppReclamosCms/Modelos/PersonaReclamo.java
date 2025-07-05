@@ -44,6 +44,10 @@ public class PersonaReclamo implements Serializable {
 
     @Column(name = "correo_electronico", length = 255)
     private String correoElectronico;
+
+    @Column(name = "resultado_por_correo") // <-- Importante para la base de datos
+    private Boolean resultadoPorCorreo;
+
     private String telefono;
 
     @Column(columnDefinition = "TEXT")

@@ -45,7 +45,7 @@ public class MedidaDTO {
 
     @NotBlank(message = "La descripción no puede estar vacía.")
     @Size(max = 2000, message = "La descripción no puede superar los 2000 caracteres.")
-    private String descripcion;
+    private String descripcionMedida;
 
 
     private Integer reclamoId;

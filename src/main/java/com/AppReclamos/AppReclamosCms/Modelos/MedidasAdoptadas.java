@@ -36,8 +36,12 @@ public class MedidasAdoptadas {
     @Column(nullable = false)
     private LocalDate fechaCulminacionPrevista;
 
-    @Column(columnDefinition = "TEXT", nullable = false)
-    private String descripcion;
+    @Column(
+            name             = "descripcion_medida",
+            columnDefinition = "TEXT",
+            nullable         = false
+    )
+    private String descripcionMedida;
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "id_reclamo", nullable = false)

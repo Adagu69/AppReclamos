@@ -50,7 +50,7 @@ public class MedidaAdoptadaServicio implements IMedidaAdoptadaServicio {
             medidaEntity.setCodigoMedida(medidaDTO.getCodigoMedida());
             medidaEntity.setNaturaleza(medidaDTO.getNaturaleza());
             medidaEntity.setProceso(medidaDTO.getProceso());
-            medidaEntity.setDescripcion(medidaDTO.getDescripcion());
+            medidaEntity.setDescripcionMedida(medidaDTO.getDescripcionMedida());
             medidaEntity.setFechaInicioImplementacion(medidaDTO.getFechaInicioImplementacion());
             medidaEntity.setFechaCulminacionPrevista(medidaDTO.getFechaCulminacionPrevista());
             // No cambiamos el reclamo al que pertenece.
@@ -64,7 +64,7 @@ public class MedidaAdoptadaServicio implements IMedidaAdoptadaServicio {
             medidaEntity.setCodigoMedida(medidaDTO.getCodigoMedida());
             medidaEntity.setNaturaleza(medidaDTO.getNaturaleza());
             medidaEntity.setProceso(medidaDTO.getProceso());
-            medidaEntity.setDescripcion(medidaDTO.getDescripcion());
+            medidaEntity.setDescripcionMedida(medidaDTO.getDescripcionMedida());
             medidaEntity.setFechaInicioImplementacion(medidaDTO.getFechaInicioImplementacion());
             medidaEntity.setFechaCulminacionPrevista(medidaDTO.getFechaCulminacionPrevista());
 
@@ -93,7 +93,7 @@ public class MedidaAdoptadaServicio implements IMedidaAdoptadaServicio {
                 .proceso(medida.getProceso())
                 .fechaInicioImplementacion(medida.getFechaInicioImplementacion())
                 .fechaCulminacionPrevista(medida.getFechaCulminacionPrevista())
-                .descripcion(medida.getDescripcion())
+                .descripcionMedida(medida.getDescripcionMedida())
                 .reclamoId(medida.getReclamo().getIdReclamo())
                 .build();
     }
@@ -106,7 +106,7 @@ public class MedidaAdoptadaServicio implements IMedidaAdoptadaServicio {
         medida.setProceso(dto.getProceso());
         medida.setFechaInicioImplementacion(dto.getFechaInicioImplementacion());
         medida.setFechaCulminacionPrevista(dto.getFechaCulminacionPrevista());
-        medida.setDescripcion(dto.getDescripcion());
+        medida.setDescripcionMedida(dto.getDescripcionMedida());
 
         Reclamos reclamo = reclamosRepositorio.findById(dto.getReclamoId())
                 .orElseThrow(() -> new RuntimeException("Reclamo no encontrado con id: " + dto.getReclamoId()));

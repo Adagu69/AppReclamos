@@ -4,6 +4,7 @@ import com.AppReclamos.AppReclamosCms.Modelos.*;
 import com.AppReclamos.AppReclamosCms.Modelos.Enums.TipoPersona;
 import com.AppReclamos.AppReclamosCms.Repositorios.ReclamosRepositorio;
 import com.AppReclamos.AppReclamosCms.Servicios.interfaces.IReclamosServicios;
+import jakarta.persistence.EntityNotFoundException;
 import lombok.RequiredArgsConstructor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -25,20 +26,34 @@ public class ReclamosServiciosImpl implements IReclamosServicios {
     @Override
     @Transactional(readOnly = true)
     public List<ReclamoTablaDTO> buscarFiltrado(String estado, String buscarPor, String query, Integer anio, Integer mes) {
-        return reclamosRepo.findAll().stream()
+        return  reclamosRepo.findAll().stream()
                 .map(r -> {
-                    DetalleReclamo detalleRec = r.getDetalles() == null
-                            ? null
-                            : r.getDetalles().stream()
-                            .max(Comparator.comparing(DetalleReclamo::getFechaCreacion))
-                            .orElse(null);
-                    PersonaReclamo usuario = r.getPersonas() == null
-                            ? null
-                            : r.getPersonas().stream()
+                    // Obtiene la persona de tipo 'USUARIO'
+                    PersonaReclamo usuario = r.getPersonas().stream()
                             .filter(p -> p.getTipoPersona() == TipoPersona.USUARIO)
                             .findFirst()
                             .orElse(null);
-                    return reclamoMapper.toTableDTO(r, detalleRec, usuario);
+
+                    // Obtiene el detalle más reciente
+                    DetalleReclamo detalleRec = r.getDetalles().stream()
+                            .max(Comparator.comparing(DetalleReclamo::getFechaCreacion)) // Asume que tienes fecha de creación
+                            .orElse(r.getDetalles().isEmpty() ? null : r.getDetalles().get(0));
+
+                    // Obtiene la gestión (suele ser una relación @OneToOne)
+                    GestionReclamo gestion = r.getGestion();
+
+                    // Obtiene el resultado más reciente
+                    ResultadoNotificacion resultadoRec = r.getResultados().stream()
+                            .max(Comparator.comparing(ResultadoNotificacion::getFechaResultado))
+                            .orElse(null);
+
+                    // Obtiene la medida más reciente
+                    MedidasAdoptadas medidaRec = r.getMedidas().stream()
+                            .max(Comparator.comparing(MedidasAdoptadas::getFechaInicioImplementacion))
+                            .orElse(null);
+
+                    // Llama al mapper con TODOS los objetos
+                    return reclamoMapper.toTableDTO(r, usuario, detalleRec, gestion, resultadoRec, medidaRec);
                 })
                 .filter(r -> estado == null || estado.equalsIgnoreCase("TODOS") || r.getEstado().name().equalsIgnoreCase(estado))
                 .filter(r -> {
@@ -65,9 +80,23 @@ public class ReclamosServiciosImpl implements IReclamosServicios {
     @Override
     @Transactional
     public ReclamoDTO guardarDesdeDTO(ReclamoDTO dto) {
-        Reclamos entity = reclamoMapper.toEntity(dto);
 
-        // Forzar tipos de persona
+        Reclamos entity;
+
+
+        if (dto.getIdReclamo() != null) {
+            // 1. Si estamos editando, cargamos la entidad con su versión
+            entity = reclamosRepo.findById(dto.getIdReclamo())
+                    .orElseThrow(() -> new EntityNotFoundException(
+                            "Reclamo no encontrado con id: " + dto.getIdReclamo()));
+            // 2. Aplicamos solo las propiedades no nulas del DTO a la entidad gestionada
+            reclamoMapper.updateFromDto(dto, entity);
+        } else {
+            // 3. Si es un alta, convertimos todo el DTO a entidad
+            entity = reclamoMapper.toEntity(dto);
+        }
+
+        // 4. Forzar tipos de persona
         if (entity.getPersonas() != null) {
             log.info("---[SERVICIO] Forzando asignación manual de TipoPersona.");
             if (!entity.getPersonas().isEmpty()) {
@@ -80,11 +109,11 @@ public class ReclamosServiciosImpl implements IReclamosServicios {
             }
         }
 
-        // Relaciones bidireccionales
-        if (entity.getPersonas() != null)    entity.getPersonas().forEach(p -> p.setReclamo(entity));
-        if (entity.getDetalles() != null)    entity.getDetalles().forEach(d -> d.setReclamo(entity));
-        if (entity.getGestion() != null)     entity.getGestion().setReclamo(entity);
-        if (entity.getResultados() != null)  entity.getResultados().forEach(r -> r.setReclamo(entity));
+        // 5. Relaciones bidireccionales
+        if (entity.getPersonas()   != null) entity.getPersonas().forEach(p -> p.setReclamo(entity));
+        if (entity.getDetalles()   != null) entity.getDetalles().forEach(d -> d.setReclamo(entity));
+        if (entity.getGestion()    != null) entity.getGestion().setReclamo(entity);
+        if (entity.getResultados() != null) entity.getResultados().forEach(r -> r.setReclamo(entity));
 
         Reclamos saved = reclamosRepo.save(entity);
         return reclamoMapper.toDetailDTO(saved);
