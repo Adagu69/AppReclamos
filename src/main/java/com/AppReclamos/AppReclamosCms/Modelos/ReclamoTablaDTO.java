@@ -9,22 +9,19 @@ import org.springframework.format.annotation.DateTimeFormat;
 
 import java.time.LocalDate;
 
-@Value                       // inmutable (≃ Lombok @Getter + final + constructor)
-@Builder(toBuilder = true)   // permite .toBuilder() para cambios puntuales
+@Value
+@Builder(toBuilder = true)
 @JsonInclude(JsonInclude.Include.NON_NULL)
 public class ReclamoTablaDTO {
 
     /* ---------- Identificadores ---------- */
-    Integer id;                      // PK interna para links / acciones
-
+    Integer id;
     EstadoReclamo estado;
-
-
 
     // --- ¡CLASIFICACION DEL RECLAMO! ---
     @NotNull(message="Fecha de reclamo es obligatoria")
-    @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) // Formato yyyy-MM-dd
-            LocalDate fechaReclamo;
+    private String periodoDeclaracion;
+
     private TipoDeclarante tipoDeclarante;
     private String codigoDeclarante;
     private String codigoUgipress;
@@ -33,18 +30,9 @@ public class ReclamoTablaDTO {
     MedioRecepcion medioRecepcion;
     String  codigoReclamo;
 
-    // --- ¡IDENTIFICACIÓN DE QUIEN PRESENTA EL RECLAMO! ---
-    // --- ¡usuario o tercero! ---
-    TipoDocumento tipoDocumentoAfectado;
-    String        numeroDocumentoAfectado;
-    String        nombreAfectado;
-    String        razonSocialAfectado;
-    private String apellidoPaterno;
-    private String apellidoMaterno;
-    private Boolean resultadoPorCorreo;
-    private String correoElectronico;
-    private String domicilio;
-    private String telefono;
+    // En ReclamoTablaDTO.java
+    private PersonaReclamoDTO presentante;
+    private PersonaReclamoDTO afectado;
 
 
     // --- ¡DETALLE DEL RECLAMO! ---
@@ -79,9 +67,6 @@ public class ReclamoTablaDTO {
     private LocalDate fechaInicioImplementacion;
     private LocalDate fechaCulminacionPrevista;
     private String descripcionMedida;
-
-
-
 
 
     /* ---------- UI helpers ---------- */

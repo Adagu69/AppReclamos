@@ -31,7 +31,9 @@ public class Reclamos implements Serializable {
     @EqualsAndHashCode.Include
     private int idReclamo;
 
-    private LocalDate fechaReclamo;
+    @Column(name = "periodo_declaracion", nullable = false, length = 6)
+    private String periodoDeclaracion;
+
     private String tipoDeclarante;
     private String codigoDeclarante;
     private String tipoInstitucion;
@@ -40,13 +42,14 @@ public class Reclamos implements Serializable {
     private String codigoReclamo;
     private String estadoReclamo;
 
-    @OneToMany(
-            mappedBy = "reclamo",
-            cascade = CascadeType.ALL,
-            orphanRemoval = true
-    )
-    // ANTES: private List<PersonaReclamo> personas = new ArrayList<>();
-    private Set<PersonaReclamo> personas = new HashSet<>();
+    // ¡CAMBIO CLAVE! Reemplazamos el Set por dos relaciones One-to-One
+    @OneToOne(cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.LAZY)
+    @JoinColumn(name = "id_presentante") // Crea una nueva columna FK en la tabla reclamos
+    private PersonaReclamo presentante;
+
+    @OneToOne(cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.LAZY)
+    @JoinColumn(name = "id_afectado") // Crea otra nueva columna FK
+    private PersonaReclamo afectado;
 
 
     @OneToOne(mappedBy = "reclamo",
@@ -73,23 +76,6 @@ public class Reclamos implements Serializable {
     // ANTES: private List<DetalleReclamo> detalles = new ArrayList<>();
     private Set<DetalleReclamo> detalles = new HashSet<>();
 
-    public void addPersona(PersonaReclamo p) {
-        personas.add(p);
-        p.setReclamo(this);
-    }
 
-    public void removePersona(PersonaReclamo p) {
-        personas.remove(p);
-        p.setReclamo(null);
-    }
 
-    public void addResultado(ResultadoNotificacion r) {
-        resultados.add(r);
-        r.setReclamo(this);
-    }
-
-    public void removeResultado(ResultadoNotificacion r) {
-        resultados.remove(r);
-        r.setReclamo(null);
-    }
 }

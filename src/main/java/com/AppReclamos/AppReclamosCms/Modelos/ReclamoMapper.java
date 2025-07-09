@@ -36,32 +36,17 @@ ProcesoMedida.class,
 public interface ReclamoMapper {
 
 
-    // --- 1. Mapeos desde 'Reclamos' (entity) ---
+    PersonaReclamo toPersonaEntity(PersonaReclamoDTO personaDTO);
+    PersonaReclamoDTO toPersonaDto(PersonaReclamo persona);
+
+
     @Mapping(target = "id", source = "entity.idReclamo")
-    @Mapping(target = "estado",
-            expression = "java(toEnum(entity.getEstadoReclamo(), EstadoReclamo.class))")
+    @Mapping(target = "estado", expression = "java(toEnum(entity.getEstadoReclamo(), EstadoReclamo.class))")
 
-    // --- 2. Mapeos desde 'usuarioAfectado' (PersonaReclamo) ---
-    @Mapping(target = "tipoDocumentoAfectado",
-            expression = "java(usuarioAfectado != null ? usuarioAfectado.getTipoDocumento() : null)")
-    @Mapping(target = "numeroDocumentoAfectado", expression = "java(usuarioAfectado != null ? usuarioAfectado.getNumeroDocumento() : null)")
-    @Mapping(target = "nombreAfectado",          expression = "java(usuarioAfectado != null ? usuarioAfectado.getNombres() : null)")
-    @Mapping(target = "razonSocialAfectado",
-            expression = "java(usuarioAfectado != null ? usuarioAfectado.getRazonSocial() : null)")
-    @Mapping(target = "apellidoPaterno",         expression = "java(usuarioAfectado != null ? usuarioAfectado.getApellidoPaterno() : null)")
-    @Mapping(target = "apellidoMaterno",         expression = "java(usuarioAfectado != null ? usuarioAfectado.getApellidoMaterno() : null)")
-    @Mapping(target = "resultadoPorCorreo",      expression = "java(usuarioAfectado != null ? usuarioAfectado.getResultadoPorCorreo() : null)") // Este es Boolean, no enum. Se queda igual.
-    @Mapping(target = "correoElectronico",       expression = "java(usuarioAfectado != null ? usuarioAfectado.getCorreoElectronico() : null)")
-    @Mapping(target = "domicilio",               expression = "java(usuarioAfectado != null ? usuarioAfectado.getDomicilio() : null)")
-    @Mapping(target = "telefono",                expression = "java(usuarioAfectado != null ? usuarioAfectado.getTelefono() : null)")
-
-    // --- 3. Mapeos desde 'detalleReciente' (DetalleReclamo) ---
-    @Mapping(target = "medioRecepcion",
-            expression = "java(detalleReciente != null ? detalleReciente.getMedioRecepcion() : null)")
-    @Mapping(target = "fechaRecepcion",
-            expression = "java(detalleReciente != null ? detalleReciente.getFechaRecepcion() : null)")
-    @Mapping(target = "descripcion",
-            expression = "java(detalleReciente != null ? detalleReciente.getDescripcion() : null)")
+    // Mapeos para DetalleReclamo
+    @Mapping(target = "medioRecepcion", expression = "java(detalleReciente != null ? detalleReciente.getMedioRecepcion() : null)")
+    @Mapping(target = "fechaRecepcion", expression = "java(detalleReciente != null ? detalleReciente.getFechaRecepcion() : null)")
+    @Mapping(target = "descripcion", expression = "java(detalleReciente != null ? detalleReciente.getDescripcion() : null)")
 
     // --- 4. Mapeos desde 'gestion' (GestionReclamo) ---
     @Mapping(target = "servicio",
@@ -101,7 +86,6 @@ public interface ReclamoMapper {
 
     ReclamoTablaDTO toTableDTO(
             Reclamos entity,
-            @Context PersonaReclamo usuarioAfectado,
             @Context DetalleReclamo detalleReciente,
             @Context GestionReclamo gestion,
             @Context ResultadoNotificacion resultadoReciente,
@@ -109,7 +93,8 @@ public interface ReclamoMapper {
 
     );
 
-            // --- Métodos de mapeo para formularios (DTO anidado <-> Entidad) ---
+    // --- MAPEADORES PARA FORMULARIO: DTO <-> Entidad ---
+    // Estos ahora también son más simples y automáticos.
     ReclamoDTO toDetailDTO(Reclamos entity);
     Reclamos toEntity(ReclamoDTO dto);
 
@@ -117,12 +102,12 @@ public interface ReclamoMapper {
     void updateFromDto(ReclamoDTO dto, @MappingTarget Reclamos entity);
 
 
+    // --- MÉTODO DE UTILIDAD (sin cambios) ---
     default <T extends Enum<T>> T toEnum(String value, Class<T> enumClass) {
         if (value == null || value.isBlank() || enumClass == null) {
             return null;
         }
         try {
-            // Se elimina el .toUpperCase() para que busque el nombre exacto
             return Enum.valueOf(enumClass, value.trim());
         } catch (IllegalArgumentException e) {
             return null;

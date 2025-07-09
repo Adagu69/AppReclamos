@@ -67,9 +67,9 @@ public class PersonaReclamoDTO {
     private Boolean     resultadoPorCorreo;
 
     // NUEVO campo: domicilio
-    @NotBlank(message="El domicilio es obligatorio")
     @Size(max=200)
     private String      domicilio;
+
 
 
 }

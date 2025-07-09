@@ -32,12 +32,17 @@
                         <div class="card-body row g-3">
 
                             <div class="col-md-3">
-                                <label>Fecha Reclamo</label>
-                                <input type="date" class="form-control"
-                                       th:field="*{fechaReclamo}" required>
+                                <label for="periodoDeclaracion">Periodo de Declaración</label>
+                                <input type="text" id="periodoDeclaracion" class="form-control"
+                                       th:field="*{periodoDeclaracion}"
+                                       placeholder="AAAAMM"
+                                       pattern="\d{6}"
+                                       maxlength="6"
+                                       title="Ingrese el periodo en formato AAAAMM (ej. 202412)"
+                                       required>
                                 <div class="text-danger"
-                                     th:if="${#fields.hasErrors('fechaReclamo')}"
-                                     th:errors="*{fechaReclamo}">
+                                     th:if="${#fields.hasErrors('periodoDeclaracion')}"
+                                     th:errors="*{periodoDeclaracion}">
                                 </div>
                             </div>
 
@@ -127,89 +132,66 @@
                             <h3 class="card-title">Persona – Presentante</h3>
                         </div>
                         <div class="card-body row g-3">
-                            <input type="hidden" th:field="*{personas[0].tipoPersona}"
-                                   th:value="${T(com.AppReclamos.AppReclamosCms.Modelos.Enums.TipoPersona).PRESENTANTE}" />
-                            <input type="hidden" th:field="*{personas[0].idPersona}" />
+                            <input type="hidden" th:field="*{presentante.idPersona}" />
 
                             <!-- Nombres -->
                             <div class="col-md-6">
                                 <label>Nombres</label>
-                                <input type="text" class="form-control" th:field="*{personas[0].nombres}" required maxlength="150" pattern="[A-Za-zÁÉÍÓÚáéíóúñÑ ]+">
-                                <div class="text-danger" th:if="${#fields.hasErrors('personas[0].nombres')}" th:errors="*{personas[0].nombres}"></div>
+                                <input type="text" class="form-control" th:field="*{presentante.nombres}" required maxlength="150" pattern="[A-Za-zÁÉÍÓÚáéíóúñÑ ]+">
+                                <div class="text-danger" th:if="${#fields.hasErrors('presentante.nombres')}" th:errors="*{presentante.nombres}"></div>
                             </div>
 
                             <!-- Ape. Paterno -->
                             <div class="col-md-3">
                                 <label>Ape. Paterno</label>
-                                <input type="text" class="form-control" th:field="*{personas[0].apellidoPaterno}" maxlength="150" pattern="[A-Za-zÁÉÍÓÚáéíóúñÑ ]*">
-                                <div class="text-danger" th:if="${#fields.hasErrors('personas[0].apellidoPaterno')}" th:errors="*{personas[0].apellidoPaterno}"></div>
+                                <input type="text" class="form-control" th:field="*{presentante.apellidoPaterno}" maxlength="150" pattern="[A-Za-zÁÉÍÓÚáéíóúñÑ ]*">
+                                <div class="text-danger" th:if="${#fields.hasErrors('presentante.apellidoPaterno')}" th:errors="*{presentante.apellidoPaterno}"></div>
                             </div>
 
                             <!-- Ape. Materno -->
                             <div class="col-md-3">
                                 <label>Ape. Materno</label>
-                                <input type="text" class="form-control"
-                                       th:field="*{personas[0].apellidoMaterno}"
-                                       maxlength="150"
-                                       pattern="[A-Za-zÁÉÍÓÚáéíóúñÑ ]*">
-                                <div class="text-danger"
-                                     th:if="${#fields.hasErrors('personas[0].apellidoMaterno')}"
-                                     th:errors="*{personas[0].apellidoMaterno}"></div>
+                                <input type="text" class="form-control" th:field="*{presentante.apellidoMaterno}" maxlength="150" pattern="[A-Za-zÁÉÍÓÚáéíóúñÑ ]*">
+                                <div class="text-danger" th:if="${#fields.hasErrors('presentante.apellidoMaterno')}" th:errors="*{presentante.apellidoMaterno}"></div>
                             </div>
 
                             <!-- Tipo Doc. -->
                             <div class="col-md-3">
                                 <label>Tipo Doc.</label>
-                                <select class="form-select"
-                                        th:field="*{personas[0].tipoDocumento}" required>
+                                <select class="form-select" th:field="*{presentante.tipoDocumento}" required>
                                     <option th:each="d : ${T(com.AppReclamos.AppReclamosCms.Modelos.Enums.TipoDocumento).values()}"
                                             th:value="${d}" th:text="${d}"></option>
                                 </select>
-                                <div class="text-danger"
-                                     th:if="${#fields.hasErrors('personas[0].tipoDocumento')}"
-                                     th:errors="*{personas[0].tipoDocumento}"></div>
+                                <div class="text-danger" th:if="${#fields.hasErrors('presentante.tipoDocumento')}" th:errors="*{presentante.tipoDocumento}"></div>
                             </div>
 
                             <!-- N.º Documento -->
                             <div class="col-md-3">
                                 <label>N.º Documento</label>
-                                <input type="text" class="form-control"
-                                       th:field="*{personas[0].numeroDocumento}"
-                                       required maxlength="15"
-                                       pattern="\d+">
-                                <div class="text-danger"
-                                     th:if="${#fields.hasErrors('personas[0].numeroDocumento')}"
-                                     th:errors="*{personas[0].numeroDocumento}"></div>
+                                <input type="text" class="form-control" th:field="*{presentante.numeroDocumento}" required maxlength="15" pattern="\d+">
+                                <div class="text-danger" th:if="${#fields.hasErrors('presentante.numeroDocumento')}" th:errors="*{presentante.numeroDocumento}"></div>
                             </div>
 
                             <!-- Razón Social (solo si es RUC) -->
                             <div class="col-md-6" id="razonSolPresentante" style="display:none;">
                                 <label>Razón Social</label>
-                                <input type="text" class="form-control"
-                                       th:field="*{personas[0].razonSocial}"
-                                       maxlength="150"
-                                       pattern="[A-Za-z0-9ÁÉÍÓÚáéíóúñÑ&., ]+">
-                                <div class="text-danger"
-                                     th:if="${#fields.hasErrors('personas[0].razonSocial')}"
-                                     th:errors="*{personas[0].razonSocial}"></div>
+                                <input type="text" class="form-control" th:field="*{presentante.razonSocial}" maxlength="150" pattern="[A-Za-z0-9ÁÉÍÓÚáéíóúñÑ&., ]+">
+                                <div class="text-danger" th:if="${#fields.hasErrors('presentante.razonSocial')}" th:errors="*{presentante.razonSocial}"></div>
                             </div>
 
                             <!-- Teléfono -->
                             <div class="col-md-3">
                                 <label>Teléfono</label>
-                                <input type="text" class="form-control"
-                                       th:field="*{personas[0].telefono}">
+                                <input type="text" class="form-control" th:field="*{presentante.telefono}">
                             </div>
 
                             <!-- Email -->
                             <div class="col-md-3">
                                 <label>Email</label>
-                                <input type="email" class="form-control"
-                                       th:field="*{personas[0].correoElectronico}">
-                                <div class="text-danger"
-                                     th:if="${#fields.hasErrors('personas[0].correoElectronico')}"
-                                     th:errors="*{personas[0].correoElectronico}"></div>
+                                <input type="email" class="form-control" th:field="*{presentante.correoElectronico}">
+                                <div class="text-danger" th:if="${#fields.hasErrors('presentante.correoElectronico')}" th:errors="*{presentante.correoElectronico}"></div>
                             </div>
+
                         </div>
                     </div>
 
@@ -222,69 +204,54 @@
                             <h3 class="card-title">Identificación de Usuario / Tercero</h3>
                         </div>
                         <div class="card-body row g-3">
-                            <input type="hidden" th:field="*{personas[1].tipoPersona}"
-                                   th:value="${T(com.AppReclamos.AppReclamosCms.Modelos.Enums.TipoPersona).USUARIO}" />
-                            <input type="hidden" th:field="*{personas[1].idPersona}" />
+                            <input type="hidden" th:field="*{afectado.idPersona}" />
 
                             <!-- Tipo documento -->
                             <div class="col-md-3">
                                 <label>Tipo Doc.</label>
-                                <select class="form-select" th:field="*{personas[1].tipoDocumento}" required>
+                                <select class="form-select" th:field="*{afectado.tipoDocumento}" required>
                                     <option th:each="d : ${T(com.AppReclamos.AppReclamosCms.Modelos.Enums.TipoDocumento).values()}"
                                             th:value="${d}" th:text="${d}"></option>
                                 </select>
+                                <div class="text-danger" th:if="${#fields.hasErrors('afectado.tipoDocumento')}" th:errors="*{afectado.tipoDocumento}"></div>
                             </div>
 
                             <!-- Número del documento -->
                             <div class="col-md-3">
                                 <label>N.º Documento</label>
-                                <input type="text" class="form-control"
-                                       th:field="*{personas[1].numeroDocumento}"
-                                       required maxlength="15"
-                                       pattern="\d+">
+                                <input type="text" class="form-control" th:field="*{afectado.numeroDocumento}" required maxlength="15" pattern="\d+">
+                                <div class="text-danger" th:if="${#fields.hasErrors('afectado.numeroDocumento')}" th:errors="*{afectado.numeroDocumento}"></div>
                             </div>
 
                             <!-- Nombres -->
                             <div class="col-md-3">
                                 <label>Nombres</label>
-                                <input type="text" class="form-control"
-                                       th:field="*{personas[1].nombres}"
-                                       required maxlength="150"
-                                       pattern="[A-Za-zÁÉÍÓÚáéíóúñÑ ]+">
+                                <input type="text" class="form-control" th:field="*{afectado.nombres}" required maxlength="150" pattern="[A-Za-zÁÉÍÓÚáéíóúñÑ ]+">
+                                <div class="text-danger" th:if="${#fields.hasErrors('afectado.nombres')}" th:errors="*{afectado.nombres}"></div>
                             </div>
 
-                            <!-- Ape. Paterno -->
                             <div class="col-md-3">
                                 <label>Ape. Paterno</label>
-                                <input type="text" class="form-control"
-                                       th:field="*{personas[1].apellidoPaterno}"
-                                       maxlength="150"
-                                       pattern="[A-Za-zÁÉÍÓÚáéíóúñÑ ]*">
+                                <input type="text" class="form-control" th:field="*{afectado.apellidoPaterno}" maxlength="150" pattern="[A-Za-zÁÉÍÓÚáéíóúñÑ ]*">
+                                <div class="text-danger" th:if="${#fields.hasErrors('afectado.apellidoPaterno')}" th:errors="*{afectado.apellidoPaterno}"></div>
                             </div>
 
-                            <!-- Ape. Materno -->
                             <div class="col-md-3">
                                 <label>Ape. Materno</label>
-                                <input type="text" class="form-control"
-                                       th:field="*{personas[1].apellidoMaterno}"
-                                       maxlength="150"
-                                       pattern="[A-Za-zÁÉÍÓÚáéíóúñÑ ]*">
+                                <input type="text" class="form-control" th:field="*{afectado.apellidoMaterno}" maxlength="150" pattern="[A-Za-zÁÉÍÓÚáéíóúñÑ ]*">
+                                <div class="text-danger" th:if="${#fields.hasErrors('afectado.apellidoMaterno')}" th:errors="*{afectado.apellidoMaterno}"></div>
                             </div>
 
                             <!-- Razón Social (solo si es RUC) -->
-                            <div class="col-md-6" id="razonSolTercero" style="display:none;">
+                            <div class="col-md-6" id="razonSolAfectado" style="display:none;">
                                 <label>Razón Social</label>
-                                <input type="text" class="form-control"
-                                       th:field="*{personas[1].razonSocial}"
-                                       maxlength="150"
-                                       pattern="[A-Za-z0-9ÁÉÍÓÚáéíóúñÑ&., ]+">
+                                <input type="text" class="form-control" th:field="*{afectado.razonSocial}" maxlength="150" pattern="[A-Za-z0-9ÁÉÍÓÚáéíóúñÑ&., ]+">
+                                <div class="text-danger" th:if="${#fields.hasErrors('afectado.razonSocial')}" th:errors="*{afectado.razonSocial}"></div>
                             </div>
 
-                            <!-- Resultado al correo (Sí/No) -->
                             <div class="col-md-3">
                                 <label>Resultado al correo</label>
-                                <select class="form-select"
-                                        th:field="*{personas[1].resultadoPorCorreo}">
+                                <select class="form-select" th:field="*{afectado.resultadoPorCorreo}">
                                     <option th:value="true">Sí</option>
                                     <option th:value="false">No</option>
                                 </select>
@@ -293,24 +260,21 @@
                             <!-- Teléfono -->
                             <div class="col-md-3">
                                 <label>Teléfono</label>
-                                <input type="text" class="form-control"
-                                       th:field="*{personas[1].telefono}">
+                                <input type="text" class="form-control" th:field="*{afectado.telefono}">
                             </div>
 
                             <!-- Email -->
                             <div class="col-md-3">
                                 <label>Email</label>
-                                <input type="email" class="form-control"
-                                       th:field="*{personas[1].correoElectronico}">
+                                <input type="email" class="form-control" th:field="*{afectado.correoElectronico}">
                             </div>
 
                             <!-- Domicilio -->
                             <div class="col-md-6">
                                 <label>Domicilio</label>
-                                <input type="text" class="form-control"
-                                       th:field="*{personas[1].domicilio}"
-                                       maxlength="200">
+                                <input type="text" class="form-control" th:field="*{afectado.domicilio}" maxlength="200">
                             </div>
+
                         </div>
                     </div>
 
@@ -576,32 +540,27 @@
 <!-- ======= Script para mostrar/ocultar Razón Social ======= -->
 <script>
     document.addEventListener('DOMContentLoaded', function() {
-        const sel0 = document.querySelector('select[name="personas[0].tipoDocumento"]');
-        const con0 = document.getElementById('razonSolPresentante');
-        const sel1 = document.querySelector('select[name="personas[1].tipoDocumento"]');
-        const con1 = document.getElementById('razonSolTercero');
+        // Función reutilizable para mostrar/ocultar un contenedor basado en el valor de un select
+        function toggleRucField(selectElement, containerElement) {
+            if (!selectElement || !containerElement) return;
 
-        function toggle(idxSel, idxCon) {
-            if (!idxSel || !idxCon) return;
-            idxCon.style.display = (idxSel.value === 'RUC') ? 'block' : 'none';
+            const toggle = () => {
+                containerElement.style.display = (selectElement.value === 'RUC') ? 'block' : 'none';
+            };
+
+            toggle(); // Ejecutar al cargar la página
+            selectElement.addEventListener('change', toggle); // Y en cada cambio
         }
 
-        [sel0, sel1].forEach((sel, i) => {
-            const cont = (i===0 ? con0 : con1);
-            toggle(sel, cont);
-            sel.addEventListener('change',()=>toggle(sel, cont));
-        });
-    });
+        // Aplicar la lógica al presentante
+        const selPresentante = document.querySelector('select[name="presentante.tipoDocumento"]');
+        const contPresentante = document.getElementById('razonSolPresentante');
+        toggleRucField(selPresentante, contPresentante);
 
-    document.addEventListener('DOMContentLoaded', () => {
-        const selTipoDoc = document.querySelector('select[name="personas[0].tipoDocumento"]');
-        const contRz     = document.getElementById('razonSocialContainer');
-
-        function toggleRazon() {
-            contRz.style.display = (selTipoDoc.value === 'RUC') ? 'block' : 'none';
-        }
-        selTipoDoc.addEventListener('change', toggleRazon);
-        toggleRazon();
+        // Aplicar la lógica al afectado/usuario
+        const selAfectado = document.querySelector('select[name="afectado.tipoDocumento"]');
+        const contAfectado = document.getElementById('razonSolAfectado'); // ¡CAMBIO! Asegúrate de que el ID del div coincida
+        toggleRucField(selAfectado, contAfectado);
     });
 
     $(document).ready(function() {

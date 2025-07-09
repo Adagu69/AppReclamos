@@ -37,6 +37,8 @@ public class ReclamosController {
 
     private final IReclamosServicios reclamosSvc;
 
+    private static final Logger log = LoggerFactory.getLogger(ReclamosController.class);
+
     private void addEnumsToModel(Model model) {
         model.addAttribute("estadosEnum", EstadoReclamo.values());
         model.addAttribute("etapasEnum", GestionEtapa.values());
@@ -67,13 +69,20 @@ public class ReclamosController {
 
     @GetMapping("/nuevo")
     public String nuevo(Model model) {
+        // 1. Creamos un DTO vacío. Los campos 'presentante' y 'afectado'
+        //    ya deberían estar inicializados dentro del constructor de ReclamoDTO.
         ReclamoDTO dto = new ReclamoDTO();
-        dto.getPersonas().add(new PersonaReclamoDTO());
-        dto.getPersonas().add(new PersonaReclamoDTO());
+
+        // 2. ¡Se eliminan las líneas que usaban getPersonas()!
+        // dto.getPersonas().add(new PersonaReclamoDTO()); <--- Eliminado
+        // dto.getPersonas().add(new PersonaReclamoDTO()); <--- Eliminado
+
+        // 3. La inicialización de otras listas se mantiene si es necesaria.
         dto.getDetalles().add(new DetalleReclamoDTO());
         dto.setGestion(new GestionReclamoDTO());
         dto.getResultados().add(new ResultadoNotificacionDTO());
 
+        // 4. Pasamos el DTO al modelo
         model.addAttribute("reclamo", dto);
         model.addAttribute("title", "Nuevo Reclamo");
         addEnumsToModel(model);
@@ -85,58 +94,84 @@ public class ReclamosController {
     public String editar(@PathVariable Integer id, Model model, RedirectAttributes redir) {
         ReclamoDTO dto = reclamosSvc.buscarPorId(id);
         if (dto == null) {
-            redir.addFlashAttribute("error", "El reclamo no existe.");
+            redir.addFlashAttribute("error", "El reclamo con ID " + id + " no existe.");
             return "redirect:/admin/reclamos";
         }
-        // ... (Lógica para asegurar listas mínimas) ...
+
+        // --- REFUERZO CLAVE ---
+        // Nos aseguramos de que 'presentante' y 'afectado' nunca sean nulos
+        // para evitar un NullPointerException en Thymeleaf.
+        if (dto.getPresentante() == null) {
+            dto.setPresentante(new PersonaReclamoDTO());
+            log.warn("El reclamo con ID {} no tenía presentante. Se inicializó uno nuevo.", id);
+        }
+        if (dto.getAfectado() == null) {
+            dto.setAfectado(new PersonaReclamoDTO());
+            log.warn("El reclamo con ID {} no tenía afectado. Se inicializó uno nuevo.", id);
+        }
+        // ... (Tu lógica para asegurar listas mínimas para detalles, etc., se mantiene) ...
+
         model.addAttribute("reclamo", dto);
         model.addAttribute("title", "Editar Reclamo");
         addEnumsToModel(model);
         return "ADMIN/reclamos-form";
     }
 
-    // --- MÉTODO SAVE (VERSIÓN FINAL Y CORRECTA) ---
     @PostMapping("/guardar")
     public String save(@Valid @ModelAttribute("reclamo") ReclamoDTO reclamo,
                        BindingResult br,
                        Model model,
                        RedirectAttributes redir) {
 
-        // --- MANEJO DE ERRORES DE VALIDACIÓN (ROBUSTO) ---
+        // --- REFUERZO DE VALIDACIÓN ---
+        // La validación se mantiene, ya que @Valid en el DTO principal debería
+        // activar la validación en cascada para 'presentante' y 'afectado' (si están anotados con @Valid).
         if (br.hasErrors()) {
-            // 1. Añadimos de nuevo al modelo todos los datos que la vista necesita
-            //    para renderizarse (como los enums para los dropdowns).
+            log.error("Errores de validación encontrados: {}", br.getAllErrors());
+
+            // La lógica para manejar errores ya es robusta y se mantiene.
             addEnumsToModel(model);
 
-            // 2. Añadimos un título para que la cabecera de la página se vea bien.
             model.addAttribute("title", reclamo.getIdReclamo() != null ? "Editar Reclamo" : "Nuevo Reclamo");
 
-            // 3. ¡IMPORTANTE! Extraemos los errores GLOBALES (los que no son de un campo específico)
-            //    y los añadimos al modelo para poder mostrarlos.
             List<String> globalErrors = br.getGlobalErrors().stream()
                     .map(err -> err.getDefaultMessage())
                     .collect(Collectors.toList());
             model.addAttribute("globalErrors", globalErrors);
 
-            // 4. Devolvemos la vista del formulario. Thymeleaf usará el BindingResult (br)
-            //    para mostrar los errores de campo, y nuestra variable "globalErrors" para los demás.
             return "ADMIN/reclamos-form";
         }
 
-        // Si la validación es exitosa, procedemos a guardar y redirigir.
-        ReclamoDTO reclamoGuardado = reclamosSvc.guardarDesdeDTO(reclamo);
-        redir.addFlashAttribute("success", "Paso 1: Datos guardados. Ahora, añade las medidas.");
-        return "redirect:/admin/medidas/reclamo/" + reclamoGuardado.getIdReclamo();
+        // --- REFUERZO DE LÓGICA DE GUARDADO ---
+        try {
+            ReclamoDTO reclamoGuardado = reclamosSvc.guardarDesdeDTO(reclamo);
+            log.info("Reclamo guardado exitosamente con ID: {}", reclamoGuardado.getIdReclamo());
+            redir.addFlashAttribute("success", "Reclamo guardado correctamente. Ahora, puede añadir las medidas adoptadas.");
+            // Redireccionamos a una página de medidas (si existe) o a la lista principal.
+            return "redirect:/admin/medidas/reclamo/" + reclamoGuardado.getIdReclamo();
+        } catch (Exception e) {
+            // Capturamos cualquier error inesperado del servicio.
+            log.error("Error al guardar el reclamo: ", e);
+            redir.addFlashAttribute("error", "Ocurrió un error inesperado al guardar el reclamo.");
+            // Si falla, lo devolvemos al formulario de edición (si tiene ID) o al de nuevo.
+            if (reclamo.getIdReclamo() != null) {
+                return "redirect:/admin/reclamos/editar/" + reclamo.getIdReclamo();
+            }
+            return "redirect:/admin/reclamos/nuevo";
+        }
     }
 
-    // --- (Otros métodos como eliminar, api, etc.) ---
     @GetMapping("/eliminar/{id}")
     public String eliminarReclamo(@PathVariable Integer id, RedirectAttributes attributes) {
         try {
             reclamosSvc.eliminarPorId(id);
-            attributes.addFlashAttribute("msg_success", "Reclamo eliminado correctamente");
+            log.info("Reclamo con ID {} eliminado correctamente.", id);
+            attributes.addFlashAttribute("success", "Reclamo eliminado correctamente.");
         } catch (Exception e) {
-            attributes.addFlashAttribute("msg_error", "Error al eliminar el reclamo");
+            // --- REFUERZO DE MANEJO DE ERRORES ---
+            // Capturamos errores específicos si es posible (ej. si el reclamo no se puede borrar por FK).
+            log.error("Error al intentar eliminar el reclamo con ID {}: ", id, e);
+            attributes.addFlashAttribute("error", "Error al eliminar el reclamo. Es posible que tenga datos asociados.");
         }
         return "redirect:/admin/reclamos";
     }

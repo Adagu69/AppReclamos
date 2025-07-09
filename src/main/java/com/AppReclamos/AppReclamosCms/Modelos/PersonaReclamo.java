@@ -29,11 +29,12 @@ public class PersonaReclamo implements Serializable {
 
     @Enumerated(EnumType.STRING)
     @Column(name = "tipo_persona", length = 15, nullable = false)
-    private TipoPersona tipoPersona;   // "PRESENTANTE", "USUARIO", "TERCERO"
+    private TipoPersona tipoPersona;
 
     @Enumerated(EnumType.STRING)
     @Column(name = "tipo_documento", length = 10, nullable = false)
     private TipoDocumento tipoDocumento;
+
 
 
     private String numeroDocumento;
@@ -52,10 +53,6 @@ public class PersonaReclamo implements Serializable {
 
     @Column(columnDefinition = "TEXT")
     private String domicilio;
-
-    @ManyToOne(fetch = FetchType.LAZY, optional = false)
-    @JoinColumn(name = "id_reclamo", nullable = false)
-    private Reclamos reclamo;
 
 
 }

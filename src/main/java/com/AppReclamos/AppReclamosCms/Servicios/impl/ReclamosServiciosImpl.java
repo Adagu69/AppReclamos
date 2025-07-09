@@ -38,20 +38,22 @@ public class ReclamosServiciosImpl implements IReclamosServicios {
     @Override
     @Transactional(readOnly = true)
     public List<ReclamoTablaDTO> buscarFiltrado(String estado, String buscarPor, String query, Integer anio, Integer mes) {
-        // 1. Normalizar los parámetros para la consulta
+        // La lógica de filtrado inicial se mantiene
         String estadoFinal = (estado == null || estado.equalsIgnoreCase("TODOS")) ? null : estado.toUpperCase();
-        String queryFinal = (query == null || query.isBlank()) ? null : "%" + query + "%";
+        String queryFinal = (query == null || query.isBlank()) ? null : query;
+        String periodoFinal = null;
+        if (anio != null && mes != null) {
+            periodoFinal = String.format("%d%02d", anio, mes);
+        }
 
-        // 2. Llamar al método eficiente del repositorio
-        List<Reclamos> reclamos = reclamosRepo.findReclamosByFilters(estadoFinal, buscarPor, queryFinal, anio, mes);
+        List<Reclamos> reclamos = reclamosRepo.findReclamosByFilters(estadoFinal, buscarPor, queryFinal, periodoFinal);
 
-        // 3. Mapear los resultados (ya filtrados) al DTO
+        // --- ¡LÓGICA DE MAPEO SIMPLIFICADA! ---
         return reclamos.stream()
                 .map(r -> {
-                    PersonaReclamo usuario = r.getPersonas().stream()
-                            .filter(p -> p.getTipoPersona() == TipoPersona.USUARIO)
-                            .findFirst().orElse(null);
+                    // La búsqueda manual de 'usuario' se elimina.
 
+                    // La lógica para encontrar el detalle, gestión, etc., más reciente se mantiene.
                     DetalleReclamo detalleRec = r.getDetalles().stream()
                             .max(Comparator.comparing(DetalleReclamo::getFechaCreacion, Comparator.nullsLast(Comparator.naturalOrder())))
                             .orElse(null);
@@ -66,7 +68,8 @@ public class ReclamosServiciosImpl implements IReclamosServicios {
                             .max(Comparator.comparing(MedidasAdoptadas::getFechaInicioImplementacion, Comparator.nullsLast(Comparator.naturalOrder())))
                             .orElse(null);
 
-                    return reclamoMapper.toTableDTO(r, usuario, detalleRec, gestion, resultadoRec, medidaRec);
+                    // ¡La llamada al mapper es más limpia! Ya no necesita el parámetro de la persona.
+                    return reclamoMapper.toTableDTO(r, detalleRec, gestion, resultadoRec, medidaRec);
                 })
                 .collect(Collectors.toList());
     }
@@ -74,43 +77,63 @@ public class ReclamosServiciosImpl implements IReclamosServicios {
     @Override
     @Transactional(readOnly = true)
     public ReclamoDTO buscarPorId(Integer id) {
-        return reclamosRepo.findById(id) // Asumiendo que findById carga todo lo necesario o tienes un método findByIdWithDetails
+        // Este método no necesita cambios.
+        return reclamosRepo.findById(id)
                 .map(reclamoMapper::toDetailDTO)
                 .orElse(null);
     }
 
+
     @Override
     @Transactional
     public ReclamoDTO guardarDesdeDTO(ReclamoDTO dto) {
-        Reclamos entity;
-        if (dto.getIdReclamo() != null) {
-            entity = reclamosRepo.findById(dto.getIdReclamo())
+        Reclamos reclamoEntity;
+
+        if (dto.getIdReclamo() != null && dto.getIdReclamo() > 0) {
+            // --- LÓGICA DE ACTUALIZACIÓN ---
+            reclamoEntity = reclamosRepo.findById(dto.getIdReclamo())
                     .orElseThrow(() -> new EntityNotFoundException("Reclamo no encontrado con id: " + dto.getIdReclamo()));
+
+            // Limpiamos las colecciones para reemplazarlas con las del DTO
+            reclamoEntity.getDetalles().clear();
+            reclamoEntity.getResultados().clear();
+
+            reclamoMapper.updateFromDto(dto, reclamoEntity);
+
         } else {
-            entity = reclamoMapper.toEntity(dto);
+            // --- LÓGICA DE CREACIÓN ---
+            reclamoEntity = reclamoMapper.toEntity(dto);
         }
 
-        // Forzar tipos de persona
-        if (entity.getPersonas() != null && !entity.getPersonas().isEmpty()) {
-            List<PersonaReclamo> personasList = new ArrayList<>(entity.getPersonas());
-
-            personasList.get(0).setTipoPersona(TipoPersona.PRESENTANTE);
-            log.info("---[SERVICIO] personas[0].tipoPersona = PRESENTANTE");
-
-            if (personasList.size() > 1) {
-                personasList.get(1).setTipoPersona(TipoPersona.USUARIO);
-                log.info("---[SERVICIO] personas[1].tipoPersona = USUARIO");
-            }
+        // Asignamos el tipo a cada persona
+        if (reclamoEntity.getPresentante() != null) {
+            reclamoEntity.getPresentante().setTipoPersona(TipoPersona.PRESENTANTE);
+        }
+        if (reclamoEntity.getAfectado() != null) {
+            reclamoEntity.getAfectado().setTipoPersona(TipoPersona.USUARIO);
         }
 
-        // Relaciones bidireccionales
-        if (entity.getPersonas() != null) entity.getPersonas().forEach(p -> p.setReclamo(entity));
-        if (entity.getDetalles() != null) entity.getDetalles().forEach(d -> d.setReclamo(entity));
-        if (entity.getGestion() != null) entity.getGestion().setReclamo(entity);
-        if (entity.getResultados() != null) entity.getResultados().forEach(r -> r.setReclamo(entity));
+        // --- ¡CORRECCIÓN FINAL Y CRUCIAL! ---
+        // Establecemos la relación bidireccional para TODAS las entidades hijas.
+        // Esto asegura que la FK 'id_reclamo' nunca sea nula.
+        final Reclamos finalEntity = reclamoEntity; // Necesario para usar dentro de lambdas
 
-        Reclamos saved = reclamosRepo.save(entity);
-        return reclamoMapper.toDetailDTO(saved);
+        if (finalEntity.getDetalles() != null) {
+            finalEntity.getDetalles().forEach(detalle -> detalle.setReclamo(finalEntity));
+        }
+        if (finalEntity.getResultados() != null) {
+            finalEntity.getResultados().forEach(resultado -> resultado.setReclamo(finalEntity));
+        }
+        if (finalEntity.getGestion() != null) {
+            finalEntity.getGestion().setReclamo(finalEntity);
+        }
+        // ... añadir aquí para 'medidas' si también es una relación que manejas en este DTO.
+
+        // Guardamos la entidad principal. Cascade se encargará del resto.
+        Reclamos reclamoGuardado = reclamosRepo.save(reclamoEntity);
+        log.info("Reclamo guardado/actualizado con ID: {}", reclamoGuardado.getIdReclamo());
+
+        return reclamoMapper.toDetailDTO(reclamoGuardado);
     }
 
     @Override
@@ -138,7 +161,7 @@ public class ReclamosServiciosImpl implements IReclamosServicios {
 
                 // Mapeo de columnas a DTO (ajustar índices según tu Excel)
                 // Columna B: FECHA RECLAMO
-                dto.setFechaReclamo(row.getCell(1).getDateCellValue().toInstant().atZone(ZoneId.systemDefault()).toLocalDate());
+//                dto.setFechaReclamo(row.getCell(1).getDateCellValue().toInstant().atZone(ZoneId.systemDefault()).toLocalDate());
 
                 // Columna D: TIPO DECLARANTE
                 String tipoDeclaranteStr = row.getCell(3).getStringCellValue();

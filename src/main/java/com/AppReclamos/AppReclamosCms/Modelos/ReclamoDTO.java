@@ -6,6 +6,8 @@ import com.AppReclamos.AppReclamosCms.Modelos.Enums.TipoDeclarante;
 import com.AppReclamos.AppReclamosCms.Modelos.Enums.TipoInstitucion;
 import com.AppReclamos.AppReclamosCms.Validations.ValidCodigoDeclarante;
 import com.AppReclamos.AppReclamosCms.Validations.ValidCodigoInstitucion;
+import jakarta.persistence.Column;
+import jakarta.validation.Valid;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
 import lombok.*;
@@ -29,8 +31,8 @@ public class ReclamoDTO {
     private Integer idReclamo;                       // PK
 
     @NotNull(message="Fecha de reclamo es obligatoria")
-    @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) // Formato yyyy-MM-dd
-    private LocalDate fechaReclamo;
+    @Column(name = "periodo_declaracion", nullable = false, length = 6)
+    private String periodoDeclaracion;
 
     @NotNull(message="Tipo de declarante es obligatorio")
     private TipoDeclarante tipoDeclarante;
@@ -62,7 +64,12 @@ public class ReclamoDTO {
     private EstadoReclamo estado;
 
     /* ---------- Personas involucradas ---------- */
-    private List<PersonaReclamoDTO> personas = new ArrayList<>();
+    // En ReclamoDTO.java
+    @Valid // Añade validación en cascada
+    private PersonaReclamoDTO presentante = new PersonaReclamoDTO();
+
+    @Valid // Añade validación en cascada
+    private PersonaReclamoDTO afectado = new PersonaReclamoDTO();
 
     /* ---------- Detalles del reclamo (puede haber varios) ---------- */
     private List<DetalleReclamoDTO> detalles = new ArrayList<>();

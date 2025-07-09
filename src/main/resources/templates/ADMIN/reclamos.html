@@ -1,6 +1,6 @@
 <!DOCTYPE html>
 <html xmlns:th="http://www.thymeleaf.org" xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
-<head th:replace="FRAGMENTS/head :: head">
+<head th:replace="~{FRAGMENTS/head :: head}">
 
     <style>
         .fila-clicable:hover {
@@ -13,8 +13,8 @@
 
 <div class="app-wrapper">
     <!-- Navbar y Sidebar -->
-    <nav   th:replace="FRAGMENTS/navbar  :: navbar"></nav>
-    <aside th:replace="FRAGMENTS/sidebar :: sidebar"></aside>
+    <div th:replace="~{FRAGMENTS/navbar  :: navbar}"></div>
+    <div th:replace="~{FRAGMENTS/sidebar :: sidebar}"></div>
 
     <!-- Main -->
     <main class="app-main">
@@ -112,14 +112,52 @@
                     <table class="table table-bordered table-hover table-striped mb-0">
                         <thead class="table-light text-center align-middle">
                         <tr>
-                            <th><input type="checkbox" id="master-checkbox" /></th>
-                            <th>Fecha</th>
-                            <th>Tipo Declarante</th>
-                            <th>Codigo Declarante</th>
-                            <th>Codigo UGIPRESS</th>
-                            <th>Tipo Institucion</th>
-                            <th>Medio</th>
-                            <th>Código</th>
+                            <th rowspan="2"><input type="checkbox" id="master-checkbox" /></th>
+                            <th rowspan="2">Periodo Declaración</th>
+                            <th rowspan="2">Tipo Declarante</th>
+                            <th rowspan="2">Código Declarante</th>
+                            <th rowspan="2">Código UGIPRESS</th>
+                            <th rowspan="2">Tipo Institución</th>
+                            <th rowspan="2">Medio</th>
+                            <th rowspan="2">Código Reclamo</th>
+
+                            <th colspan="7">Datos del Presentante</th>
+                            <th colspan="7">Datos del Usuario Afectado</th>
+
+                            <th rowspan="2">Fecha Recepción</th>
+                            <th rowspan="2">Descripción</th>
+                            <th rowspan="2">Servicio</th>
+                            <th rowspan="2">Competencia</th>
+                            <th rowspan="2">Clasificación 1</th>
+                            <th rowspan="2">Clasificación 2</th>
+                            <th rowspan="2">Clasificación 3</th>
+                            <th rowspan="2">Etapa Reclamo</th>
+                            <th rowspan="2">Cód. Primigenio</th>
+                            <th rowspan="2">Tipo Adm. Traslado</th>
+                            <th rowspan="2">Cód. Adm. Traslado</th>
+                            <th rowspan="2">Resultado</th>
+                            <th rowspan="2">Motivo Conclusión</th>
+                            <th rowspan="2">Fecha Resultado</th>
+                            <th rowspan="2">Comunicación</th>
+                            <th rowspan="2">Fecha Notificación</th>
+                            <th rowspan="2">Cód. Medida</th>
+                            <th rowspan="2">Naturaleza Medida</th>
+                            <th rowspan="2">Proceso Medida</th>
+                            <th rowspan="2">Fecha Inicio Imp.</th>
+                            <th rowspan="2">Fecha Culminación Prev.</th>
+                            <th rowspan="2">Desc. Medida</th>
+                            <th rowspan="2">Estado</th>
+
+                        </tr>
+                        <tr>
+                            <th>Tipo Doc.</th>
+                            <th>N° Doc.</th>
+                            <th>Razón Social</th>
+                            <th>Nombre</th>
+                            <th>Apellido P.</th>
+                            <th>Apellido M.</th>
+                            <th>Teléfono</th>
+
                             <th>Tipo Doc.</th>
                             <th>N° Doc.</th>
                             <th>Razón Social</th>
@@ -127,31 +165,6 @@
                             <th>Apellido P.</th>
                             <th>Apellido M.</th>
                             <th>Resultado Correo</th>
-                            <th>Domicilio</th>
-                            <th>Telefono</th>
-                            <th>FechaRecepcionDetalle</th>
-                            <th>DescripcionDetalle</th>
-                            <th>servicio</th>
-                            <th>competencia</th>
-                            <th>clasificacion1</th>
-                            <th>clasificacion2</th>
-                            <th>clasificacion3</th>
-                            <th>etapaReclamo</th>
-                            <th>codigoPrimigenio</th>
-                            <th>tipoAdministraTraslado</th>
-                            <th>codigoAdministraTraslado</th>
-                            <th>ResultadoReclamo</th>
-                            <th>MotivoConclusion</th>
-                            <th>fechaResultado</th>
-                            <th>comunicacionResultado</th>
-                            <th>fechaNotificacion</th>
-                            <th>codigoMedida</th>
-                            <th>NaturalezaMedida</th>
-                            <th>ProcesoMedida</th>
-                            <th>fechaInicioImplementacion</th>
-                            <th>fechaCulminacionPrevista</th>
-                            <th>descripcionMedida</th>
-                            <th>Estado</th>
                         </tr>
                         </thead>
                         <tbody>
@@ -160,23 +173,31 @@
                                 <input type="checkbox" class="fila-checkbox" th:value="${r.id}" />
                             </td>
 
-                            <td th:text="${#temporals.format(r.fechaReclamo, 'dd/MM/yyyy')}"
-                                class="text-center"></td>
+                            <td th:text="${r.periodoDeclaracion}"></td>
                             <td th:text="${r.tipoDeclarante}"></td>
                             <td th:text="${r.codigoDeclarante}"></td>
                             <td th:text="${r.codigoUgipress}"></td>
                             <td th:text="${r.tipoInstitucion}"></td>
                             <td th:text="${r.medioRecepcion}"></td>
                             <td th:text="${r.codigoReclamo}"></td>
-                            <td th:text="${r.tipoDocumentoAfectado}"></td>
-                            <td th:text="${r.numeroDocumentoAfectado}"></td>
-                            <td th:text="${r.razonSocialAfectado}"></td>
-                            <td th:text="${r.nombreAfectado}"></td>
-                            <td th:text="${r.apellidoPaterno}"></td>
-                            <td th:text="${r.apellidoMaterno}"></td>
-                            <td th:text="${r.resultadoPorCorreo}"></td>
-                            <td th:text="${r.domicilio}"></td>
-                            <td th:text="${r.telefono}"></td>
+
+                            <td th:text="${r.presentante?.tipoDocumento}"></td>
+                            <td th:text="${r.presentante?.numeroDocumento}"></td>
+                            <td th:text="${r.presentante?.razonSocial}"></td>
+                            <td th:text="${r.presentante?.nombres}"></td>
+                            <td th:text="${r.presentante?.apellidoPaterno}"></td>
+                            <td th:text="${r.presentante?.apellidoMaterno}"></td>
+                            <td th:text="${r.presentante?.telefono}"></td>
+
+                            <td th:text="${r.afectado?.tipoDocumento}"></td>
+                            <td th:text="${r.afectado?.numeroDocumento}"></td>
+                            <td th:text="${r.afectado?.razonSocial}"></td>
+                            <td th:text="${r.afectado?.nombres}"></td>
+                            <td th:text="${r.afectado?.apellidoPaterno}"></td>
+                            <td th:text="${r.afectado?.apellidoMaterno}"></td>
+                            <td th:text="${r.afectado?.resultadoPorCorreo == true ? 'Sí' : 'No'}"></td>
+
+
                             <td th:text="${r.fechaRecepcion}"></td>
                             <td th:text="${r.descripcion}"></td>
                             <td th:text="${r.servicio}"></td>

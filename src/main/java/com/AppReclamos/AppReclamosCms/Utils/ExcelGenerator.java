@@ -48,21 +48,21 @@ public class ExcelGenerator {
             for (ReclamoTablaDTO reclamo : reclamos) {
                 Row row = sheet.createRow(rowIdx++);
 
-                row.createCell(0).setCellValue(reclamo.getFechaReclamo() != null ? reclamo.getFechaReclamo().format(dateFormatter) : "");
+                //row.createCell(0).setCellValue(reclamo.getPeriodoDeclaracion() != null ? reclamo.getPeriodoDeclaracion().format(dateFormatter) : "");
                 row.createCell(1).setCellValue(reclamo.getTipoDeclarante() != null ? reclamo.getTipoDeclarante().toString() : "");
                 row.createCell(2).setCellValue(reclamo.getCodigoDeclarante());
                 row.createCell(3).setCellValue(reclamo.getCodigoUgipress());
                 row.createCell(4).setCellValue(reclamo.getTipoInstitucion() != null ? reclamo.getTipoInstitucion().toString() : "");
                 row.createCell(5).setCellValue(reclamo.getMedioRecepcion() != null ? reclamo.getMedioRecepcion().toString() : "");
                 row.createCell(6).setCellValue(reclamo.getCodigoReclamo());
-                row.createCell(7).setCellValue(reclamo.getTipoDocumentoAfectado() != null ? reclamo.getTipoDocumentoAfectado().toString() : "");
-                row.createCell(8).setCellValue(reclamo.getNumeroDocumentoAfectado());
-                row.createCell(9).setCellValue(reclamo.getRazonSocialAfectado());
-                row.createCell(10).setCellValue(reclamo.getNombreAfectado());
-                row.createCell(11).setCellValue(reclamo.getApellidoPaterno());
-                row.createCell(12).setCellValue(reclamo.getApellidoMaterno());
-                row.createCell(13).setCellValue(reclamo.getDomicilio());
-                row.createCell(14).setCellValue(reclamo.getTelefono());
+//                row.createCell(7).setCellValue(reclamo.getTipoDocumentoAfectado() != null ? reclamo.getTipoDocumentoAfectado().toString() : "");
+//                row.createCell(8).setCellValue(reclamo.getNumeroDocumentoAfectado());
+//                row.createCell(9).setCellValue(reclamo.getRazonSocialAfectado());
+//                row.createCell(10).setCellValue(reclamo.getNombreAfectado());
+//                row.createCell(11).setCellValue(reclamo.getApellidoPaterno());
+//                row.createCell(12).setCellValue(reclamo.getApellidoMaterno());
+//                row.createCell(13).setCellValue(reclamo.getDomicilio());
+//                row.createCell(14).setCellValue(reclamo.getTelefono());
                 row.createCell(15).setCellValue(reclamo.getFechaRecepcion() != null ? reclamo.getFechaRecepcion().format(dateFormatter) : "");
                 row.createCell(16).setCellValue(reclamo.getDescripcion());
                 row.createCell(17).setCellValue(reclamo.getServicio() != null ? reclamo.getServicio().toString() : "");
