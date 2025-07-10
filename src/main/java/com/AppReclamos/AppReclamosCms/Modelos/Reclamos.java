@@ -1,6 +1,9 @@
 package com.AppReclamos.AppReclamosCms.Modelos;
 
 
+import com.AppReclamos.AppReclamosCms.Modelos.Enums.MedioRecepcion;
+import com.AppReclamos.AppReclamosCms.Modelos.Enums.TipoDeclarante;
+import com.AppReclamos.AppReclamosCms.Modelos.Enums.TipoInstitucion;
 import jakarta.persistence.*;
 import lombok.*;
 
@@ -34,9 +37,9 @@ public class Reclamos implements Serializable {
     @Column(name = "periodo_declaracion", nullable = false, length = 6)
     private String periodoDeclaracion;
 
-    private String tipoDeclarante;
+    private TipoDeclarante tipoDeclarante;
     private String codigoDeclarante;
-    private String tipoInstitucion;
+    private TipoInstitucion tipoInstitucion;
     private String codigoInstitucion;
     private String codigoUgipress;
     private String codigoReclamo;
@@ -50,6 +53,8 @@ public class Reclamos implements Serializable {
     @OneToOne(cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.LAZY)
     @JoinColumn(name = "id_afectado") // Crea otra nueva columna FK
     private PersonaReclamo afectado;
+
+    private MedioRecepcion medioRecepcion;
 
 
     @OneToOne(mappedBy = "reclamo",

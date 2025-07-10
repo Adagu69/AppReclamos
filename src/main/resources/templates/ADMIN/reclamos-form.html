@@ -46,15 +46,17 @@
                                 </div>
                             </div>
 
-                            <div class="col-md-3">
-                                <label>Tipo Declarante</label>
-                                <select class="form-select"
-                                        th:field="*{tipoDeclarante}">
+                            <div class="col-md-4">
+                                <label>Tipo de Declarante</label>
+                                <select class="form-select" th:field="*{tipoDeclarante}" required>
+                                    <option value="">-- Seleccione una opción --</option>
                                     <option th:each="d : ${T(com.AppReclamos.AppReclamosCms.Modelos.Enums.TipoDeclarante).values()}"
-                                            th:value="${d}" th:text="${d}">
-
-                                    </option>
+                                            th:value="${d}"
+                                            th:text="${d.getGuiaUsuario()}"> </option>
                                 </select>
+                                <div class="text-danger"
+                                     th:if="${#fields.hasErrors('tipoDeclarante')}"
+                                     th:errors="*{tipoDeclarante}"></div>
                             </div>
                             <!-- 3. Código Declarante (numérico, hasta 8 dígitos, obligatorio) -->
                             <div class="col-md-3">
@@ -80,13 +82,13 @@
 
                             <div class="col-md-3">
                                 <label>Tipo Institución</label>
-                                <select class="form-select"
-                                        th:field="*{tipoInstitucion}">
+                                <select class="form-select" th:field="*{tipoInstitucion}" required>
+                                    <option value="">-- Seleccione --</option>
                                     <option th:each="i : ${T(com.AppReclamos.AppReclamosCms.Modelos.Enums.TipoInstitucion).values()}"
-                                            th:value="${i}" th:text="${i}">
-
-                                    </option>
+                                            th:value="${i}"
+                                            th:text="${i.getGuiaUsuario()}"> </option>
                                 </select>
+                                <div class="text-danger" th:if="${#fields.hasErrors('tipoInstitucion')}" th:errors="*{tipoInstitucion}"></div>
                             </div>
 
                             <!-- 6. Código Institución (numérico, hasta 8 dígitos, obligatorio) -->
@@ -102,13 +104,14 @@
 
                             <div class="col-md-3">
                                 <label>Medio del Reclamo</label>
-                                <select class="form-select"
-                                        th:field="*{medioRecepcion}">
+                                <select class="form-select" th:field="*{medioRecepcion}" required>
+                                    <option value="">-- Seleccione --</option>
                                     <option th:each="m : ${T(com.AppReclamos.AppReclamosCms.Modelos.Enums.MedioRecepcion).values()}"
                                             th:value="${m}"
-                                            th:text="${m}">
+                                            th:text="${m.getGuiaUsuario()}">
                                     </option>
                                 </select>
+                                <div class="text-danger" th:if="${#fields.hasErrors('medioRecepcion')}" th:errors="*{medioRecepcion}"></div>
                             </div>
 
                             <!-- 8. Código Reclamo (alfanumérico, hasta 20 caracteres, obligatorio) -->
@@ -159,8 +162,10 @@
                             <div class="col-md-3">
                                 <label>Tipo Doc.</label>
                                 <select class="form-select" th:field="*{presentante.tipoDocumento}" required>
+                                    <option value="">-- Seleccione --</option>
                                     <option th:each="d : ${T(com.AppReclamos.AppReclamosCms.Modelos.Enums.TipoDocumento).values()}"
-                                            th:value="${d}" th:text="${d}"></option>
+                                            th:value="${d}"
+                                            th:text="${d.getGuiaUsuario()}"> </option>
                                 </select>
                                 <div class="text-danger" th:if="${#fields.hasErrors('presentante.tipoDocumento')}" th:errors="*{presentante.tipoDocumento}"></div>
                             </div>
@@ -192,12 +197,29 @@
                                 <div class="text-danger" th:if="${#fields.hasErrors('presentante.correoElectronico')}" th:errors="*{presentante.correoElectronico}"></div>
                             </div>
 
+                            <!-- Domicilio -->
+                            <div class="col-md-6">
+                                <label>Domicilio</label>
+                                <input type="text" class="form-control" th:field="*{presentante.domicilio}" maxlength="200">
+                                <div class="text-danger" th:if="${#fields.hasErrors('presentante.domicilio')}" th:errors="*{presentante.domicilio}">
+                                </div>
+                            </div>
+
+                            <!-- Resultado al correo -->
+                            <div class="col-md-3">
+                                <label>Resultado al correo</label>
+                                <select class="form-select" th:field="*{presentante.resultadoPorCorreo}">
+                                    <option th:value="true">Sí</option>
+                                    <option th:value="false">No</option>
+                                </select>
+                                <div class="text-danger" th:if="${#fields.hasErrors('presentante.resultadoPorCorreo')}" th:errors="*{presentante.resultadoPorCorreo}"></div>
+                            </div>
                         </div>
                     </div>
 
 
                     <!-- ===========================================================================
-                         BLOQUE 2: IDENTIFICACIÓN DEL USUARIO O TERCERO (personas[1])
+                         BLOQUE 2: IDENTIFICACIÓN DEL USUARIO O TERCERO
                          =========================================================================== -->
                     <div class="card card-light mb-4">
                         <div class="card-header">
@@ -210,8 +232,10 @@
                             <div class="col-md-3">
                                 <label>Tipo Doc.</label>
                                 <select class="form-select" th:field="*{afectado.tipoDocumento}" required>
+                                    <option value="">-- Seleccione --</option>
                                     <option th:each="d : ${T(com.AppReclamos.AppReclamosCms.Modelos.Enums.TipoDocumento).values()}"
-                                            th:value="${d}" th:text="${d}"></option>
+                                            th:value="${d}"
+                                            th:text="${d.getGuiaUsuario()}"> </option>
                                 </select>
                                 <div class="text-danger" th:if="${#fields.hasErrors('afectado.tipoDocumento')}" th:errors="*{afectado.tipoDocumento}"></div>
                             </div>
@@ -249,32 +273,6 @@
                                 <div class="text-danger" th:if="${#fields.hasErrors('afectado.razonSocial')}" th:errors="*{afectado.razonSocial}"></div>
                             </div>
 
-                            <div class="col-md-3">
-                                <label>Resultado al correo</label>
-                                <select class="form-select" th:field="*{afectado.resultadoPorCorreo}">
-                                    <option th:value="true">Sí</option>
-                                    <option th:value="false">No</option>
-                                </select>
-                            </div>
-
-                            <!-- Teléfono -->
-                            <div class="col-md-3">
-                                <label>Teléfono</label>
-                                <input type="text" class="form-control" th:field="*{afectado.telefono}">
-                            </div>
-
-                            <!-- Email -->
-                            <div class="col-md-3">
-                                <label>Email</label>
-                                <input type="email" class="form-control" th:field="*{afectado.correoElectronico}">
-                            </div>
-
-                            <!-- Domicilio -->
-                            <div class="col-md-6">
-                                <label>Domicilio</label>
-                                <input type="text" class="form-control" th:field="*{afectado.domicilio}" maxlength="200">
-                            </div>
-
                         </div>
                     </div>
 
@@ -289,15 +287,13 @@
 
                             <!-- Medio de recepción del reclamo (obligatorio) -->
                             <div class="col-md-4">
-                                <label>Medio de recepción</label>
-                                <select class="form-select"
-                                        th:field="*{detalles[0].medioRecepcion}"
-                                        required>
-                                    <option th:each="m : ${T(com.AppReclamos.AppReclamosCms.Modelos.Enums.MedioRecepcion).values()}"
-                                            th:value="${m}"
-                                            th:text="${m}">
-                                    </option>
-                                </select>
+                                <label>Medio de recepción del Detalle</label> <select class="form-select" th:field="*{detalles[0].medioRecepcion}" required>
+                                <option value="">-- Seleccione --</option>
+                                <option th:each="m : ${T(com.AppReclamos.AppReclamosCms.Modelos.Enums.MedioRecepcion).values()}"
+                                        th:value="${m}"
+                                        th:text="${m.getGuiaUsuario()}">
+                                </option>
+                            </select>
                                 <div class="text-danger"
                                      th:if="${#fields.hasErrors('detalles[0].medioRecepcion')}"
                                      th:errors="*{detalles[0].medioRecepcion}"></div>
@@ -306,9 +302,13 @@
                             <!-- Fecha de recepción (obligatorio) -->
                             <div class="col-md-4">
                                 <label>Fecha de recepción</label>
-                                <input type="date"
+                                <input type="text"
                                        class="form-control"
                                        th:field="*{detalles[0].fechaRecepcion}"
+                                       placeholder="AAAAMMDD"
+                                       maxlength="8"
+                                       pattern="^(20)\d{6}$"
+                                       title="Ingrese la fecha en formato AAAAMMDD (ej. 20250709)"
                                        required>
                                 <div class="text-danger"
                                      th:if="${#fields.hasErrors('detalles[0].fechaRecepcion')}"
@@ -444,9 +444,10 @@
 
                             <div class="col-md-3">
                                 <label for="fechaResultado" class="form-label">Fecha de Resultado</label>
-                                <input type="date" id="fechaResultado" class="form-control"
+                                <input type="text" id="fechaResultado" class="form-control"
                                        th:field="*{resultados[0].fechaResultado}"
-                                       required>
+                                       placeholder="AAAAMMDD" maxlength="8" pattern="^(20)\d{6}$"
+                                       title="Ingrese la fecha en formato AAAAMMDD" required>
                                 <div class="text-danger"
                                      th:if="${#fields.hasErrors('resultados[0].fechaResultado')}"
                                      th:errors="*{resultados[0].fechaResultado}"></div>
@@ -481,9 +482,10 @@
 
                             <div class="col-md-3">
                                 <label for="fechaNotificacion" class="form-label">Fecha de Notificación del Resultado</label>
-                                <input type="date" id="fechaNotificacion" class="form-control"
+                                <input type="text" id="fechaNotificacion" class="form-control"
                                        th:field="*{resultados[0].fechaNotificacion}"
-                                       required>
+                                       placeholder="AAAAMMDD" maxlength="8" pattern="^(20)\d{6}$"
+                                       title="Ingrese la fecha en formato AAAAMMDD" required>
                                 <div class="text-danger"
                                      th:if="${#fields.hasErrors('resultados[0].fechaNotificacion')}"
                                      th:errors="*{resultados[0].fechaNotificacion}"></div>

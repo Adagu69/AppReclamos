@@ -6,6 +6,7 @@ import lombok.ToString;
 
 import java.io.Serializable;
 import java.time.LocalDate;
+import java.time.format.DateTimeFormatter;
 
 @Data
 @ToString(exclude = "reclamo")
@@ -25,8 +26,11 @@ public class ResultadoNotificacion implements Serializable {
     @Column(length = 255)
     private String comunicacionResultado;
 
-    private LocalDate fechaResultado;
-    private LocalDate fechaNotificacion;
+    @Column(name = "fecha_resultado", length = 8, nullable = false)
+    private String fechaResultado; // Formato AAAAMMDD
+
+    @Column(name = "fecha_notificacion", length = 8, nullable = false)
+    private String fechaNotificacion; // Formato AAAAMMDD
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "id_reclamo")
@@ -34,8 +38,9 @@ public class ResultadoNotificacion implements Serializable {
 
     @PrePersist
     private void prePersist() {
-        if (fechaNotificacion == null) {
-            fechaNotificacion = LocalDate.now();
+        // Si la fecha de notificación no se ha establecido, se pone la actual en el formato correcto.
+        if (this.fechaNotificacion == null || this.fechaNotificacion.isBlank()) {
+            this.fechaNotificacion = LocalDate.now().format(DateTimeFormatter.ofPattern("yyyyMMdd"));
         }
     }
 }

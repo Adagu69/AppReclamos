@@ -22,21 +22,40 @@ public class ReclamoTablaDTO {
     @NotNull(message="Fecha de reclamo es obligatoria")
     private String periodoDeclaracion;
 
-    private TipoDeclarante tipoDeclarante;
+    private Integer tipoDeclarante;
     private String codigoDeclarante;
     private String codigoUgipress;
-    private TipoInstitucion tipoInstitucion;
+    private Integer tipoInstitucion;
     private String codigoInstitucion;
-    MedioRecepcion medioRecepcion;
+    private Integer medioRecepcion;
     String  codigoReclamo;
 
-    // En ReclamoTablaDTO.java
-    private PersonaReclamoDTO presentante;
-    private PersonaReclamoDTO afectado;
+    // --- ¡CAMBIO CLAVE! ---
+    // Se reemplazan los objetos anidados por campos planos para la tabla y exportación.
+
+    // --- Datos del Presentante ---
+    private Integer tipoDocumento_presentante;
+    private String numeroDocumento_presentante;
+    private String razonSocial_presentante;
+    private String nombres_presentante;
+    private String apellidoPaterno_presentante;
+    private String apellidoMaterno_presentante;
+    private String telefono_presentante;
+    private String domicilio_presentante;
+    private String correoElectronico_presentante;
+    private Boolean resultadoPorCorreo_presentante;
+
+    // --- Datos del Afectado ---
+    private Integer tipoDocumento_afectado;
+    private String numeroDocumento_afectado;
+    private String razonSocial_afectado;
+    private String nombres_afectado;
+    private String apellidoPaterno_afectado;
+    private String apellidoMaterno_afectado;
 
 
     // --- ¡DETALLE DEL RECLAMO! ---
-    private LocalDate fechaRecepcion;
+    private String fechaRecepcion;
     private String descripcion;
 
 
@@ -56,9 +75,9 @@ public class ReclamoTablaDTO {
     // --- ¡RESULTADO Y NOTIFICACIÓN DEL RECLAMO! ---
     private ResultadoReclamo resultado;
     private MotivoConclusion motivoConclusion;
-    private LocalDate fechaResultado;
+    private String fechaResultado;      // Formato AAAAMMDD
+    private String fechaNotificacion;   // Formato AAAAMMDD
     private ComunicacionResultado comunicacionResultado;
-    private LocalDate fechaNotificacion;
 
 
     private String codigoMedida;

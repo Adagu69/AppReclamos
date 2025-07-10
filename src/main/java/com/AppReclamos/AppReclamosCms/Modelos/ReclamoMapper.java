@@ -43,8 +43,36 @@ public interface ReclamoMapper {
     @Mapping(target = "id", source = "entity.idReclamo")
     @Mapping(target = "estado", expression = "java(toEnum(entity.getEstadoReclamo(), EstadoReclamo.class))")
 
+    // ¡CAMBIO CLAVE! Añadimos un mapeo explícito para la conversión
+    @Mapping(target = "tipoDeclarante", expression = "java(entity.getTipoDeclarante() != null ? entity.getTipoDeclarante().getCodigo() : null)")
+    @Mapping(target = "tipoInstitucion", expression = "java(entity.getTipoInstitucion() != null ? entity.getTipoInstitucion().getCodigo() : null)")
+
+    // --- Mapeos para Presentante ---
+    @Mapping(target = "tipoDocumento_presentante", expression = "java(entity.getPresentante() != null && entity.getPresentante().getTipoDocumento() != null ? entity.getPresentante().getTipoDocumento().getCodigo() : null)")
+    @Mapping(target = "numeroDocumento_presentante", source = "entity.presentante.numeroDocumento")
+    @Mapping(target = "nombres_presentante", source = "entity.presentante.nombres")
+    @Mapping(target = "apellidoPaterno_presentante", source = "entity.presentante.apellidoPaterno")
+    @Mapping(target = "apellidoMaterno_presentante", source = "entity.presentante.apellidoMaterno")
+    @Mapping(target = "razonSocial_presentante", source = "entity.presentante.razonSocial")
+    @Mapping(target = "telefono_presentante", source = "entity.presentante.telefono")
+    @Mapping(target = "domicilio_presentante", source = "entity.presentante.domicilio")
+    @Mapping(target = "correoElectronico_presentante", source = "entity.presentante.correoElectronico")
+    @Mapping(target = "resultadoPorCorreo_presentante", source = "entity.presentante.resultadoPorCorreo")
+
+    // ... y así para todos los demás campos del presentante ...
+
+    // --- Mapeos para Afectado ---
+    @Mapping(target = "tipoDocumento_afectado", expression = "java(entity.getAfectado() != null && entity.getAfectado().getTipoDocumento() != null ? entity.getAfectado().getTipoDocumento().getCodigo() : null)")
+    @Mapping(target = "numeroDocumento_afectado", source = "entity.afectado.numeroDocumento")
+    @Mapping(target = "nombres_afectado", source = "entity.afectado.nombres")
+    @Mapping(target = "apellidoPaterno_afectado", source = "entity.afectado.apellidoPaterno")
+    @Mapping(target = "apellidoMaterno_afectado", source = "entity.afectado.apellidoMaterno")
+    @Mapping(target = "razonSocial_afectado", source = "entity.afectado.razonSocial")
+
+    // ... y así para todos los demás campos del afectado ...
+
     // Mapeos para DetalleReclamo
-    @Mapping(target = "medioRecepcion", expression = "java(detalleReciente != null ? detalleReciente.getMedioRecepcion() : null)")
+    @Mapping(target = "medioRecepcion", expression = "java(detalleReciente != null && detalleReciente.getMedioRecepcion() != null ? detalleReciente.getMedioRecepcion().getCodigo() : null)")
     @Mapping(target = "fechaRecepcion", expression = "java(detalleReciente != null ? detalleReciente.getFechaRecepcion() : null)")
     @Mapping(target = "descripcion", expression = "java(detalleReciente != null ? detalleReciente.getDescripcion() : null)")
 

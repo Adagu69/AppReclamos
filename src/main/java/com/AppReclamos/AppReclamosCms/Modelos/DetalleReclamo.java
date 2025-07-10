@@ -27,11 +27,11 @@ public class DetalleReclamo implements Serializable {
     private Integer id;
 
 
-    @Enumerated(EnumType.STRING)
-    @Column(name = "medio_recepcion", length = 20, nullable = false)
+    @Column(name = "medio_recepcion", nullable = false)
     private MedioRecepcion medioRecepcion;
 
-    private LocalDate fechaRecepcion;
+    @Column(name = "fecha_recepcion", length = 8, nullable = false)
+    private String fechaRecepcion; // Formato AAAAMMDD
 
     @Column(columnDefinition = "TEXT")
     private String descripcion;

@@ -63,7 +63,7 @@ public class ExcelGenerator {
 //                row.createCell(12).setCellValue(reclamo.getApellidoMaterno());
 //                row.createCell(13).setCellValue(reclamo.getDomicilio());
 //                row.createCell(14).setCellValue(reclamo.getTelefono());
-                row.createCell(15).setCellValue(reclamo.getFechaRecepcion() != null ? reclamo.getFechaRecepcion().format(dateFormatter) : "");
+//                row.createCell(15).setCellValue(reclamo.getFechaRecepcion() != null ? reclamo.getFechaRecepcion().format(dateFormatter) : "");
                 row.createCell(16).setCellValue(reclamo.getDescripcion());
                 row.createCell(17).setCellValue(reclamo.getServicio() != null ? reclamo.getServicio().toString() : "");
                 row.createCell(18).setCellValue(reclamo.getCompetencia() != null ? reclamo.getCompetencia().toString() : "");
@@ -73,9 +73,9 @@ public class ExcelGenerator {
                 row.createCell(22).setCellValue(reclamo.getEtapaReclamo() != null ? reclamo.getEtapaReclamo().toString() : "");
                 row.createCell(23).setCellValue(reclamo.getResultado() != null ? reclamo.getResultado().toString() : "");
                 row.createCell(24).setCellValue(reclamo.getMotivoConclusion() != null ? reclamo.getMotivoConclusion().toString() : "");
-                row.createCell(25).setCellValue(reclamo.getFechaResultado() != null ? reclamo.getFechaResultado().format(dateFormatter) : "");
-                row.createCell(26).setCellValue(reclamo.getComunicacionResultado() != null ? reclamo.getComunicacionResultado().toString() : "");
-                row.createCell(27).setCellValue(reclamo.getFechaNotificacion() != null ? reclamo.getFechaNotificacion().format(dateFormatter) : "");
+//                row.createCell(25).setCellValue(reclamo.getFechaResultado() != null ? reclamo.getFechaResultado().format(dateFormatter) : "");
+//                row.createCell(26).setCellValue(reclamo.getComunicacionResultado() != null ? reclamo.getComunicacionResultado().toString() : "");
+//                row.createCell(27).setCellValue(reclamo.getFechaNotificacion() != null ? reclamo.getFechaNotificacion().format(dateFormatter) : "");
                 row.createCell(28).setCellValue(reclamo.getEstado() != null ? reclamo.getEstado().toString() : "");
             }
 

@@ -4,6 +4,7 @@ import com.AppReclamos.AppReclamosCms.Modelos.Enums.MedioRecepcion;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
+import jakarta.validation.constraints.Pattern;
 import jakarta.validation.constraints.Size;
 import lombok.*;
 import org.springframework.format.annotation.DateTimeFormat;
@@ -25,10 +26,11 @@ public class DetalleReclamoDTO {
     /** Medio por el que se recibió la comunicación (catálogo fijo). */
     private MedioRecepcion medioRecepcion;     // VENTANILLA | CORREO | WEB | TELEFONICO | OTRO
 
-    /** Fecha en que se registró o se recibió el reclamo. */
-    @NotNull(message="Fecha de reclamo es obligatoria")
-    @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) // Formato yyyy-MM-dd
-    private LocalDate fechaRecepcion;
+    /** Fecha en que se registró o se recibió el reclamo, en formato AAAAMMDD. */
+    @NotBlank(message="La fecha de recepción es obligatoria")
+    @Pattern(regexp = "^(20)\\d{6}$", message = "El formato debe ser AAAAMMDD y el año debe empezar con 20")
+    @Size(min = 8, max = 8, message = "La fecha debe tener exactamente 8 dígitos")
+    private String fechaRecepcion;
 
     /** Descripción libre del hecho o ampliación del reclamo. */
     @NotBlank

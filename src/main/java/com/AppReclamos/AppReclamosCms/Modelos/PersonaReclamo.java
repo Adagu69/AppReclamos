@@ -31,8 +31,8 @@ public class PersonaReclamo implements Serializable {
     @Column(name = "tipo_persona", length = 15, nullable = false)
     private TipoPersona tipoPersona;
 
-    @Enumerated(EnumType.STRING)
-    @Column(name = "tipo_documento", length = 10, nullable = false)
+
+    @Column(name = "tipo_documento", nullable = false)
     private TipoDocumento tipoDocumento;
 
 
@@ -53,6 +53,5 @@ public class PersonaReclamo implements Serializable {
 
     @Column(columnDefinition = "TEXT")
     private String domicilio;
-
 
 }

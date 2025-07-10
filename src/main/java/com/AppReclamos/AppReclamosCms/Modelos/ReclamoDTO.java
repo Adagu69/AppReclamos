@@ -57,7 +57,7 @@ public class ReclamoDTO {
     /** Código correlativo visible para el usuario (si lo manejas aparte) */
     private String       nroReclamo;
 
-    @NotNull(message="Medio de recepción es obligatorio")
+    @NotNull(message="Medio de recepción principal es obligatorio")
     private MedioRecepcion medioRecepcion;
 
     @NotNull(message="Estado es obligatorio")

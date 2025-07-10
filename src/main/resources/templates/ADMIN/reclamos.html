@@ -107,134 +107,140 @@
 
             <!-- Tabla -->
             <div class="table-responsive">
-            <div class="card">
-                <div class="card-body p-0">
-                    <table class="table table-bordered table-hover table-striped mb-0">
-                        <thead class="table-light text-center align-middle">
-                        <tr>
-                            <th rowspan="2"><input type="checkbox" id="master-checkbox" /></th>
-                            <th rowspan="2">Periodo Declaración</th>
-                            <th rowspan="2">Tipo Declarante</th>
-                            <th rowspan="2">Código Declarante</th>
-                            <th rowspan="2">Código UGIPRESS</th>
-                            <th rowspan="2">Tipo Institución</th>
-                            <th rowspan="2">Medio</th>
-                            <th rowspan="2">Código Reclamo</th>
+                <div class="card">
+                    <div class="card-body p-0">
+                        <table class="table table-bordered table-hover table-striped mb-0">
+                            <thead class="table-light text-center align-middle">
+                            <tr>
+                                <th rowspan="2"><input type="checkbox" id="master-checkbox" /></th>
 
-                            <th colspan="7">Datos del Presentante</th>
-                            <th colspan="7">Datos del Usuario Afectado</th>
+                                <th colspan="7">ENTIDAD QUE REPORTA EL RECLAMO A LA SUPERINTENDENCIA</th>
+                                <th colspan="10">DATOS DEL PRESENTANTE</th> <th colspan="6">DATOS DEL USUARIO AFECTADO</th>
+                                <th colspan="3">DETALLE DEL RECLAMO</th>
+                                <th colspan="10">DE LA GESTIÓN DEL RECLAMO</th>
+                                <th colspan="5">RESULTADO Y NOTIFICACIÓN DEL RECLAMO</th>
+                                <th colspan="6">INFORMACIÓN DE LAS MEDIDAS ADOPTADAS O POR ADOPTAR</th>
+                            </tr>
+                            <tr>
+                                <th>Periodo Declaración</th>
+                                <th>Tipo Declarante</th>
+                                <th>Código Declarante</th>
+                                <th>Código UGIPRESS</th>
+                                <th>Tipo Institución</th>
+                                <th>Medio</th>
+                                <th>Código Reclamo</th>
 
-                            <th rowspan="2">Fecha Recepción</th>
-                            <th rowspan="2">Descripción</th>
-                            <th rowspan="2">Servicio</th>
-                            <th rowspan="2">Competencia</th>
-                            <th rowspan="2">Clasificación 1</th>
-                            <th rowspan="2">Clasificación 2</th>
-                            <th rowspan="2">Clasificación 3</th>
-                            <th rowspan="2">Etapa Reclamo</th>
-                            <th rowspan="2">Cód. Primigenio</th>
-                            <th rowspan="2">Tipo Adm. Traslado</th>
-                            <th rowspan="2">Cód. Adm. Traslado</th>
-                            <th rowspan="2">Resultado</th>
-                            <th rowspan="2">Motivo Conclusión</th>
-                            <th rowspan="2">Fecha Resultado</th>
-                            <th rowspan="2">Comunicación</th>
-                            <th rowspan="2">Fecha Notificación</th>
-                            <th rowspan="2">Cód. Medida</th>
-                            <th rowspan="2">Naturaleza Medida</th>
-                            <th rowspan="2">Proceso Medida</th>
-                            <th rowspan="2">Fecha Inicio Imp.</th>
-                            <th rowspan="2">Fecha Culminación Prev.</th>
-                            <th rowspan="2">Desc. Medida</th>
-                            <th rowspan="2">Estado</th>
+                                <th>Tipo Doc.</th>
+                                <th>N° Doc.</th>
+                                <th>Razón Social</th>
+                                <th>Nombre</th>
+                                <th>Apellido P.</th>
+                                <th>Apellido M.</th>
+                                <th>Teléfono</th>
+                                <th>Domicilio</th>
+                                <th>Email</th>
+                                <th>Resultado Correo</th>
 
-                        </tr>
-                        <tr>
-                            <th>Tipo Doc.</th>
-                            <th>N° Doc.</th>
-                            <th>Razón Social</th>
-                            <th>Nombre</th>
-                            <th>Apellido P.</th>
-                            <th>Apellido M.</th>
-                            <th>Teléfono</th>
+                                <th>Tipo Doc.</th>
+                                <th>N° Doc.</th>
+                                <th>Razón Social</th>
+                                <th>Nombre</th>
+                                <th>Apellido P.</th>
+                                <th>Apellido M.</th>
 
-                            <th>Tipo Doc.</th>
-                            <th>N° Doc.</th>
-                            <th>Razón Social</th>
-                            <th>Nombre</th>
-                            <th>Apellido P.</th>
-                            <th>Apellido M.</th>
-                            <th>Resultado Correo</th>
-                        </tr>
-                        </thead>
-                        <tbody>
-                        <tr th:each="r : ${reclamos}" th:data-href="@{/admin/reclamos/editar/{id}(id=${r.id})}" class="fila-clicable">
-                            <td class="text-center" onclick="event.stopPropagation();">
-                                <input type="checkbox" class="fila-checkbox" th:value="${r.id}" />
-                            </td>
+                                <th>Medio Recepción</th>
+                                <th>Fecha Recepción</th>
+                                <th>Descripción</th>
 
-                            <td th:text="${r.periodoDeclaracion}"></td>
-                            <td th:text="${r.tipoDeclarante}"></td>
-                            <td th:text="${r.codigoDeclarante}"></td>
-                            <td th:text="${r.codigoUgipress}"></td>
-                            <td th:text="${r.tipoInstitucion}"></td>
-                            <td th:text="${r.medioRecepcion}"></td>
-                            <td th:text="${r.codigoReclamo}"></td>
+                                <th>Servicio</th>
+                                <th>Competencia</th>
+                                <th>Clasificación 1</th>
+                                <th>Clasificación 2</th>
+                                <th>Clasificación 3</th>
+                                <th>Etapa Reclamo</th>
+                                <th>Estado Reclamo</th>
+                                <th>Cód. Primigenio</th>
+                                <th>Tipo Adm. Traslado</th>
+                                <th>Cód. Adm. Traslado</th>
 
-                            <td th:text="${r.presentante?.tipoDocumento}"></td>
-                            <td th:text="${r.presentante?.numeroDocumento}"></td>
-                            <td th:text="${r.presentante?.razonSocial}"></td>
-                            <td th:text="${r.presentante?.nombres}"></td>
-                            <td th:text="${r.presentante?.apellidoPaterno}"></td>
-                            <td th:text="${r.presentante?.apellidoMaterno}"></td>
-                            <td th:text="${r.presentante?.telefono}"></td>
+                                <th>Resultado</th>
+                                <th>Motivo Conclusión</th>
+                                <th>Fecha Resultado</th>
+                                <th>Comunicación</th>
+                                <th>Fecha Notificación</th>
 
-                            <td th:text="${r.afectado?.tipoDocumento}"></td>
-                            <td th:text="${r.afectado?.numeroDocumento}"></td>
-                            <td th:text="${r.afectado?.razonSocial}"></td>
-                            <td th:text="${r.afectado?.nombres}"></td>
-                            <td th:text="${r.afectado?.apellidoPaterno}"></td>
-                            <td th:text="${r.afectado?.apellidoMaterno}"></td>
-                            <td th:text="${r.afectado?.resultadoPorCorreo == true ? 'Sí' : 'No'}"></td>
+                                <th>Cód. Medida</th>
+                                <th>Naturaleza Medida</th>
+                                <th>Proceso Medida</th>
+                                <th>Fecha Inicio Imp.</th>
+                                <th>Fecha Culminación Prev.</th>
+                                <th>Desc. Medida</th>
+                            </tr>
+                            </thead>
+                            <tbody>
+                            <tr th:each="r : ${reclamos}" th:data-href="@{/admin/reclamos/editar/{id}(id=${r.id})}" class="fila-clicable">
+                                <td class="text-center" onclick="event.stopPropagation();">
+                                    <input type="checkbox" class="fila-checkbox" th:value="${r.id}" />
+                                </td>
 
+                                <td th:text="${r.periodoDeclaracion }"></td>
+                                <td th:text="${r.tipoDeclarante}"></td>
+                                <td th:text="${r.codigoDeclarante}"></td>
+                                <td th:text="${r.codigoUgipress}"></td>
+                                <td th:text="${r.tipoInstitucion}"></td>
+                                <td th:text="${r.medioRecepcion}"></td>
+                                <td th:text="${r.codigoReclamo}"></td>
 
-                            <td th:text="${r.fechaRecepcion}"></td>
-                            <td th:text="${r.descripcion}"></td>
-                            <td th:text="${r.servicio}"></td>
-                            <td th:text="${r.competencia}"></td>
-                            <td th:text="${r.clasificacion1}"></td>
-                            <td th:text="${r.clasificacion2}"></td>
-                            <td th:text="${r.clasificacion3}"></td>
-                            <td th:text="${r.etapaReclamo}"></td>
-                            <td th:text="${r.codigoPrimigenio}"></td>
-                            <td th:text="${r.tipoAdministraTraslado}"></td>
-                            <td th:text="${r.codigoAdministraTraslado}"></td>
-                            <td th:text="${r.resultado}"></td>
-                            <td th:text="${r.motivoConclusion}"></td>
-                            <td th:text="${r.fechaResultado}"></td>
-                            <td th:text="${r.comunicacionResultado}"></td>
-                            <td th:text="${r.fechaNotificacion}"></td>
-                            <td th:text="${r.codigoMedida}"></td>
-                            <td th:text="${r.naturaleza}"></td>
-                            <td th:text="${r.proceso}"></td>
-                            <td th:text="${r.fechaInicioImplementacion}"></td>
-                            <td th:text="${r.fechaCulminacionPrevista}"></td>
-                            <td th:text="${r.descripcionMedida}"></td>
+                                <td th:text="${r.tipoDocumento_presentante}"></td>
+                                <td th:text="${r.numeroDocumento_presentante}"></td>
+                                <td th:text="${r.razonSocial_presentante}"></td>
+                                <td th:text="${r.nombres_presentante}"></td>
+                                <td th:text="${r.apellidoPaterno_presentante}"></td>
+                                <td th:text="${r.apellidoMaterno_presentante}"></td>
+                                <td th:text="${r.telefono_presentante}"></td>
+                                <td th:text="${r.domicilio_presentante}"></td>
+                                <td th:text="${r.correoElectronico_presentante}"></td>
+                                <td th:text="${r.resultadoPorCorreo_presentante == true ? 'Sí' : 'No'}"></td>
 
-                            <td>
-                                <span class="badge"
-                                      th:switch="${r.estado?.name()}"
-                                      th:text="${r.estado != null ? r.estado.toString().replace('_',' ') : 'Indefinido'}">
-                                    <th:block th:case="'REGISTRADO'" th:classappend="'bg-secondary'"></th:block>
-                                    <th:block th:case="'EN_PROCESO'" th:classappend="'bg-warning'"></th:block>
-                                    <th:block th:case="'CONCLUIDO'" th:classappend="'bg-success'"></th:block>
-                                    <th:block th:case="*"th:classappend="'bg-dark"></th:block> </span>
-                            </td>
-                        </tr>
-                        </tbody>
-                    </table>
+                                <td th:text="${r.tipoDocumento_afectado}"></td>
+                                <td th:text="${r.numeroDocumento_afectado}"></td>
+                                <td th:text="${r.razonSocial_afectado}"></td>
+                                <td th:text="${r.nombres_afectado}"></td>
+                                <td th:text="${r.apellidoPaterno_afectado}"></td>
+                                <td th:text="${r.apellidoMaterno_afectado}"></td>
+
+                                <td th:text="${r.medioRecepcion}"></td>
+                                <td th:text="${r.fechaRecepcion}"></td>
+                                <td th:text="${r.descripcion}"></td>
+
+                                <td th:text="${r.servicio}"></td>
+                                <td th:text="${r.competencia}"></td>
+                                <td th:text="${r.clasificacion1}"></td>
+                                <td th:text="${r.clasificacion2}"></td>
+                                <td th:text="${r.clasificacion3}"></td>
+                                <td th:text="${r.etapaReclamo}"></td>
+                                <td th:text="${r.estado}"></td>
+                                <td th:text="${r.codigoPrimigenio}"></td>
+                                <td th:text="${r.tipoAdministraTraslado}"></td>
+                                <td th:text="${r.codigoAdministraTraslado}"></td>
+
+                                <td th:text="${r.resultado}"></td>
+                                <td th:text="${r.motivoConclusion}"></td>
+                                <td th:text="${r.fechaResultado}"></td>
+                                <td th:text="${r.comunicacionResultado}"></td>
+                                <td th:text="${r.fechaNotificacion}"></td>
+
+                                <td th:text="${r.codigoMedida}"></td>
+                                <td th:text="${r.naturaleza}"></td>
+                                <td th:text="${r.proceso}"></td>
+                                <td th:text="${r.fechaInicioImplementacion}"></td>
+                                <td th:text="${r.fechaCulminacionPrevista}"></td>
+                                <td th:text="${r.descripcionMedida}"></td>
+                            </tr>
+                            </tbody>
+                        </table>
+                    </div>
                 </div>
-            </div>
             </div>
         </div>
     </main>
