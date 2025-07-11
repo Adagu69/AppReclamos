@@ -140,28 +140,28 @@
                             <!-- Nombres -->
                             <div class="col-md-6">
                                 <label>Nombres</label>
-                                <input type="text" class="form-control" th:field="*{presentante.nombres}" required maxlength="150" pattern="[A-Za-zÁÉÍÓÚáéíóúñÑ ]+">
+                                <input id="presentanteNombres" type="text" class="form-control" th:field="*{presentante.nombres}" required >
                                 <div class="text-danger" th:if="${#fields.hasErrors('presentante.nombres')}" th:errors="*{presentante.nombres}"></div>
                             </div>
 
                             <!-- Ape. Paterno -->
                             <div class="col-md-3">
                                 <label>Ape. Paterno</label>
-                                <input type="text" class="form-control" th:field="*{presentante.apellidoPaterno}" maxlength="150" pattern="[A-Za-zÁÉÍÓÚáéíóúñÑ ]*">
+                                <input id="presentanteApePaterno" type="text" class="form-control" th:field="*{presentante.apellidoPaterno}" required>
                                 <div class="text-danger" th:if="${#fields.hasErrors('presentante.apellidoPaterno')}" th:errors="*{presentante.apellidoPaterno}"></div>
                             </div>
 
                             <!-- Ape. Materno -->
                             <div class="col-md-3">
                                 <label>Ape. Materno</label>
-                                <input type="text" class="form-control" th:field="*{presentante.apellidoMaterno}" maxlength="150" pattern="[A-Za-zÁÉÍÓÚáéíóúñÑ ]*">
+                                <input id="presentanteApeMaterno" type="text" class="form-control" th:field="*{presentante.apellidoMaterno}" required>
                                 <div class="text-danger" th:if="${#fields.hasErrors('presentante.apellidoMaterno')}" th:errors="*{presentante.apellidoMaterno}"></div>
                             </div>
 
                             <!-- Tipo Doc. -->
                             <div class="col-md-3">
                                 <label>Tipo Doc.</label>
-                                <select class="form-select" th:field="*{presentante.tipoDocumento}" required>
+                                <select id="presentanteTipoDocumento" class="form-select" th:field="*{presentante.tipoDocumento}" required>
                                     <option value="">-- Seleccione --</option>
                                     <option th:each="d : ${T(com.AppReclamos.AppReclamosCms.Modelos.Enums.TipoDocumento).values()}"
                                             th:value="${d}"
@@ -173,27 +173,27 @@
                             <!-- N.º Documento -->
                             <div class="col-md-3">
                                 <label>N.º Documento</label>
-                                <input type="text" class="form-control" th:field="*{presentante.numeroDocumento}" required maxlength="15" pattern="\d+">
+                                <input id="presentanteNumeroDocumento" type="text" class="form-control" th:field="*{presentante.numeroDocumento}" required>
                                 <div class="text-danger" th:if="${#fields.hasErrors('presentante.numeroDocumento')}" th:errors="*{presentante.numeroDocumento}"></div>
                             </div>
 
                             <!-- Razón Social (solo si es RUC) -->
                             <div class="col-md-6" id="razonSolPresentante" style="display:none;">
                                 <label>Razón Social</label>
-                                <input type="text" class="form-control" th:field="*{presentante.razonSocial}" maxlength="150" pattern="[A-Za-z0-9ÁÉÍÓÚáéíóúñÑ&., ]+">
+                                <input id="presentanteRazonSocial" type="text" class="form-control" th:field="*{presentante.razonSocial}">
                                 <div class="text-danger" th:if="${#fields.hasErrors('presentante.razonSocial')}" th:errors="*{presentante.razonSocial}"></div>
                             </div>
 
                             <!-- Teléfono -->
                             <div class="col-md-3">
                                 <label>Teléfono</label>
-                                <input type="text" class="form-control" th:field="*{presentante.telefono}">
+                                <input type="text" class="form-control" th:field="*{presentante.telefono}" maxlength="9" pattern="\d{9}" title="Ingrese un número de teléfono válido de 9 dígitos">
                             </div>
 
                             <!-- Email -->
                             <div class="col-md-3">
                                 <label>Email</label>
-                                <input type="email" class="form-control" th:field="*{presentante.correoElectronico}">
+                                <input type="email" class="form-control" th:field="*{presentante.correoElectronico}" maxlength="100" >
                                 <div class="text-danger" th:if="${#fields.hasErrors('presentante.correoElectronico')}" th:errors="*{presentante.correoElectronico}"></div>
                             </div>
 
@@ -207,13 +207,17 @@
 
                             <!-- Resultado al correo -->
                             <div class="col-md-3">
-                                <label>Resultado al correo</label>
-                                <select class="form-select" th:field="*{presentante.resultadoPorCorreo}">
-                                    <option th:value="true">Sí</option>
-                                    <option th:value="false">No</option>
-                                </select>
-                                <div class="text-danger" th:if="${#fields.hasErrors('presentante.resultadoPorCorreo')}" th:errors="*{presentante.resultadoPorCorreo}"></div>
-                            </div>
+                            <label>Resultado al correo</label>
+                            <select class="form-select" th:field="*{presentante.resultadoPorCorreo}" required>
+                                <option value="">-- Seleccione --</option>
+
+                                <option th:each="rc : ${T(com.AppReclamos.AppReclamosCms.Modelos.Enums.ResultadoCorreo).values()}"
+                                        th:value="${rc}"
+                                        th:text="${rc.getGuiaUsuario()}">
+                                </option>
+                            </select>
+                            <div class="text-danger" th:if="${#fields.hasErrors('presentante.resultadoPorCorreo')}" th:errors="*{presentante.resultadoPorCorreo}"></div>
+                        </div>
                         </div>
                     </div>
 
@@ -231,7 +235,7 @@
                             <!-- Tipo documento -->
                             <div class="col-md-3">
                                 <label>Tipo Doc.</label>
-                                <select class="form-select" th:field="*{afectado.tipoDocumento}" required>
+                                <select id="afectadoTipoDocumento" class="form-select" th:field="*{afectado.tipoDocumento}" required>
                                     <option value="">-- Seleccione --</option>
                                     <option th:each="d : ${T(com.AppReclamos.AppReclamosCms.Modelos.Enums.TipoDocumento).values()}"
                                             th:value="${d}"
@@ -243,33 +247,33 @@
                             <!-- Número del documento -->
                             <div class="col-md-3">
                                 <label>N.º Documento</label>
-                                <input type="text" class="form-control" th:field="*{afectado.numeroDocumento}" required maxlength="15" pattern="\d+">
+                                <input id="afectadoNumeroDocumento" type="text" class="form-control" th:field="*{afectado.numeroDocumento}" required >
                                 <div class="text-danger" th:if="${#fields.hasErrors('afectado.numeroDocumento')}" th:errors="*{afectado.numeroDocumento}"></div>
                             </div>
 
                             <!-- Nombres -->
                             <div class="col-md-3">
                                 <label>Nombres</label>
-                                <input type="text" class="form-control" th:field="*{afectado.nombres}" required maxlength="150" pattern="[A-Za-zÁÉÍÓÚáéíóúñÑ ]+">
+                                <input id="afectadoNombres" type="text" class="form-control" th:field="*{afectado.nombres}" required >
                                 <div class="text-danger" th:if="${#fields.hasErrors('afectado.nombres')}" th:errors="*{afectado.nombres}"></div>
                             </div>
 
                             <div class="col-md-3">
                                 <label>Ape. Paterno</label>
-                                <input type="text" class="form-control" th:field="*{afectado.apellidoPaterno}" maxlength="150" pattern="[A-Za-zÁÉÍÓÚáéíóúñÑ ]*">
+                                <input id="afectadoApePaterno" type="text" class="form-control" th:field="*{afectado.apellidoPaterno}" >
                                 <div class="text-danger" th:if="${#fields.hasErrors('afectado.apellidoPaterno')}" th:errors="*{afectado.apellidoPaterno}"></div>
                             </div>
 
                             <div class="col-md-3">
                                 <label>Ape. Materno</label>
-                                <input type="text" class="form-control" th:field="*{afectado.apellidoMaterno}" maxlength="150" pattern="[A-Za-zÁÉÍÓÚáéíóúñÑ ]*">
+                                <input id="afectadoApeMaterno" type="text" class="form-control" th:field="*{afectado.apellidoMaterno}" >
                                 <div class="text-danger" th:if="${#fields.hasErrors('afectado.apellidoMaterno')}" th:errors="*{afectado.apellidoMaterno}"></div>
                             </div>
 
                             <!-- Razón Social (solo si es RUC) -->
                             <div class="col-md-6" id="razonSolAfectado" style="display:none;">
                                 <label>Razón Social</label>
-                                <input type="text" class="form-control" th:field="*{afectado.razonSocial}" maxlength="150" pattern="[A-Za-z0-9ÁÉÍÓÚáéíóúñÑ&., ]+">
+                                <input id="afectadoRazonSocial" type="text" class="form-control" th:field="*{afectado.razonSocial}">
                                 <div class="text-danger" th:if="${#fields.hasErrors('afectado.razonSocial')}" th:errors="*{afectado.razonSocial}"></div>
                             </div>
 
@@ -287,27 +291,22 @@
 
                             <!-- Medio de recepción del reclamo (obligatorio) -->
                             <div class="col-md-4">
-                                <label>Medio de recepción del Detalle</label> <select class="form-select" th:field="*{detalles[0].medioRecepcion}" required>
-                                <option value="">-- Seleccione --</option>
-                                <option th:each="m : ${T(com.AppReclamos.AppReclamosCms.Modelos.Enums.MedioRecepcion).values()}"
-                                        th:value="${m}"
-                                        th:text="${m.getGuiaUsuario()}">
-                                </option>
-                            </select>
-                                <div class="text-danger"
-                                     th:if="${#fields.hasErrors('detalles[0].medioRecepcion')}"
-                                     th:errors="*{detalles[0].medioRecepcion}"></div>
+                                <label>Medio de Presentación del Detalle</label>
+                                <select id="medioPresentacionSelect" class="form-select" th:field="*{detalles[0].medioPresentacion}" required>
+                                    <option value="">-- Seleccione --</option>
+                                    <option th:each="m : ${T(com.AppReclamos.AppReclamosCms.Modelos.Enums.MedioPresentacion).values()}"
+                                            th:value="${m}" th:text="${m.getGuiaUsuario()}"></option>
+                                </select>
                             </div>
 
                             <!-- Fecha de recepción (obligatorio) -->
-                            <div class="col-md-4">
-                                <label>Fecha de recepción</label>
+                            <div class="col-md-4"> <label>Fecha de recepción</label>
                                 <input type="text"
                                        class="form-control"
                                        th:field="*{detalles[0].fechaRecepcion}"
                                        placeholder="AAAAMMDD"
                                        maxlength="8"
-                                       pattern="^(20)\d{6}$"
+                                       pattern="^(20)\\d{6}$"
                                        title="Ingrese la fecha en formato AAAAMMDD (ej. 20250709)"
                                        required>
                                 <div class="text-danger"
@@ -341,33 +340,39 @@
                                 <label for="servicioSelect">Servicio de origen <span class="text-danger">*</span></label>
                                 <select class="form-select" id="servicioSelect" th:field="*{gestion.servicio}" required>
                                     <option value="">– Seleccione –</option>
+
                                     <option th:each="s : ${T(com.AppReclamos.AppReclamosCms.Modelos.Enums.GestionServicios).values()}"
                                             th:value="${s}"
-                                            th:text="${s.name().replaceAll('_', ' ')}">
+                                            th:text="${s.getGuiaUsuario()}">
                                     </option>
                                 </select>
+                                <div class="text-danger" th:if="${#fields.hasErrors('gestion.servicio')}" th:errors="*{gestion.servicio}"></div>
                             </div>
 
                             <div class="col-md-4">
                                 <label for="competenciaSelect">Competencia <span class="text-danger">*</span></label>
                                 <select class="form-select" id="competenciaSelect" th:field="*{gestion.competencia}" required>
                                     <option value="">– Seleccione –</option>
+
                                     <option th:each="c : ${T(com.AppReclamos.AppReclamosCms.Modelos.Enums.GestionCompetencia).values()}"
                                             th:value="${c}"
-                                            th:text="${(c == T(com.AppReclamos.AppReclamosCms.Modelos.Enums.GestionCompetencia).SI) ? 'Sí' : ((c == T(com.AppReclamos.AppReclamosCms.Modelos.Enums.GestionCompetencia).NO) ? 'No' : 'Compartida')}">
+                                            th:text="${c.getGuiaUsuario()}">
                                     </option>
                                 </select>
+                                <div class="text-danger" th:if="${#fields.hasErrors('gestion.competencia')}" th:errors="*{gestion.competencia}"></div>
                             </div>
 
                             <div class="col-md-4">
                                 <label for="estadoReclamoSelect">Estado del Reclamo <span class="text-danger">*</span></label>
                                 <select class="form-select" id="estadoReclamoSelect" th:field="*{estado}" required>
                                     <option value="">– Seleccione –</option>
-                                    <option th:each="e : ${estadosEnum}"
+
+                                    <option th:each="e : ${T(com.AppReclamos.AppReclamosCms.Modelos.Enums.EstadoReclamo).values()}"
                                             th:value="${e}"
-                                            th:text="${e}">
+                                            th:text="${e.getGuiaUsuario()}">
                                     </option>
                                 </select>
+                                <div class="text-danger" th:if="${#fields.hasErrors('estado')}" th:errors="*{estado}"></div>
                             </div>
 
                             <div class="col-md-4 clasificaciones-group"
@@ -404,26 +409,29 @@
                                 <label for="etapaSelect">Etapa del Reclamo <span class="text-danger">*</span></label>
                                 <select class="form-select" id="etapaSelect" th:field="*{gestion.etapaReclamo}" required>
                                     <option value="">– Seleccione –</option>
+
                                     <option th:each="et : ${T(com.AppReclamos.AppReclamosCms.Modelos.Enums.GestionEtapa).values()}"
                                             th:value="${et}"
-                                            th:text="${et.name().replaceAll('_',' ')}">
+                                            th:text="${et.getGuiaUsuario()}">
                                     </option>
                                 </select>
+                                <div class="text-danger" th:if="${#fields.hasErrors('gestion.etapaReclamo')}" th:errors="*{gestion.etapaReclamo}"></div>
                             </div>
 
 
 
                             <div class="col-md-4 destino-group"
-                                 th:classappend="${(reclamo.estado?.name() == 'VERIFICACION' or reclamo.estado?.name() == 'CIERRE')} ? '' : 'd-none'">
-                                <label for="tipoDestinoSelect">Tipo de administrado destino <span class="text-danger primigenio-destino-required-mark">*</span></label>
+                                 th:classappend="${(reclamo.estado?.name() == 'TRASLADADO' || reclamo.estado?.name() == 'ACUMULADO') ? '' : 'd-none'}"> <label for="tipoDestinoSelect">Tipo de administrado destino <span class="text-danger primigenio-destino-required-mark">*</span></label>
                                 <select class="form-select primigenio-destino-input" id="tipoDestinoSelect" th:field="*{gestion.tipoAdministraTraslado}">
                                     <option value="">– Seleccione –</option>
+
                                     <option th:each="td : ${T(com.AppReclamos.AppReclamosCms.Modelos.Enums.TipoDeclarante).values()}"
                                             th:value="${td}"
-                                            th:text="${td}">
+                                            th:text="${td.getGuiaUsuario()}">
                                     </option>
                                 </select>
                             </div>
+
                             <div class="col-md-4 destino-group"
                                  th:classappend="${(reclamo.estado?.name() == 'VERIFICACION' or reclamo.estado?.name() == 'CIERRE')} ? '' : 'd-none'">
                                 <label for="codigoDestinoInput">Código administrado destino <span class="text-danger primigenio-destino-required-mark">*</span></label>
@@ -455,11 +463,13 @@
 
                             <div class="col-md-3">
                                 <label for="resultadoReclamo" class="form-label">Resultado del Reclamo</label>
-                                <select id="resultadoReclamo" class="form-select"
-                                        th:field="*{resultados[0].resultado}"
-                                        required>
+                                <select id="resultadoReclamo" class="form-select" th:field="*{resultados[0].resultado}" required>
+                                    <option value="">-- Seleccione --</option>
+
                                     <option th:each="res : ${T(com.AppReclamos.AppReclamosCms.Modelos.Enums.ResultadoReclamo).values()}"
-                                            th:value="${res}" th:text="${res.toString().replace('_', ' ')}"></option>
+                                            th:value="${res}"
+                                            th:text="${res.getGuiaUsuario()}">
+                                    </option>
                                 </select>
                                 <div class="text-danger"
                                      th:if="${#fields.hasErrors('resultados[0].resultado')}"
@@ -472,8 +482,11 @@
                                         th:field="*{resultados[0].motivoConclusion}"
                                         disabled>
                                     <option value="">-- Seleccione un motivo --</option>
+
                                     <option th:each="mot : ${T(com.AppReclamos.AppReclamosCms.Modelos.Enums.MotivoConclusion).values()}"
-                                            th:value="${mot}" th:text="${mot.toString().replace('_', ' ')}"></option>
+                                            th:value="${mot}"
+                                            th:text="${mot.getGuiaUsuario()}">
+                                    </option>
                                 </select>
                                 <div class="text-danger"
                                      th:if="${#fields.hasErrors('resultados[0].motivoConclusion')}"
@@ -496,8 +509,12 @@
                                 <select id="comunicacionResultado" class="form-select"
                                         th:field="*{resultados[0].comunicacionResultado}"
                                         required>
+                                    <option value="">-- Seleccione --</option>
+
                                     <option th:each="com : ${T(com.AppReclamos.AppReclamosCms.Modelos.Enums.ComunicacionResultado).values()}"
-                                            th:value="${com}" th:text="${com.toString().replace('_', ' ')}"></option>
+                                            th:value="${com}"
+                                            th:text="${com.getGuiaUsuario()}">
+                                    </option>
                                 </select>
                                 <div class="text-danger"
                                      th:if="${#fields.hasErrors('resultados[0].comunicacionResultado')}"
@@ -506,10 +523,6 @@
 
                         </div>
                     </div>
-
-
-
-
 
                     <!-- ========= BOTONES ========= -->
                     <div class="card-footer">
@@ -522,6 +535,8 @@
                 </form>
             </div>
     </main>
+
+
     <footer class="app-footer">
         <!--begin::To the end-->
         <div class="float-end d-none d-sm-inline">CMS</div>
@@ -541,88 +556,207 @@
 <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.7.1/jquery.min.js"></script>
 <!-- ======= Script para mostrar/ocultar Razón Social ======= -->
 <script>
-    document.addEventListener('DOMContentLoaded', function() {
-        // Función reutilizable para mostrar/ocultar un contenedor basado en el valor de un select
-        function toggleRucField(selectElement, containerElement) {
-            if (!selectElement || !containerElement) return;
 
-            const toggle = () => {
-                containerElement.style.display = (selectElement.value === 'RUC') ? 'block' : 'none';
-            };
+    $(document).ready(function() {
+        // --- SELECTORES ---
+        const tipoDeclaranteSelect = $('#tipoDeclarante');
+        const codigoDeclaranteInput = $('#codigoDeclarante');
+        const codigoUgipressInput = $('#codigoUgipress');
+        const tipoInstitucionSelect = $('#tipoInstitucion');
+        const codigoInstitucionInput = $('#codigoInstitucion');
+        const codigoReclamoInput = $('#codigoReclamo');
 
-            toggle(); // Ejecutar al cargar la página
-            selectElement.addEventListener('change', toggle); // Y en cada cambio
+        // --- FUNCIÓN PARA VALIDAR CÓDIGO DECLARANTE Y UGIPRESS ---
+        function actualizarValidacionDeclarante() {
+            const tipoSeleccionado = tipoDeclaranteSelect.val();
+            let pattern = "\\d+", maxlength = 8, placeholder = "Código", title = "Código es obligatorio.";
+
+            switch (tipoSeleccionado) {
+                case 'IPRESS':
+                case 'UGIPRESS':
+                    pattern = "\\d{8}"; maxlength = 8; placeholder = "8 dígitos"; title = "Debe ser de 8 dígitos.";
+                    break;
+                case 'IAFAS':
+                    pattern = "\\d{5}"; maxlength = 5; placeholder = "5 dígitos"; title = "Debe ser de 5 dígitos.";
+                    break;
+            }
+            codigoDeclaranteInput.attr({ pattern, maxlength, placeholder, title });
+
+            if (tipoSeleccionado === 'UGIPRESS' || tipoSeleccionado === 'IAFAS') {
+                codigoUgipressInput.val(codigoDeclaranteInput.val()).prop('readonly', true);
+            } else {
+                codigoUgipressInput.prop('readonly', false);
+            }
         }
 
-        // Aplicar la lógica al presentante
-        const selPresentante = document.querySelector('select[name="presentante.tipoDocumento"]');
-        const contPresentante = document.getElementById('razonSolPresentante');
-        toggleRucField(selPresentante, contPresentante);
+        // --- FUNCIÓN PARA VALIDAR CÓDIGO INSTITUCIÓN ---
+        function actualizarValidacionInstitucion() {
+            const tipoSeleccionado = tipoInstitucionSelect.val();
+            let pattern = "\\d+", maxlength = 8, placeholder = "Código", title = "Código es obligatorio.";
 
-        // Aplicar la lógica al afectado/usuario
-        const selAfectado = document.querySelector('select[name="afectado.tipoDocumento"]');
-        const contAfectado = document.getElementById('razonSolAfectado'); // ¡CAMBIO! Asegúrate de que el ID del div coincida
-        toggleRucField(selAfectado, contAfectado);
+            switch (tipoSeleccionado) {
+                case 'IPRESS':
+                case 'UGIPRESS':
+                    pattern = "\\d{8}"; maxlength = 8; placeholder = "8 dígitos"; title = "Debe ser de 8 dígitos.";
+                    break;
+                case 'IAFAS':
+                    pattern = "\\d{5}"; maxlength = 5; placeholder = "5 dígitos"; title = "Debe ser de 5 dígitos.";
+                    break;
+            }
+            codigoInstitucionInput.attr({ pattern, maxlength, placeholder, title });
+        }
+
+        // --- FUNCIÓN PARA GENERAR CÓDIGO RECLAMO ---
+        function generarCodigoReclamo() {
+            const codigoAdmin = codigoDeclaranteInput.val();
+            if (codigoAdmin) {
+                // Para un reclamo nuevo, el correlativo podría ser '1'.
+                // Para uno existente, este valor no debería cambiar.
+                // Asumimos '1' para el ejemplo.
+                const correlativo = "1"; // O podrías obtenerlo de otro campo si es necesario.
+                codigoReclamoInput.val(`${codigoAdmin}-${correlativo}`);
+            }
+        }
+
+        // --- LISTENERS ---
+        tipoDeclaranteSelect.on('change', actualizarValidacionDeclarante);
+        tipoInstitucionSelect.on('change', actualizarValidacionInstitucion);
+
+        // Cuando el usuario escribe en Codigo Declarante, actualizamos UGIPRESS y Codigo Reclamo
+        codigoDeclaranteInput.on('keyup', function() {
+            const tipoSeleccionado = tipoDeclaranteSelect.val();
+            if (tipoSeleccionado === 'UGIPRESS' || tipoSeleccionado === 'IAFAS') {
+                codigoUgipressInput.val($(this).val());
+            }
+            generarCodigoReclamo();
+        });
+
+        // --- EJECUCIÓN INICIAL ---
+        actualizarValidacionDeclarante();
+        actualizarValidacionInstitucion();
+        // No llamamos a generarCodigoReclamo() al inicio para no sobreescribir valores en modo edición.
+    });
+
+
+
+    $(document).ready(function() {
+
+        /**
+         * Función genérica para configurar la validación dinámica de una sección de persona (Presentante o Afectado).
+         * @param {string} prefix - El prefijo para los IDs de los elementos HTML ('presentante' o 'afectado').
+         */
+        function configurarValidacionPersona(prefix) {
+            // 1. Selectores de elementos usando el prefijo
+            const tipoDocSelect = $(`#${prefix}TipoDocumento`);
+            const numDocInput = $(`#${prefix}NumeroDocumento`);
+            const razonSocialGroup = $(`#razonSol${prefix.charAt(0).toUpperCase() + prefix.slice(1)}`); // Ej: #razonSolPresentante
+            const nombresGroup = $(`#${prefix}Nombres`).closest('.nombres-group');
+            const apePaternoGroup = $(`#${prefix}ApePaterno`).closest('.nombres-group');
+            const apeMaternoGroup = $(`#${prefix}ApeMaterno`).closest('.nombres-group');
+            const razonSocialInput = razonSocialGroup.find('input');
+            const nombresInput = nombresGroup.find('input');
+            const paternoInput = apePaternoGroup.find('input');
+            const maternoInput = apeMaternoGroup.find('input');
+
+            // 2. Función principal que actualiza toda la sección
+            function actualizarSeccion() {
+                const tipoDoc = tipoDocSelect.val(); // Obtiene el nombre del enum, ej: "DNI", "RUC"
+                let pattern = "\\d+", maxlength = "15", placeholder = "N.º Documento";
+
+                // Criterios para Número de Documento
+                switch (tipoDoc) {
+                    case 'DNI':
+                        pattern = "\\d{8}"; maxlength = "8"; placeholder = "8 dígitos";
+                        break;
+                    case 'CE':
+                        pattern = "[a-zA-Z0-9]{9}"; maxlength = "9"; placeholder = "9 caracteres";
+                        break;
+                    case 'RUC':
+                        pattern = "\\d{11}"; maxlength = "11"; placeholder = "11 dígitos";
+                        break;
+                }
+                numDocInput.attr({ pattern, maxlength, placeholder });
+
+                // Criterios para alternar entre Nombres y Razón Social
+                const esRuc = (tipoDoc === 'RUC');
+
+                razonSocialGroup.toggle(esRuc);
+                razonSocialInput.prop('required', esRuc);
+
+                // Usamos .add() para seleccionar y afectar todos los grupos de nombres a la vez
+                nombresGroup.add(apePaternoGroup).add(apeMaternoGroup).toggle(!esRuc);
+                nombresInput.add(paternoInput).add(maternoInput).prop('required', !esRuc);
+
+                // Limpiar campos que se ocultan
+                if (esRuc) {
+                    nombresInput.val('');
+                    paternoInput.val('');
+                    maternoInput.val('');
+                } else {
+                    razonSocialInput.val('');
+                }
+            }
+
+            // 3. Ejecutar al cargar la página y en cada cambio del select
+            if (tipoDocSelect.length) {
+                actualizarSeccion();
+                tipoDocSelect.on('change', actualizarSeccion);
+            }
+        }
+
+        // --- ¡AQUÍ ESTÁ LA MAGIA! ---
+        // Llamamos a la misma función para ambas secciones
+        configurarValidacionPersona('presentante');
+        configurarValidacionPersona('afectado');
+
+
     });
 
     $(document).ready(function() {
+
+        // --- SELECTORES ---
         const competenciaSelect = $('#competenciaSelect');
         const estadoReclamoSelect = $('#estadoReclamoSelect');
 
+        // --- GRUPOS DE CAMPOS ---
         const clasificacionesGroup = $('.clasificaciones-group');
-        const clasificacionInputs = $('.clasificacion-input');
-        const clasificacionRequiredMarks = $('.clasificacion-required-mark');
-
-        const codigoPrimigenioGroup = $('.codigo-primigenio-group');
+        const primigenioGroup = $('.primigenio-group');
         const destinoGroup = $('.destino-group');
-        const primigenioDestinoInputs = $('.primigenio-destino-input');
-        const primigenioDestinoRequiredMarks = $('.primigenio-destino-required-mark');
 
-        function setRequired(elements, isRequired) {
-            elements.prop('required', isRequired);
-        }
-
-        function updateCompetenciaFields() {
-            const selectedCompetencia = competenciaSelect.val(); // Obtiene el valor seleccionado del enum (ej. "SI", "NO", "COMPARTIDA")
-            const shouldShow = (selectedCompetencia === 'SI' || selectedCompetencia === 'COMPARTIDA');
-
-            if (shouldShow) {
-                clasificacionesGroup.removeClass('d-none');
-                clasificacionRequiredMarks.removeClass('d-none');
-                setRequired(clasificacionInputs, true);
-            } else {
-                clasificacionesGroup.addClass('d-none');
-                clasificacionRequiredMarks.addClass('d-none');
-                setRequired(clasificacionInputs, false);
-                clasificacionInputs.val(''); // Limpiar valores cuando se ocultan
+        // --- FUNCIÓN GENÉRICA PARA MANEJAR GRUPOS ---
+        function toggleFieldGroup(shouldShow, groupElement) {
+            groupElement.toggle(shouldShow);
+            groupElement.find('input, select').prop('required', shouldShow);
+            if (!shouldShow) {
+                groupElement.find('input, select').val('');
             }
         }
 
-        function updateEstadoFields() {
-            const selectedEstado = estadoReclamoSelect.val(); // Obtiene el valor seleccionado del enum (ej. "VERIFICACION", "CIERRE")
-            const shouldShow = (selectedEstado === 'VERIFICACION' || selectedEstado === 'CIERRE');
-
-            if (shouldShow) {
-                codigoPrimigenioGroup.removeClass('d-none');
-                destinoGroup.removeClass('d-none');
-                primigenioDestinoRequiredMarks.removeClass('d-none');
-                setRequired(primigenioDestinoInputs, true);
-            } else {
-                codigoPrimigenioGroup.addClass('d-none');
-                destinoGroup.addClass('d-none');
-                primigenioDestinoRequiredMarks.addClass('d-none');
-                setRequired(primigenioDestinoInputs, false);
-                primigenioDestinoInputs.val(''); // Limpiar valores cuando se ocultan
-            }
+        // --- FUNCIONES DE LÓGICA ESPECÍFICA ---
+        function actualizarClasificacionFields() {
+            const competencia = competenciaSelect.val();
+            const shouldShow = (competencia === 'SI' || competencia === 'COMPARTIDA');
+            toggleFieldGroup(shouldShow, clasificacionesGroup);
         }
 
-        // Llamar a las funciones al cargar la página para establecer el estado inicial
-        updateCompetenciaFields();
-        updateEstadoFields();
+        function actualizarEstadoFields() {
+            const estado = estadoReclamoSelect.val();
+            // Lógica para Código Primigenio
+            toggleFieldGroup(estado === 'ACUMULADO', primigenioGroup);
+            // Lógica para Campos de Destino
+            toggleFieldGroup(estado === 'TRASLADADO', destinoGroup);
+        }
 
-        // Asignar listeners para cuando cambien los selectores
-        competenciaSelect.on('change', updateCompetenciaFields);
-        estadoReclamoSelect.on('change', updateEstadoFields);
+        // --- EJECUCIÓN INICIAL Y LISTENERS ---
+        if (competenciaSelect.length) {
+            actualizarClasificacionFields();
+            competenciaSelect.on('change', actualizarClasificacionFields);
+        }
+
+        if (estadoReclamoSelect.length) {
+            actualizarEstadoFields();
+            estadoReclamoSelect.on('change', actualizarEstadoFields);
+        }
     });
 
     document.addEventListener('DOMContentLoaded', function () {

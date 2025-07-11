@@ -4,18 +4,14 @@ import com.fasterxml.jackson.annotation.JsonValue;
 
 import java.util.Arrays;
 
-public enum EstadoReclamo {
-    RESUELTO(1, "Resuelto"),
-    EN_TRAMITE(2, "En trámite"),
-    TRASLADADO(3, "Trasladado"),
-    ARCHIVADO_DUPLICIDAD(4, "Archivado por duplicidad"),
-    ACUMULADO(5, "Acumulado"),
-    CONCLUIDO(6, "Concluido");
+public enum ResultadoCorreo {
+    SI(1, "Sí"),
+    NO(2, "No");
 
     private final int codigo;
     private final String descripcion;
 
-    EstadoReclamo(int codigo, String descripcion) {
+    ResultadoCorreo(int codigo, String descripcion) {
         this.codigo = codigo;
         this.descripcion = descripcion;
     }
@@ -33,13 +29,13 @@ public enum EstadoReclamo {
         return this.codigo + " - " + this.descripcion;
     }
 
-    public static EstadoReclamo fromCodigo(Integer codigo) {
+    public static ResultadoCorreo fromCodigo(Integer codigo) {
         if (codigo == null) {
             return null;
         }
         return Arrays.stream(values())
-                .filter(estado -> estado.getCodigo() == codigo)
+                .filter(valor -> valor.getCodigo() == codigo)
                 .findFirst()
-                .orElseThrow(() -> new IllegalArgumentException("Código de EstadoReclamo no válido: " + codigo));
+                .orElseThrow(() -> new IllegalArgumentException("Código de ResultadoCorreo no válido: " + codigo));
     }
 }

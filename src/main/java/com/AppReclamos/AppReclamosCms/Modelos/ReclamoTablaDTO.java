@@ -16,7 +16,7 @@ public class ReclamoTablaDTO {
 
     /* ---------- Identificadores ---------- */
     Integer id;
-    EstadoReclamo estado;
+    private Integer estado;
 
     // --- ¡CLASIFICACION DEL RECLAMO! ---
     @NotNull(message="Fecha de reclamo es obligatoria")
@@ -43,7 +43,7 @@ public class ReclamoTablaDTO {
     private String telefono_presentante;
     private String domicilio_presentante;
     private String correoElectronico_presentante;
-    private Boolean resultadoPorCorreo_presentante;
+    private Integer resultadoPorCorreo_presentante;
 
     // --- Datos del Afectado ---
     private Integer tipoDocumento_afectado;
@@ -57,27 +57,28 @@ public class ReclamoTablaDTO {
     // --- ¡DETALLE DEL RECLAMO! ---
     private String fechaRecepcion;
     private String descripcion;
+    private Integer medioPresentacion;
 
 
     // --- ¡DE LA GESTIÓN DEL RECLAMO! ---
-    private GestionServicios servicio;
-    private GestionCompetencia competencia;
+    private String servicio;
+    private Integer competencia;
     private String clasificacion1;
     private String clasificacion2;
     private String clasificacion3;
-    private GestionEtapa etapaReclamo;
+    private Integer etapaReclamo;
     private String codigoPrimigenio;
-    private TipoDeclarante tipoAdministraTraslado;
+    private Integer tipoAdministraTraslado;
     private String codigoAdministraTraslado;
 
 
 
     // --- ¡RESULTADO Y NOTIFICACIÓN DEL RECLAMO! ---
-    private ResultadoReclamo resultado;
-    private MotivoConclusion motivoConclusion;
+    private Integer resultado;
+    private Integer motivoConclusion;
     private String fechaResultado;      // Formato AAAAMMDD
     private String fechaNotificacion;   // Formato AAAAMMDD
-    private ComunicacionResultado comunicacionResultado;
+    private Integer comunicacionResultado;
 
 
     private String codigoMedida;

@@ -6,10 +6,12 @@ import com.AppReclamos.AppReclamosCms.Modelos.Enums.TipoDeclarante;
 import com.AppReclamos.AppReclamosCms.Modelos.Enums.TipoInstitucion;
 import com.AppReclamos.AppReclamosCms.Validations.ValidCodigoDeclarante;
 import com.AppReclamos.AppReclamosCms.Validations.ValidCodigoInstitucion;
+import com.AppReclamos.AppReclamosCms.Validations.ValidGestion;
 import jakarta.persistence.Column;
 import jakarta.validation.Valid;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
+import jakarta.validation.constraints.Pattern;
 import lombok.*;
 import org.springframework.format.annotation.DateTimeFormat;
 
@@ -25,6 +27,7 @@ import java.util.List;
 @AllArgsConstructor
 @ValidCodigoDeclarante     // valida codigoDeclarante ↔ tipoDeclarante
 @ValidCodigoInstitucion   // valida codigoInstitucion ↔ tipoInstitucion
+@ValidGestion
 public class ReclamoDTO {
 
     /* ---------- Identificación & clasificación ---------- */
@@ -52,7 +55,8 @@ public class ReclamoDTO {
 
     /** Código interno / primigenio asignado por el sistema */
     @NotBlank(message="Código de reclamo no puede ser vacío")
-    private String       codigoReclamo;
+    @Pattern(regexp = "^\\d+-\\d+$", message = "El formato del Código de Reclamo debe ser 'código-correlativo'.")
+    private String codigoReclamo;
 
     /** Código correlativo visible para el usuario (si lo manejas aparte) */
     private String       nroReclamo;

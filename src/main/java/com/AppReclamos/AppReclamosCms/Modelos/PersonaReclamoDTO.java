@@ -1,8 +1,10 @@
 package com.AppReclamos.AppReclamosCms.Modelos;
 
 import com.AppReclamos.AppReclamosCms.Modelos.Enums.Parentesco;
+import com.AppReclamos.AppReclamosCms.Modelos.Enums.ResultadoCorreo;
 import com.AppReclamos.AppReclamosCms.Modelos.Enums.TipoDocumento;
 import com.AppReclamos.AppReclamosCms.Modelos.Enums.TipoPersona;
+import com.AppReclamos.AppReclamosCms.Validations.ValidPersona;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotBlank;
@@ -16,6 +18,7 @@ import org.antlr.v4.runtime.misc.NotNull;
 @NoArgsConstructor @AllArgsConstructor
 @EqualsAndHashCode(onlyExplicitlyIncluded = true)
 @JsonInclude(JsonInclude.Include.NON_NULL)
+@ValidPersona
 public class PersonaReclamoDTO {
 
     /* ---------- Identificador (solo en edición / respuesta) ---------- */
@@ -64,12 +67,10 @@ public class PersonaReclamoDTO {
 
     // NUEVO campo: si se envió el resultado por correo
     @NotNull
-    private Boolean     resultadoPorCorreo;
+    private ResultadoCorreo resultadoPorCorreo;
 
     // NUEVO campo: domicilio
     @Size(max=200)
     private String      domicilio;
-
-
 
 }

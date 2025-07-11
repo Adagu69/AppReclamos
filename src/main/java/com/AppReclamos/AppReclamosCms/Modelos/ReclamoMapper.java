@@ -41,11 +41,12 @@ public interface ReclamoMapper {
 
 
     @Mapping(target = "id", source = "entity.idReclamo")
-    @Mapping(target = "estado", expression = "java(toEnum(entity.getEstadoReclamo(), EstadoReclamo.class))")
+    @Mapping(target = "estado", expression = "java(entity.getEstadoReclamo() != null ? entity.getEstadoReclamo().getCodigo() : null)")
 
     // ¡CAMBIO CLAVE! Añadimos un mapeo explícito para la conversión
     @Mapping(target = "tipoDeclarante", expression = "java(entity.getTipoDeclarante() != null ? entity.getTipoDeclarante().getCodigo() : null)")
     @Mapping(target = "tipoInstitucion", expression = "java(entity.getTipoInstitucion() != null ? entity.getTipoInstitucion().getCodigo() : null)")
+    @Mapping(target = "medioRecepcion", expression = "java(entity.getMedioRecepcion() != null ? entity.getMedioRecepcion().getCodigo() : null)")
 
     // --- Mapeos para Presentante ---
     @Mapping(target = "tipoDocumento_presentante", expression = "java(entity.getPresentante() != null && entity.getPresentante().getTipoDocumento() != null ? entity.getPresentante().getTipoDocumento().getCodigo() : null)")
@@ -57,7 +58,7 @@ public interface ReclamoMapper {
     @Mapping(target = "telefono_presentante", source = "entity.presentante.telefono")
     @Mapping(target = "domicilio_presentante", source = "entity.presentante.domicilio")
     @Mapping(target = "correoElectronico_presentante", source = "entity.presentante.correoElectronico")
-    @Mapping(target = "resultadoPorCorreo_presentante", source = "entity.presentante.resultadoPorCorreo")
+    @Mapping(target = "resultadoPorCorreo_presentante", expression = "java(entity.getPresentante() != null && entity.getPresentante().getResultadoPorCorreo() != null ? entity.getPresentante().getResultadoPorCorreo().getCodigo() : null)")
 
     // ... y así para todos los demás campos del presentante ...
 
@@ -72,33 +73,26 @@ public interface ReclamoMapper {
     // ... y así para todos los demás campos del afectado ...
 
     // Mapeos para DetalleReclamo
-    @Mapping(target = "medioRecepcion", expression = "java(detalleReciente != null && detalleReciente.getMedioRecepcion() != null ? detalleReciente.getMedioRecepcion().getCodigo() : null)")
+    @Mapping(target = "medioPresentacion", expression = "java(detalleReciente != null && detalleReciente.getMedioPresentacion() != null ? detalleReciente.getMedioPresentacion().getCodigo() : null)")
     @Mapping(target = "fechaRecepcion", expression = "java(detalleReciente != null ? detalleReciente.getFechaRecepcion() : null)")
     @Mapping(target = "descripcion", expression = "java(detalleReciente != null ? detalleReciente.getDescripcion() : null)")
 
     // --- 4. Mapeos desde 'gestion' (GestionReclamo) ---
-    @Mapping(target = "servicio",
-            expression = "java(gestion != null ? gestion.getServicio() : null)")
-    @Mapping(target = "competencia",
-            expression = "java(gestion != null ? gestion.getCompetencia() : null)")
+    @Mapping(target = "servicio", expression = "java(gestion != null && gestion.getServicio() != null ? gestion.getServicio().getCodigo() : null)")
+    @Mapping(target = "competencia", expression = "java(gestion != null && gestion.getCompetencia() != null ? gestion.getCompetencia().getCodigo() : null)")
     @Mapping(target = "clasificacion1",          expression = "java(gestion != null ? gestion.getClasificacion1() : null)")
     @Mapping(target = "clasificacion2",          expression = "java(gestion != null ? gestion.getClasificacion2() : null)")
     @Mapping(target = "clasificacion3",          expression = "java(gestion != null ? gestion.getClasificacion3() : null)")
-    @Mapping(target = "etapaReclamo",
-            expression = "java(gestion != null ? gestion.getEtapaReclamo() : null)")
-    @Mapping(target = "codigoPrimigenio",        expression = "java(gestion != null ? gestion.getCodigoPrimigenio() : null)")
-    @Mapping(target = "tipoAdministraTraslado",
-            expression = "java(gestion != null ? gestion.getTipoAdministraTraslado() : null)")
-    @Mapping(target = "codigoAdministraTraslado",expression = "java(gestion != null ? gestion.getCodigoAdministraTraslado() : null)")
+    @Mapping(target = "etapaReclamo", expression = "java(gestion != null && gestion.getEtapaReclamo() != null ? gestion.getEtapaReclamo().getCodigo() : null)")
+    @Mapping(target = "codigoPrimigenio", expression = "java(gestion != null ? gestion.getCodigoPrimigenio() : null)")
+    @Mapping(target = "tipoAdministraTraslado", expression = "java(gestion != null && gestion.getTipoAdministraTraslado() != null ? gestion.getTipoAdministraTraslado().getCodigo() : null)")
+    @Mapping(target = "codigoAdministraTraslado", expression = "java(gestion != null ? gestion.getCodigoAdministraTraslado() : null)")
 
     // --- 5. Mapeos desde 'resultadoReciente' (ResultadoNotificacion) ---
-    @Mapping(target = "resultado",
-            expression = "java(resultadoReciente != null ? toEnum(resultadoReciente.getResultado(), ResultadoReclamo.class) : null)")
-    @Mapping(target = "motivoConclusion",
-            expression = "java(resultadoReciente != null ? toEnum(resultadoReciente.getMotivoConclusionAnticipada(), MotivoConclusion.class) : null)")
+    @Mapping(target = "resultado", expression = "java(resultadoReciente != null && resultadoReciente.getResultado() != null ? resultadoReciente.getResultado().getCodigo() : null)")
+    @Mapping(target = "motivoConclusion", expression = "java(resultadoReciente != null && resultadoReciente.getMotivoConclusionAnticipada() != null ? resultadoReciente.getMotivoConclusionAnticipada().getCodigo() : null)")
     @Mapping(target = "fechaResultado",          expression = "java(resultadoReciente != null ? resultadoReciente.getFechaResultado() : null)")
-    @Mapping(target = "comunicacionResultado",
-            expression = "java(resultadoReciente != null ? toEnum(resultadoReciente.getComunicacionResultado(), ComunicacionResultado.class) : null)")
+    @Mapping(target = "comunicacionResultado", expression = "java(resultadoReciente != null && resultadoReciente.getComunicacionResultado() != null ? resultadoReciente.getComunicacionResultado().getCodigo() : null)")
     @Mapping(target = "fechaNotificacion",       expression = "java(resultadoReciente != null ? resultadoReciente.getFechaNotificacion() : null)")
 
     // --- 6. Mapeos desde 'medidaReciente' (MedidasAdoptadas) ---

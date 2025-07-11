@@ -1,6 +1,7 @@
 package com.AppReclamos.AppReclamosCms.Modelos;
 
 
+import com.AppReclamos.AppReclamosCms.Modelos.Enums.ResultadoCorreo;
 import com.AppReclamos.AppReclamosCms.Modelos.Enums.TipoDocumento;
 import com.AppReclamos.AppReclamosCms.Modelos.Enums.TipoPersona;
 import jakarta.persistence.*;
@@ -46,8 +47,8 @@ public class PersonaReclamo implements Serializable {
     @Column(name = "correo_electronico", length = 255)
     private String correoElectronico;
 
-    @Column(name = "resultado_por_correo") // <-- Importante para la base de datos
-    private Boolean resultadoPorCorreo;
+    @Column(name = "resultado_por_correo")
+    private ResultadoCorreo resultadoPorCorreo;
 
     private String telefono;
 

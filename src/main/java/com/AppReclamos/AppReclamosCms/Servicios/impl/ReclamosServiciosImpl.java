@@ -87,23 +87,47 @@ public class ReclamosServiciosImpl implements IReclamosServicios {
     @Override
     @Transactional
     public ReclamoDTO guardarDesdeDTO(ReclamoDTO dto) {
-        Reclamos reclamoEntity;
 
+        // 1. LÓGICA DE NEGOCIO PREVIA AL GUARDADO
+        // ==========================================
+
+        // Criterio para Código UGIPRESS: Se auto-asigna si el declarante es UGIPRESS o IAFAS.
+        TipoDeclarante tipo = dto.getTipoDeclarante();
+        if (tipo == TipoDeclarante.UGIPRESS || tipo == TipoDeclarante.IAFAS) {
+            dto.setCodigoUgipress(dto.getCodigoDeclarante());
+            log.info("Auto-asignando Código UGIPRESS desde Código Declarante para tipo: {}", tipo);
+        }
+
+        // Criterio para Código Reclamo (se formatea)
+        // Asumimos que el JS ya lo formatea como "código-correlativo", pero el backend lo asegura.
+        // Aquí se podría añadir una lógica más compleja si el correlativo debe generarse en el servidor.
+
+
+        // 2. LÓGICA DE PERSISTENCIA (Creación o Actualización)
+        // ========================================================
+        Reclamos reclamoEntity;
         if (dto.getIdReclamo() != null && dto.getIdReclamo() > 0) {
             // --- LÓGICA DE ACTUALIZACIÓN ---
             reclamoEntity = reclamosRepo.findById(dto.getIdReclamo())
                     .orElseThrow(() -> new EntityNotFoundException("Reclamo no encontrado con id: " + dto.getIdReclamo()));
 
-            // Limpiamos las colecciones para reemplazarlas con las del DTO
             reclamoEntity.getDetalles().clear();
             reclamoEntity.getResultados().clear();
-
             reclamoMapper.updateFromDto(dto, reclamoEntity);
 
         } else {
             // --- LÓGICA DE CREACIÓN ---
             reclamoEntity = reclamoMapper.toEntity(dto);
+
+            // Aquí podrías añadir la lógica para generar un correlativo único si es necesario.
+            // Ejemplo simple:
+            // long correlativo = reclamosRepo.count() + 1;
+            // String codigoReclamoGenerado = dto.getCodigoDeclarante() + "-" + correlativo;
+            // reclamoEntity.setCodigoReclamo(codigoReclamoGenerado);
         }
+
+        // 3. ASIGNACIÓN DE TIPOS Y RELACIONES (Lógica que ya teníamos)
+        // =============================================================
 
         // Asignamos el tipo a cada persona
         if (reclamoEntity.getPresentante() != null) {
@@ -113,11 +137,8 @@ public class ReclamosServiciosImpl implements IReclamosServicios {
             reclamoEntity.getAfectado().setTipoPersona(TipoPersona.USUARIO);
         }
 
-        // --- ¡CORRECCIÓN FINAL Y CRUCIAL! ---
-        // Establecemos la relación bidireccional para TODAS las entidades hijas.
-        // Esto asegura que la FK 'id_reclamo' nunca sea nula.
-        final Reclamos finalEntity = reclamoEntity; // Necesario para usar dentro de lambdas
-
+        // Establecemos las relaciones bidireccionales
+        final Reclamos finalEntity = reclamoEntity;
         if (finalEntity.getDetalles() != null) {
             finalEntity.getDetalles().forEach(detalle -> detalle.setReclamo(finalEntity));
         }
@@ -127,9 +148,9 @@ public class ReclamosServiciosImpl implements IReclamosServicios {
         if (finalEntity.getGestion() != null) {
             finalEntity.getGestion().setReclamo(finalEntity);
         }
-        // ... añadir aquí para 'medidas' si también es una relación que manejas en este DTO.
 
-        // Guardamos la entidad principal. Cascade se encargará del resto.
+        // 4. GUARDADO FINAL
+        // ==================
         Reclamos reclamoGuardado = reclamosRepo.save(reclamoEntity);
         log.info("Reclamo guardado/actualizado con ID: {}", reclamoGuardado.getIdReclamo());
 

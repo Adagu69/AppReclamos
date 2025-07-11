@@ -27,29 +27,30 @@ public class GestionReclamo implements Serializable {
     @EqualsAndHashCode.Include
     private Integer idGestion;
 
-    @Enumerated(EnumType.STRING)
-    @Column(nullable=false,length=20)
+    // OK: Este ya usa su converter
+    @Column(name = "servicio", nullable = false, length = 2)
     private GestionServicios servicio;
 
-    @Enumerated(EnumType.STRING)
-    @Column(nullable=false,length=12)
+    // OK: Este ya usa su converter
+    @Column(nullable = false)
     private GestionCompetencia competencia;
 
     private String clasificacion1;
     private String clasificacion2;
     private String clasificacion3;
-
     private String estadoReclamo;
 
-    @Enumerated(EnumType.STRING)
-    @Column(nullable=false,length=20)
+    // --- ¡CORRECCIÓN CLAVE AQUÍ! ---
+    // Se elimina @Enumerated para que se use el converter de GestionEtapa
+    @Column(nullable = false)
     private GestionEtapa etapaReclamo;
 
-    @Column(length=15)
+    @Column(length = 15)
     private String codigoPrimigenio;
 
-    @Enumerated(EnumType.STRING)
-    @Column(nullable=true,length=20)
+    // --- ¡Y AQUÍ TAMBIÉN! ---
+    // Se elimina @Enumerated para que se use el converter de TipoDeclarante
+    @Column(nullable = true)
     private TipoDeclarante tipoAdministraTraslado;
 
     @Column(length = 8, nullable = true)

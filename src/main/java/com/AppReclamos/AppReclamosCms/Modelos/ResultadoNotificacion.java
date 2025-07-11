@@ -1,5 +1,8 @@
 package com.AppReclamos.AppReclamosCms.Modelos;
 
+import com.AppReclamos.AppReclamosCms.Modelos.Enums.ComunicacionResultado;
+import com.AppReclamos.AppReclamosCms.Modelos.Enums.MotivoConclusion;
+import com.AppReclamos.AppReclamosCms.Modelos.Enums.ResultadoReclamo;
 import jakarta.persistence.*;
 import lombok.Data;
 import lombok.ToString;
@@ -17,14 +20,14 @@ public class ResultadoNotificacion implements Serializable {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Integer id;
 
-    @Column(length = 50, nullable = false)
-    private String resultado;
+    @Column(nullable = false)
+    private ResultadoReclamo resultado;
 
-    @Column(length = 255)
-    private String motivoConclusionAnticipada;
+    @Column(name = "motivo_conclusion_anticipada") // Buen hábito especificar el nombre de la columna
+    private MotivoConclusion motivoConclusionAnticipada;
 
-    @Column(length = 255)
-    private String comunicacionResultado;
+    @Column(name = "comunicacion_resultado")
+    private ComunicacionResultado comunicacionResultado;
 
     @Column(name = "fecha_resultado", length = 8, nullable = false)
     private String fechaResultado; // Formato AAAAMMDD

@@ -1,6 +1,7 @@
 package com.AppReclamos.AppReclamosCms.Modelos;
 
 
+import com.AppReclamos.AppReclamosCms.Modelos.Enums.EstadoReclamo;
 import com.AppReclamos.AppReclamosCms.Modelos.Enums.MedioRecepcion;
 import com.AppReclamos.AppReclamosCms.Modelos.Enums.TipoDeclarante;
 import com.AppReclamos.AppReclamosCms.Modelos.Enums.TipoInstitucion;
@@ -43,7 +44,7 @@ public class Reclamos implements Serializable {
     private String codigoInstitucion;
     private String codigoUgipress;
     private String codigoReclamo;
-    private String estadoReclamo;
+    private EstadoReclamo estadoReclamo;
 
     // ¡CAMBIO CLAVE! Reemplazamos el Set por dos relaciones One-to-One
     @OneToOne(cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.LAZY)

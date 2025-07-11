@@ -1,6 +1,8 @@
 package com.AppReclamos.AppReclamosCms.Modelos;
 
+import com.AppReclamos.AppReclamosCms.Modelos.Enums.MedioPresentacion;
 import com.AppReclamos.AppReclamosCms.Modelos.Enums.MedioRecepcion;
+import com.AppReclamos.AppReclamosCms.Validations.ValidDetalle;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
@@ -17,6 +19,7 @@ import java.time.LocalDate;
 @NoArgsConstructor
 @AllArgsConstructor
 @JsonInclude(JsonInclude.Include.NON_NULL)
+@ValidDetalle
 public class DetalleReclamoDTO {
     /* ---------- Identificador (solo al editar / responder) ---------- */
     private Integer idDetalle;                        // null durante la creación
@@ -24,7 +27,7 @@ public class DetalleReclamoDTO {
     /* ---------- Datos del detalle ---------- */
 
     /** Medio por el que se recibió la comunicación (catálogo fijo). */
-    private MedioRecepcion medioRecepcion;     // VENTANILLA | CORREO | WEB | TELEFONICO | OTRO
+    private MedioPresentacion medioPresentacion;  // VENTANILLA | CORREO | WEB | TELEFONICO | OTRO
 
     /** Fecha en que se registró o se recibió el reclamo, en formato AAAAMMDD. */
     @NotBlank(message="La fecha de recepción es obligatoria")
