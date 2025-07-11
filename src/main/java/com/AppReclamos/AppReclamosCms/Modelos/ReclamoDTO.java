@@ -7,6 +7,7 @@ import com.AppReclamos.AppReclamosCms.Modelos.Enums.TipoInstitucion;
 import com.AppReclamos.AppReclamosCms.Validations.ValidCodigoDeclarante;
 import com.AppReclamos.AppReclamosCms.Validations.ValidCodigoInstitucion;
 import com.AppReclamos.AppReclamosCms.Validations.ValidGestion;
+import com.AppReclamos.AppReclamosCms.Validations.ValidResultado;
 import jakarta.persistence.Column;
 import jakarta.validation.Valid;
 import jakarta.validation.constraints.NotBlank;
@@ -28,6 +29,7 @@ import java.util.List;
 @ValidCodigoDeclarante     // valida codigoDeclarante ↔ tipoDeclarante
 @ValidCodigoInstitucion   // valida codigoInstitucion ↔ tipoInstitucion
 @ValidGestion
+@ValidResultado
 public class ReclamoDTO {
 
     /* ---------- Identificación & clasificación ---------- */

@@ -3,9 +3,13 @@ package com.AppReclamos.AppReclamosCms.Validations;
 
 import com.AppReclamos.AppReclamosCms.Modelos.Enums.EstadoReclamo;
 import com.AppReclamos.AppReclamosCms.Modelos.Enums.GestionCompetencia;
+import com.AppReclamos.AppReclamosCms.Modelos.Enums.GestionEtapa;
+import com.AppReclamos.AppReclamosCms.Modelos.Enums.MedioPresentacion;
 import com.AppReclamos.AppReclamosCms.Modelos.ReclamoDTO;
 import jakarta.validation.ConstraintValidator;
 import jakarta.validation.ConstraintValidatorContext;
+
+import java.util.List;
 
 public class GestionValidator implements ConstraintValidator<ValidGestion, ReclamoDTO> {
     @Override
@@ -14,43 +18,86 @@ public class GestionValidator implements ConstraintValidator<ValidGestion, Recla
             return true; // Dejar que otras validaciones se encarguen.
         }
 
+
         boolean isValid = true;
         context.disableDefaultConstraintViolation(); // Para controlar los mensajes de error.
 
-        // --- Criterios para Clasificación 1, 2, 3 ---
+        // --- ¡NUEVA VALIDACIÓN PARA CLASIFICACIÓN 1, 2, 3! ---
+        // Criterio 29: Los campos de Clasificación son obligatorios si la competencia es 1 (SI) o 3 (COMPARTIDA).
+
+
+        // --- Extracción de variables para mayor claridad ---
+        EstadoReclamo estado = dto.getEstado();
+        GestionEtapa etapa = dto.getGestion().getEtapaReclamo();
         GestionCompetencia competencia = dto.getGestion().getCompetencia();
-        if (competencia == GestionCompetencia.SI || competencia == GestionCompetencia.COMPARTIDA) {
-            if (dto.getGestion().getClasificacion1() == null || dto.getGestion().getClasificacion1().isBlank()) {
-                isValid = false;
-                context.buildConstraintViolationWithTemplate("Clasificación 1 es obligatoria para esta Competencia.")
-                        .addPropertyNode("gestion.clasificacion1").addConstraintViolation();
-            }
-            // Repetir para clasificacion2 y clasificacion3 si es necesario.
+        MedioPresentacion medio = (dto.getDetalles() != null && !dto.getDetalles().isEmpty())
+                ? dto.getDetalles().get(0).getMedioPresentacion()
+                : null;
+
+
+        // --- Criterio 33: Relación entre Estado y Competencia ---
+        if (estado == EstadoReclamo.TRASLADADO && competencia != GestionCompetencia.NO) {
+            isValid = false;
+            addError(context, "estado", "El estado solo puede ser 'Trasladado' si la Competencia es 'No'.");
         }
 
-        // --- Criterio para Código Primigenio ---
-        if (dto.getEstado() == EstadoReclamo.ACUMULADO) {
-            if (dto.getGestion().getCodigoPrimigenio() == null || dto.getGestion().getCodigoPrimigenio().isBlank()) {
+        // --- Criterio 34: Código Primigenio ---
+        boolean esRequeridoPorEstado = (estado == EstadoReclamo.ARCHIVADO_DUPLICIDAD || estado == EstadoReclamo.ACUMULADO);
+        boolean esRequeridoPorMedio = (medio == MedioPresentacion.RECLAMO_TRASLADADO || medio == MedioPresentacion.RECLAMO_COPARTICIPADO);
+
+        if (esRequeridoPorEstado || esRequeridoPorMedio) {
+            if (isBlank(dto.getGestion().getCodigoPrimigenio())) {
                 isValid = false;
-                context.buildConstraintViolationWithTemplate("Código Primigenio es obligatorio cuando el estado es Acumulado.")
-                        .addPropertyNode("gestion.codigoPrimigenio").addConstraintViolation();
+                addError(context, "gestion.codigoPrimigenio", "Código Primigenio es obligatorio para este Estado o Medio de Presentación.");
             }
         }
 
-        // --- Criterios para Destino del Traslado ---
-        if (dto.getEstado() == EstadoReclamo.TRASLADADO) {
+        // --- Criterio 35: Relación entre Estado y Etapa del Reclamo (LÓGICA ACTUALIZADA) ---
+        switch (estado) {
+            case EN_TRAMITE: // Código 2
+                // Si está en trámite, la etapa debe ser una de las tres primeras.
+                if (!List.of(GestionEtapa.ADMISION_Y_REGISTRO, GestionEtapa.EVALUACION_E_INVESTIGACION, GestionEtapa.RESULTADO_Y_NOTIFICACION).contains(etapa)) {
+                    isValid = false;
+                    addError(context, "gestion.etapaReclamo", "Para un reclamo 'En Trámite', la etapa seleccionada no es válida.");
+                }
+                break;
+            case RESUELTO: // Código 1
+                if (etapa != GestionEtapa.RESULTADO_Y_NOTIFICACION) {
+                    isValid = false;
+                    addError(context, "gestion.etapaReclamo", "Para un reclamo 'Resuelto', la etapa debe ser '3 - Resultado y Notificación'.");
+                }
+                break;
+            case CONCLUIDO: // Código 6
+                if (etapa != GestionEtapa.ARCHIVO_Y_CUSTODIA) {
+                    isValid = false;
+                    addError(context, "gestion.etapaReclamo", "Para un reclamo 'Concluido', la etapa debe ser '4 - Archivo y Custodia'.");
+                }
+                break;
+            default:
+                // No hay restricciones de etapa para otros estados.
+                break;
+        }
+
+        // --- Criterios 36 y 37: Campos de Traslado ---
+        if (estado == EstadoReclamo.TRASLADADO) {
             if (dto.getGestion().getTipoAdministraTraslado() == null) {
                 isValid = false;
-                context.buildConstraintViolationWithTemplate("Tipo de Administrado Destino es obligatorio cuando el estado es Trasladado.")
-                        .addPropertyNode("gestion.tipoAdministraTraslado").addConstraintViolation();
+                addError(context, "gestion.tipoAdministraTraslado", "Tipo de Administrado Destino es obligatorio.");
             }
-            if (dto.getGestion().getCodigoAdministraTraslado() == null || dto.getGestion().getCodigoAdministraTraslado().isBlank()) {
+            if (isBlank(dto.getGestion().getCodigoAdministraTraslado())) {
                 isValid = false;
-                context.buildConstraintViolationWithTemplate("Código de Administrado Destino es obligatorio cuando el estado es Trasladado.")
-                        .addPropertyNode("gestion.codigoAdministraTraslado").addConstraintViolation();
+                addError(context, "gestion.codigoAdministraTraslado", "Código de Administrado Destino es obligatorio.");
             }
         }
 
         return isValid;
+    }
+
+    // Métodos de ayuda
+    private void addError(ConstraintValidatorContext context, String field, String message) {
+        context.buildConstraintViolationWithTemplate(message).addPropertyNode(field).addConstraintViolation();
+    }
+    private boolean isBlank(String str) {
+        return str == null || str.isBlank();
     }
 }
