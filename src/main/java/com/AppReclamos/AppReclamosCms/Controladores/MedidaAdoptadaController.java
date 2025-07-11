@@ -68,25 +68,43 @@ public class MedidaAdoptadaController {
 
     @PostMapping("/guardar")
     public String guardarMedida(@Valid @ModelAttribute("medidaDTO") MedidaDTO medidaDTO, BindingResult result, RedirectAttributes attributes, Model model) {
-        if (medidaDTO.getFechaInicioImplementacion() != null && medidaDTO.getFechaCulminacionPrevista() != null) {
-            if (medidaDTO.getFechaCulminacionPrevista().isBefore(medidaDTO.getFechaInicioImplementacion())) {
-                result.rejectValue("fechaCulminacionPrevista", "error.medidaDTO", "La fecha de culminación no puede ser anterior a la de inicio.");
+
+        // Validación de fechas
+        if (medidaDTO.getFechaInicioImplementacion() != null &&
+                medidaDTO.getFechaCulminacionPrevista() != null) {
+            if (medidaDTO.getFechaCulminacionPrevista()
+                    .isBefore(medidaDTO.getFechaInicioImplementacion())) {
+                result.rejectValue("fechaCulminacionPrevista", "error.medidaDTO",
+                        "La fecha de culminación no puede ser anterior a la de inicio.");
             }
         }
         if (result.hasErrors()) {
             log.error("--- ERRORES DE VALIDACIÓN ENCONTRADOS ---");
             for (FieldError error : result.getFieldErrors()) {
-                log.error("Campo: '{}', Valor Rechazado: '{}', Mensaje: {}", error.getField(), error.getRejectedValue(), error.getDefaultMessage());
+                log.error("Campo: '{}', Valor Rechazado: '{}', Mensaje: {}",
+                        error.getField(), error.getRejectedValue(), error.getDefaultMessage());
             }
+
+            // Preparar el modelo para volver a mostrar el formulario con errores
             ReclamoDTO reclamo = reclamoService.buscarPorId(medidaDTO.getReclamoId());
             model.addAttribute("reclamo", reclamo);
             model.addAttribute("listaMedidas", medidaService.findByReclamoId(medidaDTO.getReclamoId()));
-            model.addAttribute("showModal", true); // Para reabrir el modal con los errores
+            model.addAttribute("showModal", true);
             addEnumsToModel(model);
+
             return "ADMIN/medidas-adoptadas";
         }
+
+        // Si es una actualización, mostrar mensaje diferente
+        boolean isUpdate = medidaDTO.getId() != null;
         medidaService.save(medidaDTO);
-        attributes.addFlashAttribute("msg_success", "Medida guardada correctamente.");
+
+        if (isUpdate) {
+            attributes.addFlashAttribute("msg_success", "Medida actualizada correctamente.");
+        } else {
+            attributes.addFlashAttribute("msg_success", "Medida guardada correctamente.");
+        }
+
         return "redirect:/admin/medidas/reclamo/" + medidaDTO.getReclamoId();
     }
 

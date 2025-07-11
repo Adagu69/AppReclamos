@@ -80,6 +80,96 @@
     </main>
 
     <div class="modal fade" id="medidaModal" tabindex="-1">
+        <div class="modal-dialog modal-lg">
+            <div class="modal-content">
+                <div class="modal-header bg-primary text-white">
+                    <h5 class="modal-title" id="medidaModalLabel">Agregar Medida</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <form id="medidaForm" th:action="@{/admin/medidas/guardar}" method="post" th:object="${medidaDTO}">
+                        <!-- Campos ocultos -->
+                        <input type="hidden" id="medidaId" name="id" th:field="*{id}" />
+                        <input type="hidden" id="reclamoId" name="reclamoId" th:field="*{reclamoId}" />
+
+                        <div class="row mb-3">
+                            <div class="col-md-4">
+                                <label for="codigoMedida" class="form-label">Código de Medida</label>
+                                <input type="text" class="form-control" id="codigoMedida" th:field="*{codigoMedida}"
+                                       required maxlength="2">
+                                <div class="invalid-feedback" th:if="${#fields.hasErrors('codigoMedida')}" th:errors="*{codigoMedida}"></div>
+                            </div>
+                            <div class="col-md-4">
+                                <label for="naturaleza" class="form-label">Naturaleza</label>
+                                <select class="form-select" id="naturaleza" th:field="*{naturaleza}" required>
+                                    <option value="">Seleccione...</option>
+                                    <option th:each="nat : ${naturalezasEnum}"
+                                            th:value="${nat}"
+                                            th:text="${nat.toString().replace('_',' ')}"></option>
+                                </select>
+                                <div class="invalid-feedback" th:if="${#fields.hasErrors('naturaleza')}" th:errors="*{naturaleza}"></div>
+                            </div>
+                            <div class="col-md-4">
+                                <label for="proceso" class="form-label">Proceso</label>
+                                <select class="form-select" id="proceso" th:field="*{proceso}" required>
+                                    <option value="">Seleccione...</option>
+                                    <option th:each="proc : ${procesosEnum}"
+                                            th:value="${proc}"
+                                            th:text="${proc.toString().replace('_',' ')}"></option>
+                                </select>
+                                <div class="invalid-feedback" th:if="${#fields.hasErrors('proceso')}" th:errors="*{proceso}"></div>
+                            </div>
+                        </div>
+
+                        <div class="row mb-3">
+                            <div class="col-md-6">
+                                <label for="fechaInicio" class="form-label">Fecha de Inicio</label>
+                                <input type="date" class="form-control" id="fechaInicio" th:field="*{fechaInicioImplementacion}" required>
+                                <div class="invalid-feedback" th:if="${#fields.hasErrors('fechaInicioImplementacion')}"
+                                     th:errors="*{fechaInicioImplementacion}"></div>
+                            </div>
+                            <div class="col-md-6">
+                                <label for="fechaCulminacion" class="form-label">Fecha de Culminación</label>
+                                <input type="date" class="form-control" id="fechaCulminacion" th:field="*{fechaCulminacionPrevista}" required>
+                                <div class="invalid-feedback" th:if="${#fields.hasErrors('fechaCulminacionPrevista')}"
+                                     th:errors="*{fechaCulminacionPrevista}"></div>
+                            </div>
+                        </div>
+
+                        <div class="mb-3">
+                            <label for="descripcion" class="form-label">Descripción</label>
+                            <textarea class="form-control" id="descripcion" th:field="*{descripcionMedida}"
+                                      rows="3" required maxlength="2000"></textarea>
+                            <div class="invalid-feedback" th:if="${#fields.hasErrors('descripcionMedida')}" th:errors="*{descripcionMedida}"></div>
+                        </div>
+
+                        <div class="modal-footer">
+                            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
+                            <button type="submit" class="btn btn-primary">Guardar</button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal de confirmación para eliminar -->
+    <div class="modal fade" id="deleteConfirmModal" tabindex="-1">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header bg-danger text-white">
+                    <h5 class="modal-title">Confirmar eliminación</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <p>¿Está seguro de que desea eliminar esta medida? Esta acción no se puede deshacer.</p>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
+                    <button type="button" id="confirmDeleteBtn" class="btn btn-danger">Eliminar</button>
+                </div>
+            </div>
+        </div>
     </div>
 
     <script th:src="@{/js/bootstrap.bundle.min.js}"></script>
@@ -88,9 +178,10 @@
 
         document.addEventListener('DOMContentLoaded', function() {
             const medidaModal = new bootstrap.Modal(document.getElementById('medidaModal'));
-            const modalElement = document.getElementById('medidaModal');
+            const deleteConfirmModal = new bootstrap.Modal(document.getElementById('deleteConfirmModal'));
             const form = document.getElementById('medidaForm');
             const modalTitle = document.getElementById('medidaModalLabel');
+            let currentDeleteForm = null;
 
             // Botones para EDITAR
             document.querySelectorAll('.edit-btn').forEach(button => {
@@ -106,14 +197,14 @@
                         .then(data => {
                             modalTitle.textContent = 'Editar Medida';
                             // Rellenar el formulario
-                            form.querySelector('#medidaId').value = data.id;
-                            form.querySelector('#reclamoId').value = data.reclamoId;
-                            form.querySelector('[name="codigoMedida"]').value = data.codigoMedida;
-                            form.querySelector('[name="naturaleza"]').value = data.naturaleza;
-                            form.querySelector('[name="proceso"]').value = data.proceso;
-                            form.querySelector('[name="descripcionMedida"]').value = data.descripcionMedida;
-                            form.querySelector('[name="fechaInicioImplementacion"]').value = data.fechaInicioImplementacion;
-                            form.querySelector('[name="fechaCulminacionPrevista"]').value = data.fechaCulminacionPrevista;
+                            document.getElementById('medidaId').value = data.id;
+                            document.getElementById('reclamoId').value = data.reclamoId;
+                            document.getElementById('codigoMedida').value = data.codigoMedida;
+                            document.getElementById('naturaleza').value = data.naturaleza;
+                            document.getElementById('proceso').value = data.proceso;
+                            document.getElementById('descripcion').value = data.descripcionMedida;
+                            document.getElementById('fechaInicio').value = data.fechaInicioImplementacion;
+                            document.getElementById('fechaCulminacion').value = data.fechaCulminacionPrevista;
                         })
                         .catch(error => {
                             console.error('Error al cargar datos de la medida:', error);
@@ -126,11 +217,28 @@
             document.querySelector('.add-btn').addEventListener('click', function() {
                 modalTitle.textContent = 'Agregar Medida';
                 form.reset(); // Limpia todos los campos del formulario
-                form.querySelector('#medidaId').value = ''; // Asegura que el ID esté vacío
-                // El reclamoId ya debería estar en el DTO que se pasa al modelo
+                document.getElementById('medidaId').value = ''; // Asegura que el ID esté vacío
+                document.getElementById('reclamoId').value = [[${reclamo.idReclamo}]]; // Mantener el ID del reclamo
             });
 
-            // Opcional: Mostrar modal si hay errores de validación del backend
+            // Manejo de botones eliminar
+            document.querySelectorAll('form[action^="/admin/medidas/eliminar/"]').forEach(form => {
+                form.onsubmit = function(e) {
+                    e.preventDefault();
+                    currentDeleteForm = form;
+                    deleteConfirmModal.show();
+                };
+            });
+
+            // Confirmación de eliminación
+            document.getElementById('confirmDeleteBtn').addEventListener('click', function() {
+                if (currentDeleteForm) {
+                    currentDeleteForm.submit();
+                }
+                deleteConfirmModal.hide();
+            });
+
+            // Mostrar modal si hay errores de validación del backend
             /*[# th:if="${showModal}"]*/
             medidaModal.show();
             /*[/]*/
