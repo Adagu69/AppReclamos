@@ -18,6 +18,7 @@ import org.springframework.validation.FieldError;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
+import java.time.LocalDate;
 import java.util.List;
 
 @Controller
@@ -70,14 +71,20 @@ public class MedidaAdoptadaController {
     public String guardarMedida(@Valid @ModelAttribute("medidaDTO") MedidaDTO medidaDTO, BindingResult result, RedirectAttributes attributes, Model model) {
 
         // Validación de fechas
-        if (medidaDTO.getFechaInicioImplementacion() != null &&
-                medidaDTO.getFechaCulminacionPrevista() != null) {
-            if (medidaDTO.getFechaCulminacionPrevista()
-                    .isBefore(medidaDTO.getFechaInicioImplementacion())) {
-                result.rejectValue("fechaCulminacionPrevista", "error.medidaDTO",
-                        "La fecha de culminación no puede ser anterior a la de inicio.");
+        if (!result.hasFieldErrors("fechaInicioImplementacion") &&
+            !result.hasFieldErrors("fechaCulminacionPrevista")) {
+
+            LocalDate fechaInicio = medidaDTO.getFechaInicioAsLocalDate();
+            LocalDate fechaCulminacion = medidaDTO.getFechaCulminacionAsLocalDate();
+
+            if (fechaInicio != null && fechaCulminacion != null) {
+                if (fechaCulminacion.isBefore(fechaInicio)) {
+                    result.rejectValue("fechaCulminacionPrevista", "error.medidaDTO",
+                            "La fecha de culminación no puede ser anterior a la de inicio.");
+                }
             }
         }
+
         if (result.hasErrors()) {
             log.error("--- ERRORES DE VALIDACIÓN ENCONTRADOS ---");
             for (FieldError error : result.getFieldErrors()) {

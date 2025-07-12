@@ -1,6 +1,7 @@
 package com.AppReclamos.AppReclamosCms.Servicios.impl;
 
 import com.AppReclamos.AppReclamosCms.Modelos.*;
+import com.AppReclamos.AppReclamosCms.Modelos.Enums.EstadoReclamo;
 import com.AppReclamos.AppReclamosCms.Modelos.Enums.TipoDeclarante;
 import com.AppReclamos.AppReclamosCms.Modelos.Enums.TipoPersona;
 import com.AppReclamos.AppReclamosCms.Repositorios.ReclamosRepositorio;
@@ -38,37 +39,57 @@ public class ReclamosServiciosImpl implements IReclamosServicios {
     @Override
     @Transactional(readOnly = true)
     public List<ReclamoTablaDTO> buscarFiltrado(String estado, String buscarPor, String query, Integer anio, Integer mes) {
-        // La lógica de filtrado inicial se mantiene
-        String estadoFinal = (estado == null || estado.equalsIgnoreCase("TODOS")) ? null : estado.toUpperCase();
-        String queryFinal = (query == null || query.isBlank()) ? null : query;
+        // Procesar los parámetros de filtrado
+        EstadoReclamo estadoEnum = null;
+        if (estado != null && !estado.equalsIgnoreCase("TODOS")) {
+            try {
+                estadoEnum = EstadoReclamo.valueOf(estado.toUpperCase());
+            } catch (IllegalArgumentException e) {
+                log.warn("Estado inválido recibido: {}. Usando null para mostrar todos.", estado);
+                estadoEnum = null;
+            }
+        }
+
+        String queryFinal = (query == null || query.trim().isEmpty()) ? null : query.trim();
+
+        // Construir el período en formato YYYYMM si ambos parámetros están presentes
         String periodoFinal = null;
         if (anio != null && mes != null) {
             periodoFinal = String.format("%d%02d", anio, mes);
         }
 
-        List<Reclamos> reclamos = reclamosRepo.findReclamosByFilters(estadoFinal, buscarPor, queryFinal, periodoFinal);
+        // Validar y ajustar el tipo de búsqueda
+        if (buscarPor == null || buscarPor.trim().isEmpty()) {
+            buscarPor = "TODO";
+        }
 
-        // --- ¡LÓGICA DE MAPEO SIMPLIFICADA! ---
+        log.info("Filtros aplicados - Estado: {}, BuscarPor: {}, Query: {}, Periodo: {}",
+                estadoEnum, buscarPor, queryFinal, periodoFinal);
+
+        // Ejecutar la consulta con los filtros (ahora pasamos el enum)
+        List<Reclamos> reclamos = reclamosRepo.findReclamosByFilters(estadoEnum, buscarPor, queryFinal, periodoFinal);
+
+        // Mapear a DTOs para la tabla
         return reclamos.stream()
                 .map(r -> {
-                    // La búsqueda manual de 'usuario' se elimina.
-
-                    // La lógica para encontrar el detalle, gestión, etc., más reciente se mantiene.
+                    // Obtener el detalle más reciente
                     DetalleReclamo detalleRec = r.getDetalles().stream()
                             .max(Comparator.comparing(DetalleReclamo::getFechaCreacion, Comparator.nullsLast(Comparator.naturalOrder())))
                             .orElse(null);
 
+                    // Obtener la gestión
                     GestionReclamo gestion = r.getGestion();
 
+                    // Obtener el resultado más reciente
                     ResultadoNotificacion resultadoRec = r.getResultados().stream()
                             .max(Comparator.comparing(ResultadoNotificacion::getFechaResultado, Comparator.nullsLast(Comparator.naturalOrder())))
                             .orElse(null);
 
+                    // Obtener la medida más reciente
                     MedidasAdoptadas medidaRec = r.getMedidas().stream()
                             .max(Comparator.comparing(MedidasAdoptadas::getFechaInicioImplementacion, Comparator.nullsLast(Comparator.naturalOrder())))
                             .orElse(null);
 
-                    // ¡La llamada al mapper es más limpia! Ya no necesita el parámetro de la persona.
                     return reclamoMapper.toTableDTO(r, detalleRec, gestion, resultadoRec, medidaRec);
                 })
                 .collect(Collectors.toList());
@@ -196,5 +217,3 @@ public class ReclamosServiciosImpl implements IReclamosServicios {
         }
     }
     }
-
-
