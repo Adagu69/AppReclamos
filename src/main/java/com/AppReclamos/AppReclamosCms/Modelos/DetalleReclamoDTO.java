@@ -37,6 +37,6 @@ public class DetalleReclamoDTO {
 
     /** Descripción libre del hecho o ampliación del reclamo. */
     @NotBlank
-    @Size(max = 1_000)
+    @Size(max = Integer.MAX_VALUE)
     private String descripcion;
 }

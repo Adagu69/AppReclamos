@@ -130,6 +130,76 @@
                 </div>
 
                 <!-- ===========================================================================
+                    BLOQUE 2: IDENTIFICACIÓN DEL USUARIO O TERCERO
+                    =========================================================================== -->
+                <div class="card card-light mb-4">
+                    <div class="card-header">
+                        <h3 class="card-title">Identificación de Usuario / Tercero</h3>
+                    </div>
+                    <div class="card-body row g-3">
+                        <input type="hidden" th:field="*{afectado.idPersona}"/>
+
+                        <!-- Tipo documento -->
+                        <div class="col-md-3">
+                            <label>Tipo Doc.</label>
+                            <select id="afectadoTipoDocumento" class="form-select" th:field="*{afectado.tipoDocumento}"
+                                    required>
+                                <option value="">-- Seleccione --</option>
+                                <option th:each="d : ${T(com.AppReclamos.AppReclamosCms.Modelos.Enums.TipoDocumento).values()}"
+                                        th:value="${d}"
+                                        th:text="${d.getGuiaUsuario()}"></option>
+                            </select>
+                            <div class="text-danger" th:if="${#fields.hasErrors('afectado.tipoDocumento')}"
+                                 th:errors="*{afectado.tipoDocumento}"></div>
+                        </div>
+
+                        <!-- Número del documento -->
+                        <div class="col-md-3">
+                            <label>N.º Documento</label>
+                            <input id="afectadoNumeroDocumento" type="text" class="form-control"
+                                   th:field="*{afectado.numeroDocumento}" required>
+                            <div class="text-danger" th:if="${#fields.hasErrors('afectado.numeroDocumento')}"
+                                 th:errors="*{afectado.numeroDocumento}"></div>
+                        </div>
+
+                        <!-- Nombres -->
+                        <div class="col-md-3">
+                            <label>Nombres</label>
+                            <input id="afectadoNombres" type="text" class="form-control" th:field="*{afectado.nombres}"
+                                   required>
+                            <div class="text-danger" th:if="${#fields.hasErrors('afectado.nombres')}"
+                                 th:errors="*{afectado.nombres}"></div>
+                        </div>
+
+                        <div class="col-md-3">
+                            <label>Ape. Paterno</label>
+                            <input id="afectadoApePaterno" type="text" class="form-control"
+                                   th:field="*{afectado.apellidoPaterno}">
+                            <div class="text-danger" th:if="${#fields.hasErrors('afectado.apellidoPaterno')}"
+                                 th:errors="*{afectado.apellidoPaterno}"></div>
+                        </div>
+
+                        <div class="col-md-3">
+                            <label>Ape. Materno</label>
+                            <input id="afectadoApeMaterno" type="text" class="form-control"
+                                   th:field="*{afectado.apellidoMaterno}">
+                            <div class="text-danger" th:if="${#fields.hasErrors('afectado.apellidoMaterno')}"
+                                 th:errors="*{afectado.apellidoMaterno}"></div>
+                        </div>
+
+                        <!-- Razón Social (solo si es RUC) -->
+                        <div class="col-md-6" id="razonSolAfectado" style="display:none;">
+                            <label>Razón Social</label>
+                            <input id="afectadoRazonSocial" type="text" class="form-control"
+                                   th:field="*{afectado.razonSocial}">
+                            <div class="text-danger" th:if="${#fields.hasErrors('afectado.razonSocial')}"
+                                 th:errors="*{afectado.razonSocial}"></div>
+                        </div>
+
+                    </div>
+                </div>
+
+                <!-- ===========================================================================
        BLOQUE 1: PERSONA – PRESENTANTE (personas[0])
        =========================================================================== -->
                 <div class="card card-secondary mb-4">
@@ -241,76 +311,6 @@
                 </div>
 
 
-                <!-- ===========================================================================
-                     BLOQUE 2: IDENTIFICACIÓN DEL USUARIO O TERCERO
-                     =========================================================================== -->
-                <div class="card card-light mb-4">
-                    <div class="card-header">
-                        <h3 class="card-title">Identificación de Usuario / Tercero</h3>
-                    </div>
-                    <div class="card-body row g-3">
-                        <input type="hidden" th:field="*{afectado.idPersona}"/>
-
-                        <!-- Tipo documento -->
-                        <div class="col-md-3">
-                            <label>Tipo Doc.</label>
-                            <select id="afectadoTipoDocumento" class="form-select" th:field="*{afectado.tipoDocumento}"
-                                    required>
-                                <option value="">-- Seleccione --</option>
-                                <option th:each="d : ${T(com.AppReclamos.AppReclamosCms.Modelos.Enums.TipoDocumento).values()}"
-                                        th:value="${d}"
-                                        th:text="${d.getGuiaUsuario()}"></option>
-                            </select>
-                            <div class="text-danger" th:if="${#fields.hasErrors('afectado.tipoDocumento')}"
-                                 th:errors="*{afectado.tipoDocumento}"></div>
-                        </div>
-
-                        <!-- Número del documento -->
-                        <div class="col-md-3">
-                            <label>N.º Documento</label>
-                            <input id="afectadoNumeroDocumento" type="text" class="form-control"
-                                   th:field="*{afectado.numeroDocumento}" required>
-                            <div class="text-danger" th:if="${#fields.hasErrors('afectado.numeroDocumento')}"
-                                 th:errors="*{afectado.numeroDocumento}"></div>
-                        </div>
-
-                        <!-- Nombres -->
-                        <div class="col-md-3">
-                            <label>Nombres</label>
-                            <input id="afectadoNombres" type="text" class="form-control" th:field="*{afectado.nombres}"
-                                   required>
-                            <div class="text-danger" th:if="${#fields.hasErrors('afectado.nombres')}"
-                                 th:errors="*{afectado.nombres}"></div>
-                        </div>
-
-                        <div class="col-md-3">
-                            <label>Ape. Paterno</label>
-                            <input id="afectadoApePaterno" type="text" class="form-control"
-                                   th:field="*{afectado.apellidoPaterno}">
-                            <div class="text-danger" th:if="${#fields.hasErrors('afectado.apellidoPaterno')}"
-                                 th:errors="*{afectado.apellidoPaterno}"></div>
-                        </div>
-
-                        <div class="col-md-3">
-                            <label>Ape. Materno</label>
-                            <input id="afectadoApeMaterno" type="text" class="form-control"
-                                   th:field="*{afectado.apellidoMaterno}">
-                            <div class="text-danger" th:if="${#fields.hasErrors('afectado.apellidoMaterno')}"
-                                 th:errors="*{afectado.apellidoMaterno}"></div>
-                        </div>
-
-                        <!-- Razón Social (solo si es RUC) -->
-                        <div class="col-md-6" id="razonSolAfectado" style="display:none;">
-                            <label>Razón Social</label>
-                            <input id="afectadoRazonSocial" type="text" class="form-control"
-                                   th:field="*{afectado.razonSocial}">
-                            <div class="text-danger" th:if="${#fields.hasErrors('afectado.razonSocial')}"
-                                 th:errors="*{afectado.razonSocial}"></div>
-                        </div>
-
-                    </div>
-                </div>
-
                 <!-- ========= DETALLE DEL RECLAMO ========= -->
                 <div class="card card-info mb-4">
                     <div class="card-header">
@@ -352,8 +352,7 @@
                             <textarea rows="4"
                                       class="form-control"
                                       th:field="*{detalles[0].descripcion}"
-                                      required
-                                      maxlength="500"></textarea>
+                                      required></textarea>
                             <div class="text-danger"
                                  th:if="${#fields.hasErrors('detalles[0].descripcion')}"
                                  th:errors="*{detalles[0].descripcion}"></div>
