@@ -41,12 +41,12 @@ public interface ReclamoMapper {
 
 
     @Mapping(target = "id", source = "entity.idReclamo")
-    @Mapping(target = "estado", expression = "java(entity.getEstadoReclamo() != null ? entity.getEstadoReclamo().getCodigo() : null)")
+    @Mapping(target = "estado", expression = "java(entity.getEstadoReclamo() != null ? entity.getEstadoReclamo().ordinal() : null)")
 
     // ¡CAMBIO CLAVE! Añadimos un mapeo explícito para la conversión
-    @Mapping(target = "tipoDeclarante", expression = "java(entity.getTipoDeclarante() != null ? entity.getTipoDeclarante().getCodigo() : null)")
-    @Mapping(target = "tipoInstitucion", expression = "java(entity.getTipoInstitucion() != null ? entity.getTipoInstitucion().getCodigo() : null)")
-    @Mapping(target = "medioRecepcion", expression = "java(entity.getMedioRecepcion() != null ? entity.getMedioRecepcion().getCodigo() : null)")
+    @Mapping(target = "tipoDeclarante", expression = "java(entity.getTipoDeclarante() != null ? entity.getTipoDeclarante().ordinal() : null)")
+    @Mapping(target = "tipoInstitucion", expression = "java(entity.getTipoInstitucion() != null ? entity.getTipoInstitucion().ordinal() : null)")
+    @Mapping(target = "medioRecepcion", expression = "java(entity.getMedioRecepcion() != null ? entity.getMedioRecepcion().ordinal() : null)")
 
     // --- Mapeos para Presentante ---
     @Mapping(target = "tipoDocumento_presentante", expression = "java(entity.getPresentante() != null && entity.getPresentante().getTipoDocumento() != null ? entity.getPresentante().getTipoDocumento().getCodigo() : null)")
@@ -117,10 +117,14 @@ public interface ReclamoMapper {
 
     // --- MAPEADORES PARA FORMULARIO: DTO <-> Entidad ---
     // Estos ahora también son más simples y automáticos.
+    @Mapping(target = "estado", source = "estadoReclamo")
     ReclamoDTO toDetailDTO(Reclamos entity);
+
+    @Mapping(target = "estadoReclamo", source = "estado")
     Reclamos toEntity(ReclamoDTO dto);
 
     @BeanMapping(nullValuePropertyMappingStrategy = NullValuePropertyMappingStrategy.IGNORE)
+    @Mapping(target = "estadoReclamo", source = "estado")
     void updateFromDto(ReclamoDTO dto, @MappingTarget Reclamos entity);
 
 

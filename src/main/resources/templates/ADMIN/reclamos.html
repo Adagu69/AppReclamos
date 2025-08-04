@@ -28,10 +28,15 @@
                 <div class="d-flex flex-column align-items-end">
 
                     <div class="d-flex mb-2">
-                        <form th:action="@{/admin/reclamos/importar}" method="post" enctype="multipart/form-data" class="d-flex align-items-center me-2">
-                            <input type="file" name="archivoExcel" class="form-control form-control-sm" required style="width: 250px;">
-                            <button type="submit" class="btn btn-info btn-sm ms-2 flex-shrink-0">
-                                <i class="fas fa-upload"></i> Procesar
+                        <form th:action="@{/admin/reclamos/generarTrama}" method="get" id="formGenerarTrama" class="d-flex align-items-center me-2">
+                            <input type="hidden" name="estado" th:value="${estado}">
+                            <input type="hidden" name="buscarPor" th:value="${buscarPor}">
+                            <input type="hidden" name="query" th:value="${query}">
+                            <input type="hidden" name="anio" th:value="${anio}">
+                            <input type="hidden" name="mes" th:value="${mes}">
+
+                            <button type="submit" class="btn btn-warning btn-sm flex-shrink-0">
+                                <i class="fas fa-file-code"></i> Generar Trama TXT
                             </button>
                         </form>
 
@@ -57,7 +62,7 @@
             <div class="card mb-4">
                 <div class="card-body">
                     <h5 class="card-title mb-3">Filtros de Búsqueda</h5>
-                    <form class="row g-3 align-items-end" method="get">
+                    <form class="row g-3 align-items-end" method="get" id="filtrosForm">
                         <div class="col-md-auto">
                             <label for="estado" class="form-label">Estado:</label>
                             <select name="estado" id="estado" class="form-select form-select-sm">
@@ -72,26 +77,68 @@
                             <label for="buscarPor" class="form-label">Buscar por:</label>
                             <select name="buscarPor" id="buscarPor" class="form-select form-select-sm">
                                 <option th:value="'TODO'" th:selected="${buscarPor == 'TODO'}">Todo</option>
-                                <option th:value="'CODIGO'" th:selected="${buscarPor == 'CODIGO'}">Código</option>
-                                <option th:value="'NOMBRE'" th:selected="${buscarPor == 'NOMBRE'}">Nombre</option>
+                                <option th:value="'CODIGO'" th:selected="${buscarPor == 'CODIGO'}">Códigos</option>
+                                <option th:value="'NOMBRE'" th:selected="${buscarPor == 'NOMBRE'}">Nombres/Razón Social</option>
+                                <option th:value="'DOCUMENTO'" th:selected="${buscarPor == 'DOCUMENTO'}">N° Documento</option>
+                                <option th:value="'DESCRIPCION'" th:selected="${buscarPor == 'DESCRIPCION'}">Descripción</option>
                             </select>
                         </div>
                         <div class="col-md-3">
-                            <label for="query" class="form-label">Término:</label>
-                            <input type="text" name="query" id="query" th:value="${query}" class="form-control form-control-sm"/>
+                            <label for="query" class="form-label">Término de búsqueda:</label>
+                            <input type="text" name="query" id="query" th:value="${query}"
+                                   class="form-control form-control-sm"
+                                   placeholder="Ingrese texto a buscar..."/>
+                            <small class="form-text text-muted" id="helpText">Busca en todos los campos disponibles</small>
                         </div>
                         <div class="col-md-auto">
                             <label for="anio" class="form-label">Año:</label>
-                            <input type="number" min="2020" max="2100" name="anio" id="anio" th:value="${anio}" class="form-control form-control-sm" style="width: 100px;"/>
+                            <select name="anio" id="anio" class="form-select form-select-sm" style="width: 100px;">
+                                <option value="">Todos</option>
+                                <option th:each="year : ${#numbers.sequence(2020, 2030)}"
+                                        th:value="${year}"
+                                        th:text="${year}"
+                                        th:selected="${anio == year}"></option>
+                            </select>
                         </div>
                         <div class="col-md-auto">
                             <label for="mes" class="form-label">Mes:</label>
-                            <input type="number" min="1" max="12" name="mes" id="mes" th:value="${mes}" class="form-control form-control-sm" style="width: 80px;"/>
+                            <select name="mes" id="mes" class="form-select form-select-sm" style="width: 100px;">
+                                <option value="">Todos</option>
+                                <option value="1" th:selected="${mes == 1}">Enero</option>
+                                <option value="2" th:selected="${mes == 2}">Febrero</option>
+                                <option value="3" th:selected="${mes == 3}">Marzo</option>
+                                <option value="4" th:selected="${mes == 4}">Abril</option>
+                                <option value="5" th:selected="${mes == 5}">Mayo</option>
+                                <option value="6" th:selected="${mes == 6}">Junio</option>
+                                <option value="7" th:selected="${mes == 7}">Julio</option>
+                                <option value="8" th:selected="${mes == 8}">Agosto</option>
+                                <option value="9" th:selected="${mes == 9}">Septiembre</option>
+                                <option value="10" th:selected="${mes == 10}">Octubre</option>
+                                <option value="11" th:selected="${mes == 11}">Noviembre</option>
+                                <option value="12" th:selected="${mes == 12}">Diciembre</option>
+                            </select>
                         </div>
                         <div class="col-md-auto">
-                            <button class="btn btn-primary btn-sm">Buscar</button>
+                            <button type="submit" class="btn btn-primary btn-sm">
+                                <i class="fas fa-search"></i> Buscar
+                            </button>
+                            <button type="button" class="btn btn-secondary btn-sm ms-1" id="limpiarFiltros">
+                                <i class="fas fa-times"></i> Limpiar
+                            </button>
                         </div>
                     </form>
+
+                    <!-- Mostrar filtros activos -->
+                    <div th:if="${estado != 'TODOS' or query != null and query != '' or anio != null or mes != null}"
+                         class="mt-3">
+                        <small class="text-muted">
+                            <strong>Filtros activos:</strong>
+                            <span th:if="${estado != 'TODOS'}" class="badge bg-info me-1" th:text="'Estado: ' + ${estado}"></span>
+                            <span th:if="${query != null and query != ''}" class="badge bg-info me-1" th:text="'Búsqueda: ' + ${query}"></span>
+                            <span th:if="${anio != null}" class="badge bg-info me-1" th:text="'Año: ' + ${anio}"></span>
+                            <span th:if="${mes != null}" class="badge bg-info me-1" th:text="'Mes: ' + ${mes}"></span>
+                        </small>
+                    </div>
                 </div>
             </div>
 
@@ -269,6 +316,8 @@
         const checkboxes = document.querySelectorAll('.fila-checkbox');
         const btnEditar = document.getElementById('btnEditar');
         const btnEliminar = document.getElementById('btnEliminar');
+        const buscarPorSelect = document.getElementById('buscarPor');
+        const helpText = document.getElementById('helpText');
 
         // Lógica para el checkbox maestro
         masterCheckbox.addEventListener('change', function () {
@@ -293,6 +342,77 @@
             });
         });
 
+        // Actualizar texto de ayuda según el tipo de búsqueda seleccionado
+        buscarPorSelect.addEventListener('change', function() {
+            const queryInput = document.getElementById('query');
+            const value = this.value;
+
+            switch(value) {
+                case 'TODO':
+                    helpText.textContent = 'Busca en todos los campos disponibles';
+                    queryInput.placeholder = 'Ingrese texto a buscar...';
+                    break;
+                case 'CODIGO':
+                    helpText.textContent = 'Busca en códigos de reclamo, declarante y UGIPRESS';
+                    queryInput.placeholder = 'Ej: REC-001, 12345...';
+                    break;
+                case 'NOMBRE':
+                    helpText.textContent = 'Busca en nombres, apellidos y razones sociales';
+                    queryInput.placeholder = 'Ej: Juan, García, EMPRESA S.A...';
+                    break;
+                case 'DOCUMENTO':
+                    helpText.textContent = 'Busca por número de documento del presentante o afectado';
+                    queryInput.placeholder = 'Ej: 12345678, 20123456789...';
+                    break;
+                case 'DESCRIPCION':
+                    helpText.textContent = 'Busca en la descripción del reclamo';
+                    queryInput.placeholder = 'Ej: problema con el servicio...';
+                    break;
+            }
+        });
+
+        // Lógica para limpiar filtros
+        document.getElementById('limpiarFiltros').addEventListener('click', function() {
+            // Limpiar todos los campos del formulario
+            document.getElementById('estado').value = 'TODOS';
+            document.getElementById('buscarPor').value = 'TODO';
+            document.getElementById('query').value = '';
+            document.getElementById('anio').value = '';
+            document.getElementById('mes').value = '';
+
+            // Actualizar el texto de ayuda
+            buscarPorSelect.dispatchEvent(new Event('change'));
+
+            // Enviar el formulario para aplicar la limpieza
+            document.getElementById('filtrosForm').submit();
+        });
+
+        // Envío automático al cambiar filtros de selección (opcional)
+        const autoSubmitElements = ['estado', 'anio', 'mes'];
+        autoSubmitElements.forEach(id => {
+            document.getElementById(id).addEventListener('change', function() {
+                // Auto-enviar cuando cambian estos filtros
+                // Comentar esta línea si no quieres auto-envío
+                // document.getElementById('filtrosForm').submit();
+            });
+        });
+
+        // Búsqueda en tiempo real con debounce (opcional)
+        let timeoutId;
+        document.getElementById('query').addEventListener('input', function() {
+            clearTimeout(timeoutId);
+            const query = this.value.trim();
+
+            // Solo buscar si hay al menos 3 caracteres o está vacío
+            if (query.length >= 3 || query.length === 0) {
+                timeoutId = setTimeout(() => {
+                    // Auto-enviar después de 1 segundo de inactividad
+                    // Comentar esta línea si no quieres búsqueda en tiempo real
+                    // document.getElementById('filtrosForm').submit();
+                }, 1000);
+            }
+        });
+
         function actualizarBotones() {
             const seleccionados = document.querySelectorAll('.fila-checkbox:checked');
 
@@ -312,6 +432,9 @@
                 btnEditar.onclick = null;
             }
         }
+
+        // Inicializar el texto de ayuda
+        buscarPorSelect.dispatchEvent(new Event('change'));
     });
 </script>
 </body>

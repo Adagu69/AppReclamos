@@ -3,14 +3,17 @@ package com.AppReclamos.AppReclamosCms.Controladores;
 import com.AppReclamos.AppReclamosCms.Modelos.*;
 import com.AppReclamos.AppReclamosCms.Modelos.Enums.*;
 import com.AppReclamos.AppReclamosCms.Servicios.interfaces.IReclamosServicios;
+import com.AppReclamos.AppReclamosCms.Servicios.impl.ReporteTramaServicio;
 import com.AppReclamos.AppReclamosCms.Utils.ExcelGenerator;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.core.io.ByteArrayResource;
 import org.springframework.core.io.InputStreamResource;
 import org.springframework.http.HttpHeaders;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -36,6 +39,7 @@ import java.util.stream.Collectors;
 public class ReclamosController {
 
     private final IReclamosServicios reclamosSvc;
+    private final ReporteTramaServicio reporteTramaServicio;
 
     private static final Logger log = LoggerFactory.getLogger(ReclamosController.class);
 
@@ -218,5 +222,28 @@ public class ReclamosController {
         }
 
         return "redirect:/admin/reclamos";
+    }
+
+    @GetMapping("/generarTrama")
+    public ResponseEntity<ByteArrayResource> generarTramaTxt(
+            @RequestParam(value = "estado", defaultValue = "TODOS") String estado,
+            @RequestParam(value = "buscarPor", defaultValue = "TODO") String buscarPor,
+            @RequestParam(value = "query", required = false) String query,
+            @RequestParam(value = "anio", required = false) Integer anio,
+            @RequestParam(value = "mes", required = false) Integer mes) {
+
+        try {
+            ByteArrayResource recurso = reporteTramaServicio.generarTramaTxt(estado, buscarPor, query, anio, mes);
+            String nombreArchivo = reporteTramaServicio.generarNombreArchivo();
+
+            return ResponseEntity.ok()
+                    .header(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename=\"" + nombreArchivo + "\"")
+                    .header(HttpHeaders.CONTENT_TYPE, "text/plain; charset=UTF-8")
+                    .body(recurso);
+
+        } catch (Exception e) {
+            log.error("Error al generar la trama TXT", e);
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
+        }
     }
 }

@@ -45,8 +45,8 @@
                                 <td class="align-middle" th:text="${m.naturaleza.toString().replace('_',' ')}"></td>
                                 <td class="align-middle" th:text="${m.proceso.toString().replace('_',' ')}"></td>
                                 <td class="align-middle" th:text="${m.descripcionMedida}"></td>
-                                <td class="text-center align-middle" th:text="${#temporals.format(m.fechaInicioImplementacion,'dd/MM/yyyy')}"></td>
-                                <td class="text-center align-middle" th:text="${#temporals.format(m.fechaCulminacionPrevista,'dd/MM/yyyy')}"></td>
+                                <td class="text-center align-middle" th:text="${m.fechaInicioImplementacion}"></td>
+                                <td class="text-center align-middle" th:text="${m.fechaCulminacionPrevista}"></td>
                                 <td class="text-center align-middle">
                                     <button type="button" class="btn btn-warning btn-sm edit-btn"
                                             title="Editar Medida"
@@ -94,10 +94,10 @@
 
                         <div class="row mb-3">
                             <div class="col-md-4">
-                                <label for="codigoMedida" class="form-label">Código de Medida</label>
+                                <label for="codigoMedida" class="form-label">Código de Medida (Automático)</label>
                                 <input type="text" class="form-control" id="codigoMedida" th:field="*{codigoMedida}"
-                                       required maxlength="2">
-                                <div class="invalid-feedback" th:if="${#fields.hasErrors('codigoMedida')}" th:errors="*{codigoMedida}"></div>
+                                       readonly placeholder="Se genera automáticamente">
+                                <small class="form-text text-muted">El código se genera automáticamente (01, 02, 03...)</small>
                             </div>
                             <div class="col-md-4">
                                 <label for="naturaleza" class="form-label">Naturaleza</label>
@@ -123,14 +123,18 @@
 
                         <div class="row mb-3">
                             <div class="col-md-6">
-                                <label for="fechaInicio" class="form-label">Fecha de Inicio</label>
-                                <input type="date" class="form-control" id="fechaInicio" th:field="*{fechaInicioImplementacion}" required>
+                                <label for="fechaInicio" class="form-label">Fecha de Inicio (AAAAMMDD)</label>
+                                <input type="text" class="form-control" id="fechaInicio" th:field="*{fechaInicioImplementacion}"
+                                       required placeholder="20241225" maxlength="8" pattern="[0-9]{8}">
+                                <small class="form-text text-muted">Formato: AAAAMMDD (ejemplo: 20241225)</small>
                                 <div class="invalid-feedback" th:if="${#fields.hasErrors('fechaInicioImplementacion')}"
                                      th:errors="*{fechaInicioImplementacion}"></div>
                             </div>
                             <div class="col-md-6">
-                                <label for="fechaCulminacion" class="form-label">Fecha de Culminación</label>
-                                <input type="date" class="form-control" id="fechaCulminacion" th:field="*{fechaCulminacionPrevista}" required>
+                                <label for="fechaCulminacion" class="form-label">Fecha de Culminación (AAAAMMDD)</label>
+                                <input type="text" class="form-control" id="fechaCulminacion" th:field="*{fechaCulminacionPrevista}"
+                                       required placeholder="20241231" maxlength="8" pattern="[0-9]{8}">
+                                <small class="form-text text-muted">Formato: AAAAMMDD (ejemplo: 20241231)</small>
                                 <div class="invalid-feedback" th:if="${#fields.hasErrors('fechaCulminacionPrevista')}"
                                      th:errors="*{fechaCulminacionPrevista}"></div>
                             </div>
